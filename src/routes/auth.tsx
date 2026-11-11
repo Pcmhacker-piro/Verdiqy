@@ -72,7 +72,7 @@ function AuthPage() {
   const [appleAvailable, setAppleAvailable] = useState(false);
 
   useEffect(() => {
-    setAppleAvailable(isLovableHost());
+    setAppleAvailable(true);
   }, []);
 
   // If already signed in (or session hydrates after OAuth return), bounce to target
