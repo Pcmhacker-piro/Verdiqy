@@ -276,7 +276,7 @@ function ProfileCard({ stats, onClear }: { stats: ProfileStats; onClear: () => v
     <div>
       <div className="flex items-start gap-3">
         <Avatar className="size-14 border border-border">
-          <AvatarImage src={user.titlePhoto ?? user.avatar} alt={user.handle} />
+          <AvatarImage src={cfAvatarUrl(user.titlePhoto ?? user.avatar)} alt={user.handle} />
           <AvatarFallback>{user.handle.slice(0, 2).toUpperCase()}</AvatarFallback>
         </Avatar>
         <div className="min-w-0 flex-1">
