@@ -1,3 +1,4 @@
+import { lovable } from "@/integrations/lovable/index";
 import { createFileRoute, useNavigate, useSearch, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { ArrowLeft, Loader2, Sparkles } from "lucide-react";
@@ -49,11 +50,11 @@ async function startOAuth(
   provider: "google" | "apple",
   returnUrl: string,
 ): Promise<OAuthOutcome> {
-    const { error } = await supabase.auth.signInWithOAuth({
-    provider,
-    options: { redirectTo: returnUrl },
+  void returnUrl;
+  const result = await lovable.auth.signInWithOAuth(provider, {
+    redirect_uri: window.location.origin,
   });
-  return { error, redirected: !error };
+  return { error: result.error ?? null, redirected: !!result.redirected };
 }
 
 function AuthPage() {
