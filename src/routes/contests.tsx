@@ -104,7 +104,7 @@ const PLATFORM_META: Record<
     hex: "#f59e0b",
     short: "CC",
     icon: "CC",
-    logo: "https://cdn.codechef.com/images/cc-logo-big.png",
+    logo: "https://www.codechef.com/favicon.ico",
     tileBg: "bg-amber-950/70",
   },
   LeetCode: {
