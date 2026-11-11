@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { motion } from "framer-motion";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -106,84 +105,29 @@ function HeaderAuthCta() {
 }
 
 function Hero() {
-  const heroRef = useRef<HTMLDivElement>(null);
-  const mx = useMotionValue(0);
-  const my = useMotionValue(0);
-  const sx = useSpring(mx, { stiffness: 60, damping: 15 });
-  const sy = useSpring(my, { stiffness: 60, damping: 15 });
-  const rotateY = useTransform(sx, [-0.5, 0.5], [8, -8]);
-  const rotateX = useTransform(sy, [-0.5, 0.5], [-6, 6]);
-  const bgX = useTransform(sx, [-0.5, 0.5], [30, -30]);
-  const bgY = useTransform(sy, [-0.5, 0.5], [18, -18]);
-  const bgRotY = useTransform(sx, [-0.5, 0.5], [-3, 3]);
-  const bgRotX = useTransform(sy, [-0.5, 0.5], [2, -2]);
-  const glowX = useTransform(sx, [-0.5, 0.5], ["35%", "65%"]);
-  const glowY = useTransform(sy, [-0.5, 0.5], ["25%", "55%"]);
-
-  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const r = e.currentTarget.getBoundingClientRect();
-    mx.set((e.clientX - r.left) / r.width - 0.5);
-    my.set((e.clientY - r.top) / r.height - 0.5);
-  };
-  const onLeave = () => {
-    mx.set(0);
-    my.set(0);
-  };
-
   return (
-    <section
-      ref={heroRef}
-      onMouseMove={onMove}
-      onMouseLeave={onLeave}
-      className="landing-hero relative overflow-hidden [perspective:1600px]"
-    >
-      {/* Hero background — layered 3D */}
-      <motion.div
-        aria-hidden
-        style={{
-          x: bgX,
-          y: bgY,
-          rotateX: bgRotX,
-          rotateY: bgRotY,
-          transformStyle: "preserve-3d",
-        }}
-        className="absolute inset-[-4%] [transform-style:preserve-3d]"
-      >
+    <section className="landing-hero relative overflow-hidden">
+      {/* Hero background */}
+      <div aria-hidden className="absolute inset-[-4%]">
         <motion.img
           src={heroImage}
           alt=""
           width={1920}
           height={1280}
-          initial={{ scale: 1.15, opacity: 0 }}
-          animate={{
-            scale: [1.15, 1.22, 1.15],
-            opacity: 1,
-          }}
-          transition={{
-            opacity: { duration: 1.4, ease: [0.16, 1, 0.3, 1] },
-            scale: {
-              duration: 22,
-              repeat: Infinity,
-              ease: "easeInOut",
-            },
-          }}
-          className="absolute inset-0 h-full w-full object-cover [will-change:transform]"
-          style={{ transform: "translateZ(-80px)" }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="absolute inset-0 h-full w-full scale-[1.06] object-cover"
         />
 
         {/* Aurora glows */}
-        <motion.div
+        <div
           aria-hidden
-          animate={{ opacity: [0.55, 0.85, 0.55] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          style={{ left: glowX, top: glowY, transform: "translate(-50%, -50%) translateZ(-20px)" }}
-          className="pointer-events-none absolute size-[60vmax] rounded-full bg-[radial-gradient(closest-side,rgba(120,150,255,0.35),transparent_70%)] blur-3xl"
+          className="pointer-events-none absolute left-[45%] top-[35%] size-[60vmax] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(120,150,255,0.28),transparent_70%)] blur-3xl"
         />
-        <motion.div
+        <div
           aria-hidden
-          animate={{ opacity: [0.35, 0.6, 0.35] }}
-          transition={{ duration: 11, repeat: Infinity, ease: "easeInOut" }}
-          className="pointer-events-none absolute -bottom-40 -right-40 size-[50vmax] rounded-full bg-[radial-gradient(closest-side,rgba(80,120,255,0.35),transparent_70%)] blur-3xl"
+          className="pointer-events-none absolute -bottom-40 -right-40 size-[50vmax] rounded-full bg-[radial-gradient(closest-side,rgba(80,120,255,0.28),transparent_70%)] blur-3xl"
         />
 
         {/* Depth gradients — pinned to dark hero regardless of theme */}
@@ -199,7 +143,7 @@ function Hero() {
               "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.7'/></svg>\")",
           }}
         />
-      </motion.div>
+      </div>
 
       {/* Nav */}
       <header className="relative z-10 flex items-center justify-between px-6 py-5 sm:px-10">
@@ -226,15 +170,11 @@ function Hero() {
       </header>
 
       {/* Hero content */}
-      <motion.main
-        style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-        className="relative z-10 mx-auto flex min-h-[calc(100dvh-88px)] max-w-4xl flex-col items-center justify-center px-6 pb-24 pt-8 text-center [will-change:transform]"
-      >
+      <main className="relative z-10 mx-auto flex min-h-[calc(100dvh-88px)] max-w-4xl flex-col items-center justify-center px-6 pb-24 pt-8 text-center">
         <motion.span
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          style={{ transform: "translateZ(40px)" }}
           className="inline-flex items-center gap-2 rounded-full bg-[rgb(var(--lp-ink)/15%)] px-4 py-1.5 text-xs font-medium text-[rgb(var(--lp-ink))] shadow-[0_8px_24px_-8px_rgba(0,0,0,0.5)] backdrop-blur-md"
         >
           <Sparkles className="size-3.5 text-amber-300" />
@@ -245,7 +185,6 @@ function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          style={{ transform: "translateZ(80px)" }}
           className="mt-6 font-display text-5xl font-semibold leading-[1.05] tracking-tight text-[rgb(var(--lp-ink))] [text-shadow:0_10px_40px_rgba(0,0,0,0.35)] sm:text-6xl md:text-7xl"
         >
           Master Codeforces,
@@ -257,7 +196,6 @@ function Hero() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-          style={{ transform: "translateZ(50px)" }}
           className="mt-6 max-w-xl text-base leading-relaxed text-[rgb(var(--lp-ink)/85%)] sm:text-lg"
         >
           Curated problem sheets, honest progress tracking, contest reminders
@@ -269,9 +207,6 @@ function Hero() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-          style={{ transform: "translateZ(70px)" }}
-          whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.97 }}
           className="mt-8"
         >
           <Button
@@ -290,7 +225,6 @@ function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.9, delay: 0.55 }}
-          style={{ transform: "translateZ(30px)" }}
           className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-[rgb(var(--lp-ink)/80%)]"
         >
            <li>✨ Free to use</li>
@@ -307,7 +241,7 @@ function Hero() {
            <li aria-hidden className="size-1 rounded-full bg-[rgb(var(--lp-ink)/50%)]" />
            <li>🎬 Video editorials built-in</li>
         </motion.ul>
-      </motion.main>
+      </main>
     </section>
   );
 }
@@ -526,15 +460,7 @@ function Showcase() {
         </div>
 
         {/* Faux product panel */}
-        <motion.div
-          initial={{ opacity: 0, y: 30, rotateX: 8 }}
-          whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-          whileHover={{ y: -4, rotateX: -1, rotateY: 1 }}
-          style={{ transformStyle: "preserve-3d", transformPerspective: 1200 }}
-          className="rounded-2xl border border-[rgb(var(--lp-ink)/10%)] bg-[var(--lp-bg)] p-6 shadow-2xl"
-        >
+        <div className="rounded-2xl border border-[rgb(var(--lp-ink)/10%)] bg-[var(--lp-bg)] p-6 shadow-2xl">
           <div className="flex items-center justify-between border-b border-[rgb(var(--lp-ink)/10%)] pb-4">
             <div>
               <div className="text-sm font-semibold text-[rgb(var(--lp-ink))]">
@@ -556,15 +482,10 @@ function Showcase() {
               { id: "1741E", name: "Sending a Sequence Over the Network", tag: "dp", done: false },
               { id: "1620D", name: "Exact Change", tag: "brute force", done: true },
               { id: "1701D", name: "Permutation Restoration", tag: "greedy", done: false },
-            ].map((p, i) => (
-              <motion.div
+            ].map((p) => (
+              <div
                 key={p.id}
-                initial={{ opacity: 0, x: -12 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.5, delay: 0.1 + i * 0.08, ease: [0.16, 1, 0.3, 1] }}
-                whileHover={{ x: 3, backgroundColor: "rgb(var(--lp-ink) / 0.06)" }}
-                className="flex items-center justify-between rounded-lg border border-[rgb(var(--lp-ink)/10%)] bg-[rgb(var(--lp-ink)/2%)] px-3 py-2.5 text-sm"
+                className="flex items-center justify-between rounded-lg border border-[rgb(var(--lp-ink)/10%)] bg-[rgb(var(--lp-ink)/2%)] px-3 py-2.5 text-sm transition-colors hover:bg-[rgb(var(--lp-ink)/6%)]"
               >
                 <div className="flex items-center gap-3">
                   <span
@@ -580,20 +501,14 @@ function Showcase() {
                 <span className="hidden text-[10px] uppercase tracking-widest text-[rgb(var(--lp-ink)/45%)] sm:inline">
                   {p.tag}
                 </span>
-              </motion.div>
+              </div>
             ))}
           </div>
 
           <div className="mt-5 h-1.5 w-full overflow-hidden rounded-full bg-[rgb(var(--lp-ink)/10%)]">
-            <motion.div
-              initial={{ width: 0 }}
-              whileInView={{ width: "75%" }}
-              viewport={{ once: true, margin: "-40px" }}
-              transition={{ duration: 1.2, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="h-full rounded-full bg-[rgb(var(--lp-ink)/70%)]"
-            />
+            <div className="h-full w-[75%] rounded-full bg-[rgb(var(--lp-ink)/70%)]" />
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
@@ -745,8 +660,8 @@ const TOPICS = [
 ];
 
 function TopicsMarquee() {
-  // Two counter-rotating 3D rows for depth
-  const row = (dir: "left" | "right", speed: number, tilt: number) => (
+  // Two quiet rows of topic tags — no scrolling
+  const row = (key: string, offset: number, tilt: number) => (
     <div
       className="relative flex overflow-hidden"
       style={{
@@ -756,27 +671,19 @@ function TopicsMarquee() {
           "linear-gradient(90deg, transparent, black 12%, black 88%, transparent)",
       }}
     >
-      <motion.div
-        className="flex shrink-0 gap-3 pr-3 [transform-style:preserve-3d]"
-        style={{ rotateX: tilt }}
-        animate={{ x: dir === "left" ? ["0%", "-50%"] : ["-50%", "0%"] }}
-        transition={{ duration: speed, ease: "linear", repeat: Infinity }}
+      <div
+        className="flex shrink-0 gap-3 pr-3"
+        style={{ transform: `rotateX(${tilt}deg)` }}
       >
-        {[...TOPICS, ...TOPICS, ...TOPICS, ...TOPICS].map((t, i) => (
-          <motion.span
-            key={`${dir}-${t}-${i}`}
-            whileHover={{
-              scale: 1.08,
-              rotateY: 8,
-              z: 30,
-              transition: { type: "spring", stiffness: 260, damping: 18 },
-            }}
-            className="whitespace-nowrap rounded-full border border-[rgb(var(--lp-ink)/12%)] bg-[rgb(var(--lp-ink)/5%)] px-4 py-1.5 text-xs text-[rgb(var(--lp-ink)/75%)] shadow-[0_8px_24px_-12px_rgba(0,0,0,0.5)] backdrop-blur-sm [transform-style:preserve-3d] [will-change:transform]"
+        {[...TOPICS.slice(offset), ...TOPICS.slice(0, offset)].map((t) => (
+          <span
+            key={`${key}-${t}`}
+            className="whitespace-nowrap rounded-full border border-[rgb(var(--lp-ink)/12%)] bg-[rgb(var(--lp-ink)/5%)] px-4 py-1.5 text-xs text-[rgb(var(--lp-ink)/75%)] shadow-[0_8px_24px_-12px_rgba(0,0,0,0.5)] backdrop-blur-sm"
           >
             {t}
-          </motion.span>
+          </span>
         ))}
-      </motion.div>
+      </div>
     </div>
   );
 
@@ -788,8 +695,8 @@ function TopicsMarquee() {
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(120,150,255,0.12),transparent_70%)]"
       />
       <div className="relative flex flex-col gap-3 [transform-style:preserve-3d]">
-        {row("left", 38, 4)}
-        {row("right", 46, -4)}
+        {row("a", 0, 4)}
+        {row("b", 7, -4)}
       </div>
     </section>
   );
@@ -1215,41 +1122,12 @@ function MasteryCard() {
     { name: "Greedy", pct: 74 },
     { name: "Data Structures", pct: 58 },
   ];
-  const cardRef = useRef<HTMLDivElement>(null);
-  const mx = useMotionValue(0);
-  const my = useMotionValue(0);
-  const sx = useSpring(mx, { stiffness: 120, damping: 18 });
-  const sy = useSpring(my, { stiffness: 120, damping: 18 });
-  const rY = useTransform(sx, [-0.5, 0.5], [12, -12]);
-  const rX = useTransform(sy, [-0.5, 0.5], [-10, 10]);
-  const gX = useTransform(sx, [-0.5, 0.5], ["20%", "80%"]);
-  const gY = useTransform(sy, [-0.5, 0.5], ["10%", "90%"]);
-
-  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const r = e.currentTarget.getBoundingClientRect();
-    mx.set((e.clientX - r.left) / r.width - 0.5);
-    my.set((e.clientY - r.top) / r.height - 0.5);
-  };
-  const onLeave = () => {
-    mx.set(0);
-    my.set(0);
-  };
-
   return (
-    <div className="[perspective:1400px]">
-      <motion.div
-        ref={cardRef}
-        onMouseMove={onMove}
-        onMouseLeave={onLeave}
-        style={{ rotateX: rX, rotateY: rY, transformStyle: "preserve-3d" }}
-        className="group relative rounded-2xl border border-[rgb(var(--lp-ink)/12%)] bg-[var(--lp-panel)] p-6 shadow-[0_20px_60px_-25px_rgba(0,0,0,0.55)] [will-change:transform]"
-      >
-        {/* Dynamic cursor sheen */}
-        <Sheen gX={gX} gY={gY} />
+    <div>
+      <div className="group relative rounded-2xl border border-[rgb(var(--lp-ink)/12%)] bg-[var(--lp-panel)] p-6 shadow-[0_20px_60px_-25px_rgba(0,0,0,0.55)]">
 
         <div
           className="relative flex items-center justify-between border-b border-[rgb(var(--lp-ink)/10%)] pb-3"
-          style={{ transform: "translateZ(40px)" }}
         >
           <div>
             <div className="text-xs uppercase tracking-[0.18em] text-[rgb(var(--lp-ink)/55%)]">
@@ -1266,93 +1144,31 @@ function MasteryCard() {
 
         <div
           className="relative mt-4 space-y-3"
-          style={{ transform: "translateZ(30px)" }}
         >
-          {topics.map((t, i) => (
-            <motion.div
-              key={t.name}
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{
-                duration: 0.6,
-                delay: 0.1 + i * 0.08,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-            >
+          {topics.map((t) => (
+            <div key={t.name}>
               <div className="flex justify-between text-xs">
                 <span className="text-[rgb(var(--lp-ink)/85%)]">{t.name}</span>
-                <motion.span
-                  className="font-mono text-[rgb(var(--lp-ink)/60%)]"
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.4 + i * 0.08, duration: 0.5 }}
-                >
-                  {t.pct}%
-                </motion.span>
+                <span className="font-mono text-[rgb(var(--lp-ink)/60%)]">{t.pct}%</span>
               </div>
               <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-[rgb(var(--lp-ink)/8%)] shadow-[inset_0_1px_2px_rgba(0,0,0,0.15)]">
-                <motion.div
-                  initial={{ width: 0 }}
-                  whileInView={{ width: `${t.pct}%` }}
-                  viewport={{ once: true, margin: "-80px" }}
-                  transition={{
-                    duration: 1.1,
-                    delay: 0.2 + i * 0.1,
-                    ease: [0.22, 1, 0.36, 1],
-                  }}
-                  className="relative h-full rounded-full bg-gradient-to-r from-[rgb(120,150,255)] via-[rgb(150,180,255)] to-[rgb(200,220,255)] shadow-[0_0_20px_rgba(120,150,255,0.6)]"
-                >
-                  <motion.div
-                    aria-hidden
-                    className="absolute inset-y-0 -left-1/2 w-1/2 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent)]"
-                    animate={{ x: ["0%", "400%"] }}
-                    transition={{
-                      duration: 2.2,
-                      delay: 1.2 + i * 0.15,
-                      repeat: Infinity,
-                      repeatDelay: 3,
-                      ease: "easeInOut",
-                    }}
-                  />
-                </motion.div>
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-[rgb(120,150,255)] via-[rgb(150,180,255)] to-[rgb(200,220,255)] shadow-[0_0_20px_rgba(120,150,255,0.6)]"
+                  style={{ width: `${t.pct}%` }}
+                />
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
 
         <div
           className="relative mt-6 flex items-center justify-between border-t border-[rgb(var(--lp-ink)/10%)] pt-4 text-xs text-[rgb(var(--lp-ink)/55%)]"
-          style={{ transform: "translateZ(20px)" }}
         >
           <span>Avg mastery</span>
           <span className="font-mono text-[rgb(var(--lp-ink))]">63.8%</span>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
 
-function Sheen({
-  gX,
-  gY,
-}: {
-  gX: import("framer-motion").MotionValue<string>;
-  gY: import("framer-motion").MotionValue<string>;
-}) {
-  const bg = useTransform(
-    [gX, gY] as unknown as import("framer-motion").MotionValue<string>[],
-    (v) => {
-      const [x, y] = v as unknown as [string, string];
-      return `radial-gradient(360px circle at ${x} ${y}, rgba(150,180,255,0.22), transparent 60%)`;
-    }
-  );
-  return (
-    <motion.div
-      aria-hidden
-      style={{ background: bg }}
-      className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-    />
-  );
-}
