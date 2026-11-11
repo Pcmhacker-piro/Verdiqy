@@ -917,7 +917,7 @@ function UserTurn({ children }: { children: ReactNode }) {
 }
 
 function Prose({ children }: { children: ReactNode }) {
-  return <p className="text-sm leading-relaxed text-muted-foreground">{children}</p>;
+  return <div className="text-sm leading-relaxed text-muted-foreground">{children}</div>;
 }
 
 function linkify(text: string): ReactNode[] {
