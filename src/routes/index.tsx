@@ -107,7 +107,7 @@ function HeaderAuthCta() {
 function Hero() {
   return (
     <section className="landing-hero relative overflow-hidden">
-      {/* Hero background — layered 3D */}
+      {/* Hero background */}
       <div aria-hidden className="absolute inset-[-4%]">
         <motion.img
           src={heroImage}
@@ -1125,7 +1125,6 @@ function MasteryCard() {
 
         <div
           className="relative flex items-center justify-between border-b border-[rgb(var(--lp-ink)/10%)] pb-3"
-          style={{ transform: "translateZ(40px)" }}
         >
           <div>
             <div className="text-xs uppercase tracking-[0.18em] text-[rgb(var(--lp-ink)/55%)]">
@@ -1142,7 +1141,6 @@ function MasteryCard() {
 
         <div
           className="relative mt-4 space-y-3"
-          style={{ transform: "translateZ(30px)" }}
         >
           {topics.map((t) => (
             <div key={t.name}>
@@ -1162,7 +1160,6 @@ function MasteryCard() {
 
         <div
           className="relative mt-6 flex items-center justify-between border-t border-[rgb(var(--lp-ink)/10%)] pt-4 text-xs text-[rgb(var(--lp-ink)/55%)]"
-          style={{ transform: "translateZ(20px)" }}
         >
           <span>Avg mastery</span>
           <span className="font-mono text-[rgb(var(--lp-ink))]">63.8%</span>
