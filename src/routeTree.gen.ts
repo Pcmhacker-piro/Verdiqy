@@ -31,6 +31,7 @@ import { Route as SheetsSheetIdRouteImport } from './routes/sheets.$sheetId'
 import { Route as UHandleRouteImport } from './routes/u.$handle'
 import { Route as AuthenticatedAdminBugReportsRouteImport } from './routes/_authenticated/admin.bug-reports'
 import { Route as AuthenticatedSettingsProfileRouteImport } from './routes/_authenticated/settings.profile'
+import { Route as ApiPublicCfAvatarRouteImport } from './routes/api/public/cf-avatar'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -144,6 +145,11 @@ const AuthenticatedSettingsProfileRoute =
     path: '/settings/profile',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicCfAvatarRoute = ApiPublicCfAvatarRouteImport.update({
+  id: '/api/public/cf-avatar',
+  path: '/api/public/cf-avatar',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -167,6 +173,7 @@ export interface FileRoutesByFullPath {
   '/u/$handle': typeof UHandleRoute
   '/admin/bug-reports': typeof AuthenticatedAdminBugReportsRoute
   '/settings/profile': typeof AuthenticatedSettingsProfileRoute
+  '/api/public/cf-avatar': typeof ApiPublicCfAvatarRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -190,6 +197,7 @@ export interface FileRoutesByTo {
   '/u/$handle': typeof UHandleRoute
   '/admin/bug-reports': typeof AuthenticatedAdminBugReportsRoute
   '/settings/profile': typeof AuthenticatedSettingsProfileRoute
+  '/api/public/cf-avatar': typeof ApiPublicCfAvatarRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -215,6 +223,7 @@ export interface FileRoutesById {
   '/u/$handle': typeof UHandleRoute
   '/_authenticated/admin/bug-reports': typeof AuthenticatedAdminBugReportsRoute
   '/_authenticated/settings/profile': typeof AuthenticatedSettingsProfileRoute
+  '/api/public/cf-avatar': typeof ApiPublicCfAvatarRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -240,6 +249,7 @@ export interface FileRouteTypes {
     | '/u/$handle'
     | '/admin/bug-reports'
     | '/settings/profile'
+    | '/api/public/cf-avatar'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -263,6 +273,7 @@ export interface FileRouteTypes {
     | '/u/$handle'
     | '/admin/bug-reports'
     | '/settings/profile'
+    | '/api/public/cf-avatar'
   id:
     | '__root__'
     | '/'
@@ -287,6 +298,7 @@ export interface FileRouteTypes {
     | '/u/$handle'
     | '/_authenticated/admin/bug-reports'
     | '/_authenticated/settings/profile'
+    | '/api/public/cf-avatar'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -305,6 +317,7 @@ export interface RootRouteChildren {
   VideosRoute: typeof VideosRoute
   SheetsSheetIdRoute: typeof SheetsSheetIdRoute
   UHandleRoute: typeof UHandleRoute
+  ApiPublicCfAvatarRoute: typeof ApiPublicCfAvatarRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -463,6 +476,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/cf-avatar': {
+      id: '/api/public/cf-avatar'
+      path: '/api/public/cf-avatar'
+      fullPath: '/api/public/cf-avatar'
+      preLoaderRoute: typeof ApiPublicCfAvatarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -514,6 +534,7 @@ const rootRouteChildren: RootRouteChildren = {
   VideosRoute: VideosRoute,
   SheetsSheetIdRoute: SheetsSheetIdRoute,
   UHandleRoute: UHandleRoute,
+  ApiPublicCfAvatarRoute: ApiPublicCfAvatarRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
