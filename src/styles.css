@@ -509,16 +509,11 @@
 }
 
 @supports (animation-timeline: view()) {
-  .landing-root section {
-    perspective: 1400px;
-  }
   /* Reveal direct block-level children of each landing section */
   .landing-root section > *:not(.landing-hero-inner):not(img):not([aria-hidden]) {
     animation: lp-reveal-3d linear both;
     animation-timeline: view();
-    animation-range: entry 0% cover 40%;
-    transform-style: preserve-3d;
-    will-change: transform, opacity, filter;
+    animation-range: entry 0% cover 22%;
   }
   /* Hero opts out — it has its own motion */
   .landing-hero > * {
