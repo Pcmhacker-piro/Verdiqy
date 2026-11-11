@@ -4,7 +4,11 @@ import { createFileRoute } from "@tanstack/react-router";
 // so we fetch the image server-side and stream it back. Only codeforces
 // hosts are allowed, and nothing but the image bytes is returned.
 function isAllowedHost(hostname: string): boolean {
-  return hostname === "codeforces.com" || hostname.endsWith(".codeforces.org");
+  return (
+    hostname === "codeforces.com" ||
+    hostname === "codeforces.org" ||
+    hostname.endsWith(".codeforces.org")
+  );
 }
 
 export const Route = createFileRoute("/api/public/cf-avatar")({
