@@ -610,7 +610,7 @@ function ProfileHeader({
       <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
         <div className="flex items-start gap-4">
           <img
-            src={user.titlePhoto || user.avatar}
+            src={cfAvatarUrl(user.titlePhoto || user.avatar)}
             alt={user.handle}
             className="size-16 rounded-full border-2 border-border object-cover md:size-20"
             referrerPolicy="no-referrer"
