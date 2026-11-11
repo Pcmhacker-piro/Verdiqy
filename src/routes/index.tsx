@@ -671,7 +671,10 @@ function TopicsMarquee() {
           "linear-gradient(90deg, transparent, black 12%, black 88%, transparent)",
       }}
     >
-      <div className="flex shrink-0 gap-3 pr-3" style={{ rotateX: tilt }}>
+      <div
+        className="flex shrink-0 gap-3 pr-3"
+        style={{ transform: `rotateX(${tilt}deg)` }}
+      >
         {[...TOPICS.slice(offset), ...TOPICS.slice(0, offset)].map((t) => (
           <span
             key={`${key}-${t}`}
