@@ -48,6 +48,7 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Kbd } from "@/components/ds/kbd";
 import { cn } from "@/lib/utils";
+import { cfAvatarUrl } from "@/lib/cf-avatar";
 import {
   getCodeforcesJourney,
   type CFJourney,
