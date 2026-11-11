@@ -437,10 +437,9 @@
   will-change: transform;
 }
 .tilt-3d:hover {
-  transform: perspective(1000px) rotateX(4deg) rotateY(-6deg) translateY(-4px) translateZ(6px);
+  transform: translateY(-2px);
   box-shadow:
-    0 24px 60px -20px rgba(0, 0, 0, 0.6),
-    0 2px 0 0 rgba(255, 255, 255, 0.06) inset;
+    0 14px 34px -22px rgba(0, 0, 0, 0.45);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -496,13 +495,11 @@
 @keyframes lp-reveal-3d {
   from {
     opacity: 0;
-    transform: perspective(1200px) translateY(60px) translateZ(-80px) rotateX(14deg);
-    filter: blur(6px);
+    transform: translateY(18px);
   }
   to {
     opacity: 1;
-    transform: perspective(1200px) translateY(0) translateZ(0) rotateX(0deg);
-    filter: blur(0);
+    transform: translateY(0);
   }
 }
 
