@@ -1,3 +1,6 @@
+import codeforcesMark from "@/assets/codeforces-mark.png";
+import codechefMark from "@/assets/codechef-mark.svg";
+import leetcodeMark from "@/assets/leetcode-mark.png";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -51,6 +54,8 @@ export const Route = createFileRoute("/contests")({
         content:
           "One calendar for every competitive programming contest. Live countdowns, reminders, Google Calendar export, AI prep plan.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: ContestsPage,
@@ -94,7 +99,7 @@ const PLATFORM_META: Record<
     hex: "#38bdf8",
     short: "CF",
     icon: "CF",
-    logo: "https://codeforces.org/s/0/favicon-32x32.png",
+    logo: codeforcesMark,
     tileBg: "bg-sky-950/70",
   },
   CodeChef: {
@@ -104,7 +109,7 @@ const PLATFORM_META: Record<
     hex: "#f59e0b",
     short: "CC",
     icon: "CC",
-    logo: "https://www.codechef.com/favicon.ico",
+    logo: codechefMark,
     tileBg: "bg-amber-950/70",
   },
   LeetCode: {
@@ -114,7 +119,7 @@ const PLATFORM_META: Record<
     hex: "#f59e0b",
     short: "LC",
     icon: "LC",
-    logo: "https://leetcode.com/favicon-32x32.png",
+    logo: leetcodeMark,
     tileBg: "bg-neutral-900/80",
   },
 };
@@ -190,8 +195,7 @@ async function fetchFromCodeforces(): Promise<Contest[]> {
     if (r.phase === "FINISHED") continue;
     const start = r.startTimeSeconds * 1000;
     const end = start + r.durationSeconds * 1000;
-    const status: Contest["status"] =
-      end < now ? "past" : start <= now ? "live" : "upcoming";
+    const status: Contest["status"] = end < now ? "past" : start <= now ? "live" : "upcoming";
     if (status === "past") continue;
     out.push({
       id: `Codeforces-${r.id}`,
@@ -227,8 +231,7 @@ async function fetchFromCompeteApi(): Promise<Contest[]> {
     const start = Number(r.startTime);
     const end = Number(r.endTime);
     if (!Number.isFinite(start) || !Number.isFinite(end)) continue;
-    const status: Contest["status"] =
-      end < now ? "past" : start <= now ? "live" : "upcoming";
+    const status: Contest["status"] = end < now ? "past" : start <= now ? "live" : "upcoming";
     if (status === "past") continue;
     out.push({
       id: `${platform}-${start}-${r.title}`,
@@ -247,10 +250,7 @@ async function fetchFromCompeteApi(): Promise<Contest[]> {
 
 async function fetchContests(): Promise<Contest[]> {
   // Fetch multiple sources in parallel; a single failure must not break the page.
-  const results = await Promise.allSettled([
-    fetchFromCodeforces(),
-    fetchFromCompeteApi(),
-  ]);
+  const results = await Promise.allSettled([fetchFromCodeforces(), fetchFromCompeteApi()]);
   const all: Contest[] = [];
   let anyOk = false;
   for (const r of results) {
@@ -386,7 +386,9 @@ function ContestsPage() {
     if ("Notification" in window && Notification.permission === "default") {
       Notification.requestPermission();
     }
-    toast.success(`Reminder set ${minutesBefore < 60 ? `${minutesBefore}m` : `${minutesBefore / 60}h`} before`);
+    toast.success(
+      `Reminder set ${minutesBefore < 60 ? `${minutesBefore}m` : `${minutesBefore / 60}h`} before`,
+    );
   };
 
   const clearReminder = async (c: Contest) => {
@@ -450,7 +452,8 @@ function ContestsPage() {
       if (!platforms.has(c.platform)) return false;
       if (divisions.size > 0) {
         const d = c.division ?? "";
-        if (![...divisions].some((div) => d.toLowerCase().includes(div.toLowerCase()))) return false;
+        if (![...divisions].some((div) => d.toLowerCase().includes(div.toLowerCase())))
+          return false;
       }
       if (ratedOnly && !/rated|round/i.test(c.name)) return false;
       if (c.start > rangeEnd) return false;
@@ -498,8 +501,8 @@ function ContestsPage() {
                 Every round, every judge, one calendar.
               </h1>
               <p className="text-sm text-muted-foreground">
-                All times shown in <span className="font-mono text-foreground">{tz}</span> · auto-refresh
-                every 15 min
+                All times shown in <span className="font-mono text-foreground">{tz}</span> ·
+                auto-refresh every 15 min
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -933,7 +936,10 @@ function CalendarView({
                       <img
                         src={meta.logo}
                         alt=""
-                        loading="lazy"
+                        loading="eager"
+                        decoding="async"
+                        width={16}
+                        height={16}
                         className="size-4 object-contain"
                         onError={(e) => {
                           const el = e.currentTarget;
@@ -1017,9 +1023,7 @@ function ListView({
                 <td className="min-w-0 max-w-[400px] px-3 py-2.5">
                   <p className="truncate font-medium">{c.name}</p>
                 </td>
-                <td className="px-3 py-2.5 text-2xs text-muted-foreground">
-                  {c.division ?? "—"}
-                </td>
+                <td className="px-3 py-2.5 text-2xs text-muted-foreground">{c.division ?? "—"}</td>
                 <td className="px-3 py-2.5 font-mono text-2xs tabular-nums text-muted-foreground">
                   {formatLocal(c.start)}
                 </td>
@@ -1257,11 +1261,7 @@ function ContestModal({
                     : "border-border/70 text-muted-foreground hover:text-foreground",
                 )}
               >
-                {reminder === opt.m ? (
-                  <BellRing className="size-3" />
-                ) : (
-                  <Bell className="size-3" />
-                )}
+                {reminder === opt.m ? <BellRing className="size-3" /> : <Bell className="size-3" />}
                 {opt.label}
               </button>
             ))}
@@ -1291,10 +1291,7 @@ function ContestModal({
             </p>
             <div className="mt-1 flex flex-wrap gap-1.5">
               {rec.topics.map((t) => (
-                <span
-                  key={t}
-                  className="rounded-full border border-border/70 px-2 py-0.5 text-2xs"
-                >
+                <span key={t} className="rounded-full border border-border/70 px-2 py-0.5 text-2xs">
                   {t}
                 </span>
               ))}
@@ -1306,15 +1303,7 @@ function ContestModal({
   );
 }
 
-function MiniStat({
-  label,
-  value,
-  accent,
-}: {
-  label: string;
-  value: string;
-  accent?: boolean;
-}) {
+function MiniStat({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
     <div className="rounded-md border border-border/70 bg-card p-2">
       <p className="text-2xs uppercase tracking-[0.12em] text-muted-foreground">{label}</p>

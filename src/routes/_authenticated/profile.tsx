@@ -1,5 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { createContext, useContext, useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ChangeEvent,
+} from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getMyCodeforcesDashboard, type Dashboard } from "@/lib/cf-dashboard.functions";
@@ -100,6 +108,14 @@ export const Route = createFileRoute("/_authenticated/profile")({
         content:
           "Your competitive programming profile: link your Codeforces handle, upload an avatar, and track rating evolution, contests, topics and habits.",
       },
+      { property: "og:title", content: "Your profile \u00b7 Verdiqy" },
+      {
+        property: "og:description",
+        content:
+          "Your competitive programming profile: link your Codeforces handle, upload an avatar, and track rating evolution, contests, topics and habits.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: ProfilePage,
@@ -350,11 +366,7 @@ function ProfilePage() {
   };
   return (
     <AppShell
-      breadcrumb={[
-        { label: "Workspace", to: "/" },
-        { label: "Profile" },
-        { label: displayHandle },
-      ]}
+      breadcrumb={[{ label: "Workspace", to: "/" }, { label: "Profile" }, { label: displayHandle }]}
       actions={
         <>
           <Button
@@ -385,7 +397,6 @@ function ProfilePage() {
     >
       <DashboardContext.Provider value={dashboard}>
         <div className="mx-auto max-w-6xl space-y-6 px-6 py-6 sm:px-8">
-          
           <AboutCard
             profile={p ?? null}
             loading={profileQuery.isLoading}
@@ -394,8 +405,8 @@ function ProfilePage() {
           />
           {hasHandle && dashboardQuery.isLoading ? (
             <div className="rounded-xl border border-border bg-card p-4 text-xs text-muted-foreground">
-              <Loader2 className="mr-2 inline size-3.5 animate-spin" /> Syncing live Codeforces
-              data for {p?.codeforces_handle}…
+              <Loader2 className="mr-2 inline size-3.5 animate-spin" /> Syncing live Codeforces data
+              for {p?.codeforces_handle}…
             </div>
           ) : null}
           <ActivityCard />
@@ -435,7 +446,6 @@ function ProfilePage() {
     </AppShell>
   );
 }
-
 
 /* ---------- Hero ---------- */
 
@@ -505,9 +515,7 @@ function ProfileHero({
             >
               {handle ?? profile?.display_name ?? (loading ? "Loading…" : "Your profile")}
             </h1>
-            {fullName ? (
-              <span className="text-sm text-muted-foreground">{fullName}</span>
-            ) : null}
+            {fullName ? <span className="text-sm text-muted-foreground">{fullName}</span> : null}
           </div>
           <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
             {location ? (
@@ -528,14 +536,13 @@ function ProfileHero({
           </div>
           {handle ? (
             <p className="mt-4 max-w-xl text-sm text-muted-foreground text-pretty">
-              <span className="text-foreground capitalize">{profile?.cf_rank ?? band.name}</span>
-              {" "}on Codeforces
+              <span className="text-foreground capitalize">{profile?.cf_rank ?? band.name}</span> on
+              Codeforces
               {peak && current ? (
                 <>
-                  {" "}· currently{" "}
-                  <span className="text-foreground">
-                    {Math.max(0, peak - current)} points
-                  </span>{" "}
+                  {" "}
+                  · currently{" "}
+                  <span className="text-foreground">{Math.max(0, peak - current)} points</span>{" "}
                   {current >= peak ? "at your peak" : "below your peak"}.
                 </>
               ) : null}
@@ -575,12 +582,8 @@ function ProfileHero({
           </div>
         </div>
         <div className="flex shrink-0 flex-col items-end gap-2">
-          {handle && current ? (
-            <RatingBadge value={current} band={band} label="Current" />
-          ) : null}
-          {handle && peak ? (
-            <RatingBadge value={peak} band={peakBand} label="Peak" muted />
-          ) : null}
+          {handle && current ? <RatingBadge value={current} band={band} label="Current" /> : null}
+          {handle && peak ? <RatingBadge value={peak} band={peakBand} label="Peak" muted /> : null}
         </div>
       </div>
       <EditProfileDialog open={editOpen} onOpenChange={onEditOpenChange} profile={profile} />
@@ -730,7 +733,9 @@ function EditProfileDialog({
                 />
               ) : null}
               <AvatarFallback className="text-lg">
-                {(profile?.codeforces_handle ?? profile?.display_name ?? "?").charAt(0).toUpperCase()}
+                {(profile?.codeforces_handle ?? profile?.display_name ?? "?")
+                  .charAt(0)
+                  .toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col gap-2">
@@ -804,9 +809,8 @@ function EditProfileDialog({
               </Button>
             </div>
             <p className="text-2xs text-muted-foreground">
-              We fetch{" "}
-              <span className="font-mono">codeforces.com/api/user.info</span> — the handle must
-              exist.
+              We fetch <span className="font-mono">codeforces.com/api/user.info</span> — the handle
+              must exist.
             </p>
             {profile?.codeforces_handle ? (
               <Button
@@ -853,7 +857,7 @@ function StatsStrip({ profile }: { profile: MyProfile | null }) {
       icon: TrendingUp,
       emoji: "🚀",
       color: "text-purple-500",
-      hint: s?.peak ?? profile?.cf_max_rating ? "All-time high" : "—",
+      hint: (s?.peak ?? profile?.cf_max_rating) ? "All-time high" : "—",
     },
     {
       label: "Contests",
@@ -918,7 +922,9 @@ function StatsStrip({ profile }: { profile: MyProfile | null }) {
               <p className="text-2xs uppercase tracking-wider text-muted-foreground">{s.label}</p>
             </div>
             <p className="tabular mt-2 flex items-center gap-1.5 text-xl font-semibold tracking-tight">
-              <span aria-hidden className="text-lg leading-none">{s.emoji}</span>
+              <span aria-hidden className="text-lg leading-none">
+                {s.emoji}
+              </span>
               <span>{s.value}</span>
             </p>
             <p className="mt-0.5 text-2xs text-muted-foreground">{s.hint}</p>
@@ -928,7 +934,6 @@ function StatsStrip({ profile }: { profile: MyProfile | null }) {
     </section>
   );
 }
-
 
 /* ============================================================
  * TAB: Overview — the "at a glance" story
@@ -993,22 +998,21 @@ function OverviewTab() {
                 />
               )
             ) : (
-                <>
-                  <StoryItem
-                    icon={Trophy}
-                    tone="primary"
-                    headline="Connect Codeforces to see your story"
-                    body="We'll surface your peak rating, longest streak, and hardest solved problem."
-                  />
-                </>
-              )}
+              <>
+                <StoryItem
+                  icon={Trophy}
+                  tone="primary"
+                  headline="Connect Codeforces to see your story"
+                  body="We'll surface your peak rating, longest streak, and hardest solved problem."
+                />
+              </>
+            )}
           </ul>
         </Panel>
       </div>
     </>
   );
 }
-
 
 function StoryItem({
   icon: Icon,
@@ -1235,7 +1239,11 @@ function ContestsTab() {
         <RatingChart data={history} height={320} />
       </Panel>
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
-        <Panel title="Recent contests" caption={`All ${timeline.length} rated appearances`} icon={Swords}>
+        <Panel
+          title="Recent contests"
+          caption={`All ${timeline.length} rated appearances`}
+          icon={Swords}
+        >
           <ContestTimeline />
         </Panel>
         <Panel
@@ -1263,7 +1271,6 @@ function ContestsTab() {
     </>
   );
 }
-
 
 function ContestTimeline() {
   const dash = useDashboard();
@@ -1396,9 +1403,7 @@ function PerformanceGap() {
               color: "var(--popover-foreground)",
             }}
             labelFormatter={(_: unknown, payload: readonly { payload?: unknown }[]) => {
-              const p = payload?.[0]?.payload as
-                | { name: string; date: string }
-                | undefined;
+              const p = payload?.[0]?.payload as { name: string; date: string } | undefined;
               return p ? `${p.name} · ${p.date}` : "";
             }}
             formatter={(value: unknown, _n: unknown, item: { payload?: unknown }) => {
@@ -1424,7 +1429,6 @@ function PerformanceGap() {
   );
 }
 
-
 /* ============================================================
  * TAB: Problems
  * ============================================================ */
@@ -1445,7 +1449,11 @@ function ProblemsTab() {
       </Panel>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-        <Panel title="Topic mastery" caption={`${(dash ? (dash.topics ?? []) : topics).length} tags · higher = stronger`} icon={Sparkles}>
+        <Panel
+          title="Topic mastery"
+          caption={`${(dash ? (dash.topics ?? []) : topics).length} tags · higher = stronger`}
+          icon={Sparkles}
+        >
           <TopicRadar />
         </Panel>
         <Panel
@@ -1460,7 +1468,6 @@ function ProblemsTab() {
           <AcceptanceBreakdown />
         </Panel>
       </div>
-
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <Panel title="Favorite problem types" caption="Where you spend your time" icon={Star}>
@@ -1524,14 +1531,13 @@ function DifficultyChart() {
       </ResponsiveContainer>
       {frontier ? (
         <p className="mt-3 border-t border-border pt-3 text-xs text-muted-foreground">
-          Your solving frontier sits at{" "}
-          <span className="text-foreground">{frontier}+</span>. Push harder ratings to raise it.
+          Your solving frontier sits at <span className="text-foreground">{frontier}+</span>. Push
+          harder ratings to raise it.
         </p>
       ) : null}
     </div>
   );
 }
-
 
 function TopicRadar() {
   const dash = useDashboard();
@@ -1592,7 +1598,9 @@ function AcceptanceBreakdown() {
     <div>
       <div className="mb-3 flex items-baseline justify-between">
         <div>
-          <p className="tabular text-3xl font-semibold tracking-tight">{acceptancePct.toFixed(1)}%</p>
+          <p className="tabular text-3xl font-semibold tracking-tight">
+            {acceptancePct.toFixed(1)}%
+          </p>
           <p className="text-2xs text-muted-foreground">Overall acceptance</p>
         </div>
         <div className="text-right">
@@ -1724,11 +1732,9 @@ function WeakAreas() {
           </Link>
         </Button>
       </li>
-
     </ul>
   );
 }
-
 
 /* ============================================================
  * TAB: Habits
@@ -1737,14 +1743,9 @@ function WeakAreas() {
 function HabitsTab() {
   const dash = useDashboard();
   const vel = dash ? dash.velocity : velocity;
-  const liveHabitTotal = dash
-    ? dash.habitMatrix.flat().reduce((sum, value) => sum + value, 0)
-    : 0;
+  const liveHabitTotal = dash ? dash.habitMatrix.flat().reduce((sum, value) => sum + value, 0) : 0;
   const liveEveningTotal = dash
-    ? dash.habitMatrix.reduce(
-        (sum, row) => sum + row.slice(19, 24).reduce((a, b) => a + b, 0),
-        0,
-      )
+    ? dash.habitMatrix.reduce((sum, row) => sum + row.slice(19, 24).reduce((a, b) => a + b, 0), 0)
     : 0;
   const peak = dash
     ? dash.habitMatrix.reduce(
@@ -1793,16 +1794,16 @@ function HabitsTab() {
   const momentum = risingCount >= 3 ? "Rising" : risingCount <= 1 ? "Cooling" : "Steady";
   return (
     <>
-      <Panel
-        title="When you code"
-        caption="Submissions by hour × day of week"
-        icon={Clock}
-      >
+      <Panel title="When you code" caption="Submissions by hour × day of week" icon={Clock}>
         <TimeHeatmap />
       </Panel>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
-        <Panel title="Learning velocity" caption={`Weekly rating change · ${vel.length}-week window`} icon={Zap}>
+        <Panel
+          title="Learning velocity"
+          caption={`Weekly rating change · ${vel.length}-week window`}
+          icon={Zap}
+        >
           <VelocityChart />
           <div className="mt-4 grid grid-cols-3 gap-3 border-t border-border pt-4">
             <MiniStat
@@ -1816,7 +1817,13 @@ function HabitsTab() {
               label="Momentum"
               value={momentum}
               hint={`${risingCount}/4 up weeks`}
-              tone={momentum === "Rising" ? "success" : momentum === "Cooling" ? "destructive" : undefined}
+              tone={
+                momentum === "Rising"
+                  ? "success"
+                  : momentum === "Cooling"
+                    ? "destructive"
+                    : undefined
+              }
             />
           </div>
         </Panel>
@@ -1824,8 +1831,6 @@ function HabitsTab() {
           <SubmissionTrend />
         </Panel>
       </div>
-
-
 
       <Panel title="Behavioral insights" caption="What the data suggests" icon={Sparkles}>
         <ul className="grid gap-4 sm:grid-cols-3">
@@ -1925,8 +1930,11 @@ function TimeHeatmap() {
       </div>
       {total > 0 ? (
         <p className="mt-4 border-t border-border pt-3 text-xs text-muted-foreground">
-          Peak: <span className="text-foreground">{days[peakDi]} {peakHi}:00</span> ·{" "}
-          <span className="text-foreground">{eveningPct}%</span> of submissions between 19:00 and
+          Peak:{" "}
+          <span className="text-foreground">
+            {days[peakDi]} {peakHi}:00
+          </span>{" "}
+          · <span className="text-foreground">{eveningPct}%</span> of submissions between 19:00 and
           23:59.
         </p>
       ) : null}
@@ -2163,9 +2171,7 @@ function ProfileStrengthCard({
                 key={i}
                 className={cn(
                   "absolute top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2",
-                  filled
-                    ? "border-primary bg-primary"
-                    : "border-border bg-background",
+                  filled ? "border-primary bg-primary" : "border-border bg-background",
                 )}
                 style={{ left: `${left}%` }}
               />
@@ -2206,7 +2212,8 @@ function AboutCard({
   const initial = (handle ?? fullName ?? "?").charAt(0).toUpperCase();
   const org = profile?.cf_organization || "—";
   // Attempts = total submissions from activity mix (fallback to solved)
-  const attempts = dash?.submissionMix?.reduce((a, m) => a + (m.value ?? 0), 0) || dash?.stats?.solved || 0;
+  const attempts =
+    dash?.submissionMix?.reduce((a, m) => a + (m.value ?? 0), 0) || dash?.stats?.solved || 0;
   // Longest consecutive-day streak the user has visited this site
   const [siteStreak, setSiteStreak] = useState(0);
   useEffect(() => {
@@ -2220,7 +2227,8 @@ function AboutCard({
       // trim to last 2 years to bound storage
       const trimmed = days.slice(-730);
       localStorage.setItem(KEY, JSON.stringify(trimmed));
-      let best = 0, run = 0;
+      let best = 0,
+        run = 0;
       let prev: number | null = null;
       for (const d of trimmed) {
         const t = new Date(d).getTime();
@@ -2245,7 +2253,10 @@ function AboutCard({
     <section className="rounded-2xl border border-border bg-card p-5 sm:p-6">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-lg font-semibold tracking-tight">
-          <span className="mr-1.5" aria-hidden>👋</span> About
+          <span className="mr-1.5" aria-hidden>
+            👋
+          </span>{" "}
+          About
         </h2>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={onEdit}>
@@ -2285,20 +2296,35 @@ function AboutCard({
           </p>
 
           <div className="mt-4 flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-400/15 px-2.5 py-1 text-xs ring-1 ring-amber-400/30" title="Questions attempted">
+            <span
+              className="inline-flex items-center gap-1.5 rounded-full bg-amber-400/15 px-2.5 py-1 text-xs ring-1 ring-amber-400/30"
+              title="Questions attempted"
+            >
               <span aria-hidden>⭐</span>
-              <span className="tabular font-semibold text-amber-700 dark:text-amber-300">{attempts}</span>
+              <span className="tabular font-semibold text-amber-700 dark:text-amber-300">
+                {attempts}
+              </span>
               <span className="text-muted-foreground">Attempts</span>
             </span>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-500/15 px-2.5 py-1 text-xs ring-1 ring-orange-500/30" title="Longest consecutive days visiting Verdiqy">
+            <span
+              className="inline-flex items-center gap-1.5 rounded-full bg-orange-500/15 px-2.5 py-1 text-xs ring-1 ring-orange-500/30"
+              title="Longest consecutive days visiting Verdiqy"
+            >
               <span aria-hidden>🔥</span>
-              <span className="tabular font-semibold text-orange-600 dark:text-orange-300">{siteStreak}</span>
+              <span className="tabular font-semibold text-orange-600 dark:text-orange-300">
+                {siteStreak}
+              </span>
               <span className="text-muted-foreground">Max Days</span>
             </span>
 
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-sky-500/15 px-2.5 py-1 text-xs ring-1 ring-sky-500/30" title="Current Codeforces rating">
+            <span
+              className="inline-flex items-center gap-1.5 rounded-full bg-sky-500/15 px-2.5 py-1 text-xs ring-1 ring-sky-500/30"
+              title="Current Codeforces rating"
+            >
               <span aria-hidden>📊</span>
-              <span className="tabular font-semibold text-sky-600 dark:text-sky-300">{rating || 0}</span>
+              <span className="tabular font-semibold text-sky-600 dark:text-sky-300">
+                {rating || 0}
+              </span>
               <span className="text-muted-foreground">Rating</span>
             </span>
           </div>
@@ -2308,7 +2334,9 @@ function AboutCard({
             <div className="flex items-center gap-1.5">
               <CpProfileIcon
                 title="Codeforces"
-                href={handle ? `https://codeforces.com/profile/${encodeURIComponent(handle)}` : null}
+                href={
+                  handle ? `https://codeforces.com/profile/${encodeURIComponent(handle)}` : null
+                }
                 active={!!handle}
                 tone="rose"
               >
@@ -2341,17 +2369,29 @@ function AboutCard({
           <div className="mt-3">
             <p className="text-2xs uppercase tracking-wider text-muted-foreground">Work</p>
             <div className="mt-2 flex items-center gap-2">
-              <LinkChip title="GitHub" tone="slate"><Github className="size-3.5" /></LinkChip>
-              <LinkChip title="Website" tone="emerald"><Globe className="size-3.5" /></LinkChip>
-              <LinkChip title="LinkedIn" tone="sky"><Linkedin className="size-3.5" /></LinkChip>
+              <LinkChip title="GitHub" tone="slate">
+                <Github className="size-3.5" />
+              </LinkChip>
+              <LinkChip title="Website" tone="emerald">
+                <Globe className="size-3.5" />
+              </LinkChip>
+              <LinkChip title="LinkedIn" tone="sky">
+                <Linkedin className="size-3.5" />
+              </LinkChip>
             </div>
           </div>
           <div className="mt-4">
             <p className="text-2xs uppercase tracking-wider text-muted-foreground">Social</p>
             <div className="mt-2 flex items-center gap-2">
-              <LinkChip title="Twitter" tone="sky"><Twitter className="size-3.5" /></LinkChip>
-              <LinkChip title="Instagram" tone="pink"><Instagram className="size-3.5" /></LinkChip>
-              <LinkChip title="Facebook" tone="indigo"><Facebook className="size-3.5" /></LinkChip>
+              <LinkChip title="Twitter" tone="sky">
+                <Twitter className="size-3.5" />
+              </LinkChip>
+              <LinkChip title="Instagram" tone="pink">
+                <Instagram className="size-3.5" />
+              </LinkChip>
+              <LinkChip title="Facebook" tone="indigo">
+                <Facebook className="size-3.5" />
+              </LinkChip>
             </div>
           </div>
         </div>
@@ -2364,13 +2404,18 @@ type ChipTone = "rose" | "amber" | "orange" | "slate" | "sky" | "emerald" | "pin
 
 const TONE_ACTIVE: Record<ChipTone, string> = {
   rose: "border-rose-400/40 bg-rose-500/15 text-rose-600 dark:text-rose-300 hover:bg-rose-500/25",
-  amber: "border-amber-400/40 bg-amber-400/20 text-amber-700 dark:text-amber-300 hover:bg-amber-400/30",
-  orange: "border-orange-400/40 bg-orange-500/15 text-orange-600 dark:text-orange-300 hover:bg-orange-500/25",
-  slate: "border-slate-400/40 bg-slate-500/15 text-slate-700 dark:text-slate-200 hover:bg-slate-500/25",
+  amber:
+    "border-amber-400/40 bg-amber-400/20 text-amber-700 dark:text-amber-300 hover:bg-amber-400/30",
+  orange:
+    "border-orange-400/40 bg-orange-500/15 text-orange-600 dark:text-orange-300 hover:bg-orange-500/25",
+  slate:
+    "border-slate-400/40 bg-slate-500/15 text-slate-700 dark:text-slate-200 hover:bg-slate-500/25",
   sky: "border-sky-400/40 bg-sky-500/15 text-sky-600 dark:text-sky-300 hover:bg-sky-500/25",
-  emerald: "border-emerald-400/40 bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 hover:bg-emerald-500/25",
+  emerald:
+    "border-emerald-400/40 bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 hover:bg-emerald-500/25",
   pink: "border-pink-400/40 bg-pink-500/15 text-pink-600 dark:text-pink-300 hover:bg-pink-500/25",
-  indigo: "border-indigo-400/40 bg-indigo-500/15 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-500/25",
+  indigo:
+    "border-indigo-400/40 bg-indigo-500/15 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-500/25",
 };
 
 function CpProfileIcon({
@@ -2461,7 +2506,9 @@ function LinkChip({
 
   const cls = cn(
     "relative inline-flex size-8 items-center justify-center rounded-full border transition",
-    url ? TONE_ACTIVE[tone] : "border-dashed border-border/60 bg-muted/30 text-muted-foreground/70 hover:bg-muted/50",
+    url
+      ? TONE_ACTIVE[tone]
+      : "border-dashed border-border/60 bg-muted/30 text-muted-foreground/70 hover:bg-muted/50",
   );
 
   const dot = url ? (
@@ -2491,17 +2538,11 @@ function LinkChip({
     );
   }
   return (
-    <button
-      type="button"
-      onClick={promptForUrl}
-      title={`Add your ${title} link`}
-      className={cls}
-    >
+    <button type="button" onClick={promptForUrl} title={`Add your ${title} link`} className={cls}>
       {children}
     </button>
   );
 }
-
 
 function DonutStat({ value, label, number }: { value: number; label: string; number: number }) {
   const size = 120;
@@ -2512,7 +2553,13 @@ function DonutStat({ value, label, number }: { value: number; label: string; num
   return (
     <div className="relative" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} strokeWidth={stroke} className="fill-none stroke-border" />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          strokeWidth={stroke}
+          className="fill-none stroke-border"
+        />
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -2525,7 +2572,9 @@ function DonutStat({ value, label, number }: { value: number; label: string; num
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span className="tabular text-2xl font-semibold leading-none">{number}</span>
-        <span className="mt-1 text-2xs uppercase tracking-wider text-muted-foreground">{label}</span>
+        <span className="mt-1 text-2xs uppercase tracking-wider text-muted-foreground">
+          {label}
+        </span>
       </div>
     </div>
   );
@@ -2536,8 +2585,21 @@ function ActivityCard() {
   const matrix = dash?.activityMatrix ?? Array<number>(53 * 7).fill(0);
   const streak = dash?.stats?.activeDays ?? 0;
   const [year, setYear] = useState(new Date().getFullYear());
-  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  const days = ["Mon","Wed","Fri"];
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const days = ["Mon", "Wed", "Fri"];
   const shades = [
     "bg-muted/40",
     "bg-emerald-200 dark:bg-emerald-900/40",
@@ -2550,17 +2612,24 @@ function ActivityCard() {
     <section className="rounded-2xl border border-border bg-card p-5 sm:p-6">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-lg font-semibold tracking-tight">
-          <span className="mr-1.5" aria-hidden>📅</span> Your Activity
+          <span className="mr-1.5" aria-hidden>
+            📅
+          </span>{" "}
+          Your Activity
         </h2>
         <div className="flex items-center gap-4 text-xs">
           <span className="inline-flex items-center gap-2 rounded-full bg-orange-500/10 px-2.5 py-1 ring-1 ring-orange-500/25">
             <span aria-hidden>🔥</span>
-            <span className="tabular font-semibold text-orange-600 dark:text-orange-300">{streak} Days</span>
+            <span className="tabular font-semibold text-orange-600 dark:text-orange-300">
+              {streak} Days
+            </span>
             <span className="text-muted-foreground">Active Streak</span>
           </span>
           <span className="inline-flex items-center gap-2 rounded-full bg-indigo-500/10 px-2.5 py-1 ring-1 ring-indigo-500/25">
             <span aria-hidden>🚀</span>
-            <span className="tabular font-semibold text-indigo-600 dark:text-indigo-300">{streak} Days</span>
+            <span className="tabular font-semibold text-indigo-600 dark:text-indigo-300">
+              {streak} Days
+            </span>
             <span className="text-muted-foreground">Longest Streak</span>
           </span>
         </div>
@@ -2569,11 +2638,15 @@ function ActivityCard() {
       <div className="overflow-x-auto">
         <div className="min-w-[720px]">
           <div className="ml-8 grid grid-cols-12 text-2xs text-muted-foreground">
-            {months.map((m) => <span key={m}>{m}</span>)}
+            {months.map((m) => (
+              <span key={m}>{m}</span>
+            ))}
           </div>
           <div className="mt-1 flex gap-2">
             <div className="flex w-6 flex-col justify-between py-1 text-2xs text-muted-foreground">
-              {days.map((d) => <span key={d}>{d}</span>)}
+              {days.map((d) => (
+                <span key={d}>{d}</span>
+              ))}
             </div>
             <div className="grid grid-flow-col grid-rows-7 gap-[3px]">
               {matrix.map((v, i) => (
@@ -2595,7 +2668,9 @@ function ActivityCard() {
           className="rounded-lg border border-border bg-background px-3 py-1.5 text-xs"
         >
           {[year, year - 1, year - 2].map((y) => (
-            <option key={y} value={y}>{y}</option>
+            <option key={y} value={y}>
+              {y}
+            </option>
           ))}
         </select>
         <div className="flex items-center gap-1.5 text-2xs text-muted-foreground">
@@ -2611,14 +2686,55 @@ function ActivityCard() {
 }
 
 const PROJECT_TYPES = [
-  { id: "frontend", label: "Frontend", icon: "🖥️", tint: "bg-sky-500/10 text-sky-700 dark:text-sky-300 ring-sky-500/30" },
-  { id: "backend", label: "Backend", icon: "🗄️", tint: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 ring-emerald-500/30" },
-  { id: "fullstack", label: "Full Stack", icon: "🧱", tint: "bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 ring-indigo-500/30" },
-  { id: "aiml", label: "AI/ML", icon: "🧠", tint: "bg-fuchsia-500/10 text-fuchsia-700 dark:text-fuchsia-300 ring-fuchsia-500/30" },
-  { id: "general", label: "General", icon: "{ }", tint: "bg-amber-500/10 text-amber-700 dark:text-amber-300 ring-amber-500/30" },
+  {
+    id: "frontend",
+    label: "Frontend",
+    icon: "🖥️",
+    tint: "bg-sky-500/10 text-sky-700 dark:text-sky-300 ring-sky-500/30",
+  },
+  {
+    id: "backend",
+    label: "Backend",
+    icon: "🗄️",
+    tint: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 ring-emerald-500/30",
+  },
+  {
+    id: "fullstack",
+    label: "Full Stack",
+    icon: "🧱",
+    tint: "bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 ring-indigo-500/30",
+  },
+  {
+    id: "aiml",
+    label: "AI/ML",
+    icon: "🧠",
+    tint: "bg-fuchsia-500/10 text-fuchsia-700 dark:text-fuchsia-300 ring-fuchsia-500/30",
+  },
+  {
+    id: "general",
+    label: "General",
+    icon: "{ }",
+    tint: "bg-amber-500/10 text-amber-700 dark:text-amber-300 ring-amber-500/30",
+  },
 ] as const;
 
-const TAG_OPTIONS = ["React", "Next.js", "TypeScript", "Node.js", "Python", "TailwindCSS", "PostgreSQL", "MongoDB", "GraphQL", "AWS", "Docker", "TensorFlow", "PyTorch", "Rust", "Go"];
+const TAG_OPTIONS = [
+  "React",
+  "Next.js",
+  "TypeScript",
+  "Node.js",
+  "Python",
+  "TailwindCSS",
+  "PostgreSQL",
+  "MongoDB",
+  "GraphQL",
+  "AWS",
+  "Docker",
+  "TensorFlow",
+  "PyTorch",
+  "Rust",
+  "Go",
+];
 
 type ProjectItem = {
   id: string;
@@ -2643,11 +2759,17 @@ function useProjects() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) setItems(JSON.parse(raw));
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }, []);
   const save = (next: ProjectItem[]) => {
     setItems(next);
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); } catch { /* ignore */ }
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    } catch {
+      /* ignore */
+    }
   };
   return {
     items,
@@ -2663,7 +2785,10 @@ function ExperienceProjectsCard() {
     <section className="rounded-2xl border border-border bg-card p-5 sm:p-6">
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-lg font-semibold tracking-tight">
-          <span className="mr-1.5" aria-hidden>💼</span> Experience &amp; Projects
+          <span className="mr-1.5" aria-hidden>
+            💼
+          </span>{" "}
+          Experience &amp; Projects
         </h2>
         {items.length > 0 ? (
           <Button size="sm" onClick={() => setOpen(true)}>
@@ -2675,10 +2800,28 @@ function ExperienceProjectsCard() {
       {items.length === 0 ? (
         <div className="mt-4 rounded-xl border border-dashed border-border/60 bg-gradient-to-br from-primary/5 via-transparent to-fuchsia-500/5 p-8 text-center">
           <div className="mx-auto flex w-fit items-center gap-2">
-            <span className="grid size-9 place-items-center rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 ring-1 ring-emerald-500/30" aria-hidden>📊</span>
-            <span className="grid size-9 place-items-center rounded-lg bg-sky-500/15 text-sky-600 dark:text-sky-300 ring-1 ring-sky-500/30" aria-hidden>🗂️</span>
-            <span className="grid size-9 place-items-center rounded-lg bg-amber-500/15 text-amber-700 dark:text-amber-300 ring-1 ring-amber-500/30" aria-hidden>🧩</span>
-            <span className="grid size-9 place-items-center rounded-lg bg-fuchsia-500/15 text-fuchsia-600 dark:text-fuchsia-300 ring-1 ring-fuchsia-500/30" aria-hidden>{`{}`}</span>
+            <span
+              className="grid size-9 place-items-center rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 ring-1 ring-emerald-500/30"
+              aria-hidden
+            >
+              📊
+            </span>
+            <span
+              className="grid size-9 place-items-center rounded-lg bg-sky-500/15 text-sky-600 dark:text-sky-300 ring-1 ring-sky-500/30"
+              aria-hidden
+            >
+              🗂️
+            </span>
+            <span
+              className="grid size-9 place-items-center rounded-lg bg-amber-500/15 text-amber-700 dark:text-amber-300 ring-1 ring-amber-500/30"
+              aria-hidden
+            >
+              🧩
+            </span>
+            <span
+              className="grid size-9 place-items-center rounded-lg bg-fuchsia-500/15 text-fuchsia-600 dark:text-fuchsia-300 ring-1 ring-fuchsia-500/30"
+              aria-hidden
+            >{`{}`}</span>
           </div>
           <p className="mt-3 text-sm font-semibold">The more, the merrier ✨</p>
           <p className="mt-1 text-xs text-muted-foreground">
@@ -2694,42 +2837,79 @@ function ExperienceProjectsCard() {
           {items.map((p) => {
             const t = PROJECT_TYPES.find((x) => x.id === p.type) ?? PROJECT_TYPES[4];
             return (
-              <div key={p.id} className="group rounded-xl border border-border/70 bg-gradient-to-br from-background to-surface-muted/40 p-4">
+              <div
+                key={p.id}
+                className="group rounded-xl border border-border/70 bg-gradient-to-br from-background to-surface-muted/40 p-4"
+              >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-start gap-3 min-w-0">
-                    <span className={cn("grid size-10 shrink-0 place-items-center rounded-lg ring-1 text-base font-semibold", t.tint)} aria-hidden>{t.icon}</span>
+                    <span
+                      className={cn(
+                        "grid size-10 shrink-0 place-items-center rounded-lg ring-1 text-base font-semibold",
+                        t.tint,
+                      )}
+                      aria-hidden
+                    >
+                      {t.icon}
+                    </span>
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <h3 className="truncate text-sm font-semibold">{p.title}</h3>
-                        <span className={cn("rounded-full px-2 py-0.5 text-2xs font-medium ring-1", t.tint)}>{t.label}</span>
+                        <span
+                          className={cn(
+                            "rounded-full px-2 py-0.5 text-2xs font-medium ring-1",
+                            t.tint,
+                          )}
+                        >
+                          {t.label}
+                        </span>
                         {p.isJob === "yes" && p.company ? (
-                          <span className="rounded-full bg-primary/10 px-2 py-0.5 text-2xs font-medium text-primary ring-1 ring-primary/20">@ {p.company}</span>
+                          <span className="rounded-full bg-primary/10 px-2 py-0.5 text-2xs font-medium text-primary ring-1 ring-primary/20">
+                            @ {p.company}
+                          </span>
                         ) : null}
                       </div>
-                      {(p.startDate || p.endDate) ? (
+                      {p.startDate || p.endDate ? (
                         <p className="mt-0.5 text-2xs text-muted-foreground">
                           {p.startDate || "—"} → {p.endDate || "Present"}
                         </p>
                       ) : null}
                       {p.description ? (
-                        <p className="mt-2 text-xs text-muted-foreground line-clamp-3">{p.description}</p>
+                        <p className="mt-2 text-xs text-muted-foreground line-clamp-3">
+                          {p.description}
+                        </p>
                       ) : null}
                       {p.tags.length > 0 ? (
                         <div className="mt-2 flex flex-wrap gap-1">
                           {p.tags.map((tag) => (
-                            <span key={tag} className="rounded-md bg-surface-muted px-1.5 py-0.5 text-2xs text-muted-foreground">#{tag}</span>
+                            <span
+                              key={tag}
+                              className="rounded-md bg-surface-muted px-1.5 py-0.5 text-2xs text-muted-foreground"
+                            >
+                              #{tag}
+                            </span>
                           ))}
                         </div>
                       ) : null}
-                      {(p.github || p.website) ? (
+                      {p.github || p.website ? (
                         <div className="mt-2 flex flex-wrap gap-2">
                           {p.github ? (
-                            <a href={p.github} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded-md bg-slate-500/10 px-2 py-0.5 text-2xs font-medium text-slate-700 ring-1 ring-slate-500/20 hover:bg-slate-500/15 dark:text-slate-300">
+                            <a
+                              href={p.github}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1 rounded-md bg-slate-500/10 px-2 py-0.5 text-2xs font-medium text-slate-700 ring-1 ring-slate-500/20 hover:bg-slate-500/15 dark:text-slate-300"
+                            >
                               <Github className="size-3" /> GitHub
                             </a>
                           ) : null}
                           {p.website ? (
-                            <a href={p.website} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-0.5 text-2xs font-medium text-emerald-700 ring-1 ring-emerald-500/20 hover:bg-emerald-500/15 dark:text-emerald-300">
+                            <a
+                              href={p.website}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-0.5 text-2xs font-medium text-emerald-700 ring-1 ring-emerald-500/20 hover:bg-emerald-500/15 dark:text-emerald-300"
+                            >
                               <Globe className="size-3" /> Live
                             </a>
                           ) : null}
@@ -2737,7 +2917,13 @@ function ExperienceProjectsCard() {
                       ) : null}
                     </div>
                   </div>
-                  <Button variant="ghost" size="icon" className="size-7 opacity-0 group-hover:opacity-100" aria-label="Remove project" onClick={() => remove(p.id)}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-7 opacity-0 group-hover:opacity-100"
+                    aria-label="Remove project"
+                    onClick={() => remove(p.id)}
+                  >
                     <X className="size-3.5" />
                   </Button>
                 </div>
@@ -2747,12 +2933,28 @@ function ExperienceProjectsCard() {
         </div>
       )}
 
-      <AddProjectDialog open={open} onOpenChange={setOpen} onAdd={(p) => { add(p); setOpen(false); toast.success("Project added"); }} />
+      <AddProjectDialog
+        open={open}
+        onOpenChange={setOpen}
+        onAdd={(p) => {
+          add(p);
+          setOpen(false);
+          toast.success("Project added");
+        }}
+      />
     </section>
   );
 }
 
-function AddProjectDialog({ open, onOpenChange, onAdd }: { open: boolean; onOpenChange: (v: boolean) => void; onAdd: (p: ProjectItem) => void }) {
+function AddProjectDialog({
+  open,
+  onOpenChange,
+  onAdd,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  onAdd: (p: ProjectItem) => void;
+}) {
   const [title, setTitle] = useState("");
   const [hosted, setHosted] = useState<"yes" | "no" | null>(null);
   const [github, setGithub] = useState("");
@@ -2767,8 +2969,17 @@ function AddProjectDialog({ open, onOpenChange, onAdd }: { open: boolean; onOpen
 
   useEffect(() => {
     if (!open) {
-      setTitle(""); setHosted(null); setGithub(""); setWebsite(""); setIsJob(null);
-      setCompany(""); setStartDate(""); setEndDate(""); setType(""); setTags([]); setDescription("");
+      setTitle("");
+      setHosted(null);
+      setGithub("");
+      setWebsite("");
+      setIsJob(null);
+      setCompany("");
+      setStartDate("");
+      setEndDate("");
+      setType("");
+      setTags([]);
+      setDescription("");
     }
   }, [open]);
 
@@ -2785,21 +2996,35 @@ function AddProjectDialog({ open, onOpenChange, onAdd }: { open: boolean; onOpen
     onAdd({
       id: crypto.randomUUID(),
       title: title.trim(),
-      hosted, github: github.trim(), website: website.trim(),
-      isJob, company: company.trim(),
-      startDate, endDate,
+      hosted,
+      github: github.trim(),
+      website: website.trim(),
+      isJob,
+      company: company.trim(),
+      startDate,
+      endDate,
       type: type || "general",
       tags,
       description: description.trim(),
     });
   };
 
-
-  const YesNo = ({ value, onChange }: { value: "yes" | "no" | null; onChange: (v: "yes" | "no") => void }) => (
+  const YesNo = ({
+    value,
+    onChange,
+  }: {
+    value: "yes" | "no" | null;
+    onChange: (v: "yes" | "no") => void;
+  }) => (
     <div className="flex items-center gap-4">
       {(["yes", "no"] as const).map((v) => (
         <label key={v} className="flex cursor-pointer items-center gap-1.5 text-sm">
-          <input type="radio" checked={value === v} onChange={() => onChange(v)} className="accent-primary" />
+          <input
+            type="radio"
+            checked={value === v}
+            onChange={() => onChange(v)}
+            className="accent-primary"
+          />
           <span className="capitalize">{v}</span>
         </label>
       ))}
@@ -2815,15 +3040,23 @@ function AddProjectDialog({ open, onOpenChange, onAdd }: { open: boolean; onOpen
 
         <div className="grid gap-5">
           <div className="grid gap-1.5">
-            <Label htmlFor="proj-title"><span className="text-rose-500">*</span> Title</Label>
-            <Input id="proj-title" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+            <Label htmlFor="proj-title">
+              <span className="text-rose-500">*</span> Title
+            </Label>
+            <Input
+              id="proj-title"
+              placeholder="Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border/60 bg-surface-muted/40 p-3">
             <div className="flex items-center gap-2 text-sm">
               <span className="text-muted-foreground">Is the project hosted?</span>
               <span className="inline-flex items-center gap-1.5 rounded-full bg-sky-500/10 px-2.5 py-1 text-2xs font-medium text-sky-700 ring-1 ring-sky-500/20 dark:text-sky-300">
-                <Github className="size-3" /> <Globe className="size-3" /> Projects with links are 10X more Valuable!
+                <Github className="size-3" /> <Globe className="size-3" /> Projects with links are
+                10X more Valuable!
               </span>
             </div>
             <YesNo value={hosted} onChange={setHosted} />
@@ -2833,11 +3066,21 @@ function AddProjectDialog({ open, onOpenChange, onAdd }: { open: boolean; onOpen
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="grid gap-1.5">
                 <Label htmlFor="proj-gh">Github</Label>
-                <Input id="proj-gh" placeholder="Github" value={github} onChange={(e) => setGithub(e.target.value)} />
+                <Input
+                  id="proj-gh"
+                  placeholder="Github"
+                  value={github}
+                  onChange={(e) => setGithub(e.target.value)}
+                />
               </div>
               <div className="grid gap-1.5">
                 <Label htmlFor="proj-web">Website</Label>
-                <Input id="proj-web" placeholder="Website" value={website} onChange={(e) => setWebsite(e.target.value)} />
+                <Input
+                  id="proj-web"
+                  placeholder="Website"
+                  value={website}
+                  onChange={(e) => setWebsite(e.target.value)}
+                />
               </div>
             </div>
           ) : null}
@@ -2850,18 +3093,33 @@ function AddProjectDialog({ open, onOpenChange, onAdd }: { open: boolean; onOpen
           {isJob === "yes" ? (
             <div className="grid gap-1.5">
               <Label htmlFor="proj-co">Company</Label>
-              <Input id="proj-co" placeholder="Company" value={company} onChange={(e) => setCompany(e.target.value)} />
+              <Input
+                id="proj-co"
+                placeholder="Company"
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+              />
             </div>
           ) : null}
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="grid gap-1.5">
               <Label htmlFor="proj-start">Start Date</Label>
-              <Input id="proj-start" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+              <Input
+                id="proj-start"
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
             </div>
             <div className="grid gap-1.5">
               <Label htmlFor="proj-end">End Date</Label>
-              <Input id="proj-end" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+              <Input
+                id="proj-end"
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+              />
             </div>
           </div>
 
@@ -2882,7 +3140,15 @@ function AddProjectDialog({ open, onOpenChange, onAdd }: { open: boolean; onOpen
                         : "border-border hover:border-primary/50 hover:bg-surface-muted/40",
                     )}
                   >
-                    <span className={cn("grid size-9 place-items-center rounded-md ring-1 text-base font-semibold", t.tint)} aria-hidden>{t.icon}</span>
+                    <span
+                      className={cn(
+                        "grid size-9 place-items-center rounded-md ring-1 text-base font-semibold",
+                        t.tint,
+                      )}
+                      aria-hidden
+                    >
+                      {t.icon}
+                    </span>
                     <span className="font-medium">{t.label}</span>
                   </button>
                 );
@@ -2894,10 +3160,17 @@ function AddProjectDialog({ open, onOpenChange, onAdd }: { open: boolean; onOpen
             <Label>Tags</Label>
             <div className="flex flex-wrap gap-1.5 rounded-lg border border-border p-2 min-h-11">
               {tags.length === 0 ? (
-                <span className="px-1.5 py-1 text-xs text-muted-foreground">select tags from here…</span>
+                <span className="px-1.5 py-1 text-xs text-muted-foreground">
+                  select tags from here…
+                </span>
               ) : (
                 tags.map((tag) => (
-                  <button key={tag} type="button" onClick={() => toggleTag(tag)} className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary ring-1 ring-primary/20">
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => toggleTag(tag)}
+                    className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary ring-1 ring-primary/20"
+                  >
                     {tag} <X className="size-3" />
                   </button>
                 ))
@@ -2905,7 +3178,12 @@ function AddProjectDialog({ open, onOpenChange, onAdd }: { open: boolean; onOpen
             </div>
             <div className="flex flex-wrap gap-1.5">
               {TAG_OPTIONS.filter((t) => !tags.includes(t)).map((tag) => (
-                <button key={tag} type="button" onClick={() => toggleTag(tag)} className="rounded-md bg-surface-muted px-2 py-0.5 text-2xs text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary">
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => toggleTag(tag)}
+                  className="rounded-md bg-surface-muted px-2 py-0.5 text-2xs text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+                >
                   + {tag}
                 </button>
               ))}
@@ -2926,7 +3204,9 @@ function AddProjectDialog({ open, onOpenChange, onAdd }: { open: boolean; onOpen
         </div>
 
         <DialogFooter>
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>
+            Cancel
+          </Button>
           <Button onClick={submit} disabled={!canSubmit}>
             <span className="mr-1">+</span> Add Project
           </Button>
@@ -2971,9 +3251,7 @@ function BookmarksTab() {
   }, []);
 
   const remove = (problemKey: string, sheetId: string) => {
-    const next = bookmarks.filter(
-      (b) => !(b.problemKey === problemKey && b.sheetId === sheetId),
-    );
+    const next = bookmarks.filter((b) => !(b.problemKey === problemKey && b.sheetId === sheetId));
     setBookmarks(next);
     try {
       localStorage.setItem("verdiqy.bookmarks", JSON.stringify(next));
@@ -3016,16 +3294,13 @@ function BookmarksTab() {
 
       {bookmarks.length === 0 ? (
         <div className="rounded-xl border border-dashed border-border/60 bg-surface/30 p-6 text-center text-sm text-muted-foreground">
-          No bookmarks yet. Open a sheet from your Cheat Library and tap the
-          bookmark icon on any problem — it shows up here.
+          No bookmarks yet. Open a sheet from your Cheat Library and tap the bookmark icon on any
+          problem — it shows up here.
         </div>
       ) : (
         <ul className="divide-y divide-border/40">
           {bookmarks.map((b) => (
-            <li
-              key={`${b.sheetId}:${b.problemKey}`}
-              className="flex items-start gap-3 py-3"
-            >
+            <li key={`${b.sheetId}:${b.problemKey}`} className="flex items-start gap-3 py-3">
               <div className="min-w-0 flex-1">
                 <a
                   href={b.url}
@@ -3053,9 +3328,7 @@ function BookmarksTab() {
                       {t}
                     </span>
                   ))}
-                  <span>
-                    · {new Date(b.bookmarkedAt).toLocaleDateString()}
-                  </span>
+                  <span>· {new Date(b.bookmarkedAt).toLocaleDateString()}</span>
                 </div>
               </div>
               <button
@@ -3072,4 +3345,3 @@ function BookmarksTab() {
     </div>
   );
 }
-

@@ -24,7 +24,10 @@ export const submitBugReport = createServerFn({ method: "POST" })
       from: (table: string) => {
         insert: (value: Record<string, unknown>) => {
           select: (cols: string) => {
-            single: () => Promise<{ data: { id: string } | null; error: { message: string } | null }>;
+            single: () => Promise<{
+              data: { id: string } | null;
+              error: { message: string } | null;
+            }>;
           };
         };
       };
@@ -56,8 +59,9 @@ export const submitBugReport = createServerFn({ method: "POST" })
       const sevColor =
         data.severity === "high" ? "#dc2626" : data.severity === "low" ? "#6b7280" : "#f59e0b";
       const esc = (s: string) =>
-        s.replace(/[&<>"']/g, (c) =>
-          ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!,
+        s.replace(
+          /[&<>"']/g,
+          (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!,
         );
       const html = `
           <div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;max-width:640px;margin:0 auto;padding:24px;color:#111">
@@ -76,9 +80,15 @@ export const submitBugReport = createServerFn({ method: "POST" })
             </table>
           </div>`;
 
+      const fromAddress =
+        process.env.BUG_REPORT_FROM_EMAIL || "Bug Reports <onboarding@resend.dev>";
+      const toAddress = process.env.BUG_REPORT_TO_EMAIL
+        ? process.env.BUG_REPORT_TO_EMAIL.split(",").map((s) => s.trim())
+        : ["pcmhacker511@gmail.com"];
+
       const payload = JSON.stringify({
-        from: "Bug Reports <onboarding@resend.dev>",
-        to: ["pcmhacker511@gmail.com"],
+        from: fromAddress,
+        to: toAddress,
         subject: `[Bug · ${data.severity}] ${data.title}`,
         html,
         reply_to: context.claims?.email ? [context.claims.email as string] : undefined,
@@ -89,12 +99,17 @@ export const submitBugReport = createServerFn({ method: "POST" })
 
       for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
         try {
+          const headers: Record<string, string> = {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${resendKey}`,
+          };
+          if (row?.id) {
+            headers["Idempotency-Key"] = `bug-report-${row.id}`;
+          }
+
           const res = await fetch("https://api.resend.com/emails", {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${resendKey}`,
-            },
+            headers,
             body: payload,
           });
 
@@ -124,7 +139,8 @@ export const submitBugReport = createServerFn({ method: "POST" })
       if (!emailStatus.sent) {
         emailStatus = {
           sent: false,
-          error: `We couldn't email the bug report after ${MAX_ATTEMPTS} attempts. It has been saved (ID: ${row?.id ?? "n/a"}). ${lastError ? `Details: ${lastError}` : ""}`.trim(),
+          error:
+            `We couldn't email the bug report after ${MAX_ATTEMPTS} attempts. It has been saved (ID: ${row?.id ?? "n/a"}). ${lastError ? `Details: ${lastError}` : ""}`.trim(),
         };
       }
     }

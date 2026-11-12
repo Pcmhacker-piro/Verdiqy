@@ -14,6 +14,10 @@ export const Route = createFileRoute("/_authenticated/admin/bug-reports")({
       { title: "Bug Report Analytics · Verdiqy" },
       { name: "description", content: "Track Report a bug usage and submission outcomes." },
       { name: "robots", content: "noindex" },
+      { property: "og:title", content: "Bug Report Analytics \u00b7 Verdiqy" },
+      { property: "og:description", content: "Track Report a bug usage and submission outcomes." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: BugReportsAdmin,
@@ -83,9 +87,7 @@ function BugReportsAdmin() {
 
         <div className="mb-6 rounded-xl border border-border/60 bg-surface-muted/40 p-4 text-sm">
           <div className="text-muted-foreground">Open → Submit conversion</div>
-          <div className="mt-1 text-2xl font-semibold">
-            {opened > 0 ? `${conversion}%` : "—"}
-          </div>
+          <div className="mt-1 text-2xl font-semibold">{opened > 0 ? `${conversion}%` : "—"}</div>
         </div>
 
         {query.isLoading && (
@@ -144,7 +146,8 @@ function BugReportsAdmin() {
                         {r.page_url ?? "—"}
                       </td>
                       <td className="px-3 py-2 text-muted-foreground">
-                        {r.error_message ?? (r.bug_report_id ? `report ${r.bug_report_id.slice(0, 8)}…` : "—")}
+                        {r.error_message ??
+                          (r.bug_report_id ? `report ${r.bug_report_id.slice(0, 8)}…` : "—")}
                       </td>
                     </tr>
                   );

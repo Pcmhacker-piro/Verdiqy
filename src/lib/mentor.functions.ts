@@ -62,7 +62,7 @@ export const askMentor = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data) => inputSchema.parse(data))
   .handler(async ({ data }) => {
-    const { callLovableAI } = await import("./ai-gateway.server");
+    const { callAI } = await import("./ai-gateway.server");
 
     const last = data.messages[data.messages.length - 1];
     const hasImages = last?.role === "user" && last.images && last.images.length > 0;
@@ -107,7 +107,7 @@ export const askMentor = createServerFn({ method: "POST" })
       user = priorTranscript;
     }
 
-    const reply = await callLovableAI({
+    const reply = await callAI({
       system: SYSTEM,
       user,
       temperature: 0.5,

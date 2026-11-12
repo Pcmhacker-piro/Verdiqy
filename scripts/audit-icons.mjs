@@ -108,13 +108,17 @@ if (!existsSync(manifestPath)) {
           if (!dims) {
             errors.push(`${icon.src}: invalid PNG`);
           } else {
-            const [w, h] = String(icon.sizes ?? "").split("x").map(Number);
+            const [w, h] = String(icon.sizes ?? "")
+              .split("x")
+              .map(Number);
             if (w && h && (dims.width !== w || dims.height !== h)) {
               errors.push(
                 `${icon.src}: manifest sizes="${icon.sizes}" but PNG is ${dims.width}x${dims.height}`,
               );
             } else {
-              ok.push(`manifest ${icon.src} ${dims.width}x${dims.height} purpose=${icon.purpose ?? "any"} ✓`);
+              ok.push(
+                `manifest ${icon.src} ${dims.width}x${dims.height} purpose=${icon.purpose ?? "any"} ✓`,
+              );
             }
           }
         }
@@ -122,10 +126,18 @@ if (!existsSync(manifestPath)) {
         if (purposes.includes("maskable")) sawMaskable = true;
         if (purposes.includes("any")) sawAny = true;
       }
-      if (!sawMaskable) warnings.push('No icon with purpose="maskable" — Android adaptive icons will letterbox.');
+      if (!sawMaskable)
+        warnings.push('No icon with purpose="maskable" — Android adaptive icons will letterbox.');
       if (!sawAny) warnings.push('No icon with purpose="any" — install prompts may fall back.');
     }
-    for (const key of ["name", "short_name", "start_url", "display", "theme_color", "background_color"]) {
+    for (const key of [
+      "name",
+      "short_name",
+      "start_url",
+      "display",
+      "theme_color",
+      "background_color",
+    ]) {
       if (!manifest[key]) warnings.push(`manifest.${key} is empty`);
     }
   }

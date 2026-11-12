@@ -39,6 +39,14 @@ export const Route = createFileRoute("/simulator")({
         content:
           "Build your own contest — pick source, rating range, topics, and duration. Generate from AI, sheets, bookmarks, or any Codeforces handle.",
       },
+      { property: "og:title", content: "Custom Contest \u00b7 Verdiqy" },
+      {
+        property: "og:description",
+        content:
+          "Build your own contest \u2014 pick source, rating range, topics, and duration. Generate from AI, sheets, bookmarks, or any Codeforces handle.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: CustomContestPage,
@@ -169,13 +177,15 @@ async function fetchProblemset(): Promise<ContestProblem[]> {
   const res = await fetch("https://codeforces.com/api/problemset.problems");
   const json = await res.json();
   if (json.status !== "OK") throw new Error(json.comment ?? "Failed to load problems");
-  const problems = (json.result.problems as Array<{
-    contestId?: number;
-    index: string;
-    name: string;
-    rating?: number;
-    tags: string[];
-  }>)
+  const problems = (
+    json.result.problems as Array<{
+      contestId?: number;
+      index: string;
+      name: string;
+      rating?: number;
+      tags: string[];
+    }>
+  )
     .filter((p) => p.contestId)
     .map<ContestProblem>((p) => ({
       key: `${p.contestId}-${p.index}`,
@@ -209,11 +219,7 @@ interface BuildArgs {
   sheets: StoredSheet[];
 }
 
-function matchesFilters(
-  p: ContestProblem,
-  args: BuildArgs,
-  excludeKeys: Set<string>,
-): boolean {
+function matchesFilters(p: ContestProblem, args: BuildArgs, excludeKeys: Set<string>): boolean {
   if (excludeKeys.has(p.key)) return false;
   if (p.rating == null) return false;
   if (p.rating < args.minRating || p.rating > args.maxRating) return false;
@@ -445,7 +451,6 @@ function CustomContestPage() {
     }
   };
 
-
   const buildSavedRecord = (problems: ContestProblem[]): SavedContest => ({
     id: crypto.randomUUID(),
     name: name.trim() || defaultName(source, handle),
@@ -528,7 +533,6 @@ function CustomContestPage() {
     setConfirmDeleteId(null);
   };
 
-
   if (running) {
     return <LiveContest contest={running} onExit={() => setRunning(null)} />;
   }
@@ -566,8 +570,18 @@ function CustomContestPage() {
                 {(
                   [
                     { id: "ai", label: "AI Mix", icon: Sparkles, hint: "From CF problemset" },
-                    { id: "sheet", label: "Sheet", icon: BookMarked, hint: `${sheets.length} saved` },
-                    { id: "bookmarks", label: "Bookmarks", icon: Tag, hint: `${bookmarks.length} saved` },
+                    {
+                      id: "sheet",
+                      label: "Sheet",
+                      icon: BookMarked,
+                      hint: `${sheets.length} saved`,
+                    },
+                    {
+                      id: "bookmarks",
+                      label: "Bookmarks",
+                      icon: Tag,
+                      hint: `${bookmarks.length} saved`,
+                    },
                     { id: "handle", label: "CF Handle", icon: Users, hint: "Inspired by user" },
                   ] as const
                 ).map((s) => {
@@ -833,8 +847,10 @@ function CustomContestPage() {
               </div>
             ) : null}
             {preview && preview.length > 0 ? (
-              <div id="contest-preview" className="rounded-lg border border-border/70 bg-card scroll-mt-4">
-
+              <div
+                id="contest-preview"
+                className="rounded-lg border border-border/70 bg-card scroll-mt-4"
+              >
                 <div className="flex items-center justify-between border-b border-border/60 px-4 py-3">
                   <div>
                     <p className="text-sm font-semibold">Preview</p>
@@ -866,10 +882,7 @@ function CustomContestPage() {
                         </p>
                       </div>
                       <span
-                        className={cn(
-                          "font-mono text-xs tabular-nums",
-                          ratingColor(p.rating ?? 0),
-                        )}
+                        className={cn("font-mono text-xs tabular-nums", ratingColor(p.rating ?? 0))}
                       >
                         {p.rating ?? "?"}
                       </span>
@@ -1063,7 +1076,9 @@ function LiveContest({ contest, onExit }: { contest: SavedContest; onExit: () =>
           <div className="flex items-center gap-3">
             <Clock className="size-4 text-primary" />
             <div>
-              <p className="font-mono text-lg font-semibold tabular-nums">{formatTime(remaining)}</p>
+              <p className="font-mono text-lg font-semibold tabular-nums">
+                {formatTime(remaining)}
+              </p>
               <p className="text-2xs text-muted-foreground">
                 {solved}/{contest.problems.length} solved
               </p>
@@ -1104,7 +1119,9 @@ function LiveContest({ contest, onExit }: { contest: SavedContest; onExit: () =>
                     <span className="text-2xs text-amber-500">·</span>
                   ) : null}
                 </div>
-                <p className={cn("mt-1 font-mono text-2xs tabular-nums", ratingColor(p.rating ?? 0))}>
+                <p
+                  className={cn("mt-1 font-mono text-2xs tabular-nums", ratingColor(p.rating ?? 0))}
+                >
                   {p.rating ?? "?"}
                 </p>
               </button>

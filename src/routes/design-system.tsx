@@ -98,6 +98,19 @@ import { TokenSwatch } from "@/components/ds/token-swatch";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/design-system")({
+  head: () => ({
+    meta: [
+      { title: "Design System · Verdiqy" },
+      { name: "description", content: "Verdiqy interface patterns, controls, and visual tokens." },
+      { property: "og:title", content: "Design System · Verdiqy" },
+      {
+        property: "og:description",
+        content: "Verdiqy interface patterns, controls, and visual tokens.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: DesignSystemPage,
 });
 
@@ -284,7 +297,6 @@ function DesignSystemPage() {
     <div className="min-h-screen bg-background text-foreground">
       <TopBar />
       <main className="mx-auto max-w-6xl px-6 pb-24 pt-10 sm:px-8">
-
         <Hero />
         <div className="mt-16 space-y-20">
           <Foundations />

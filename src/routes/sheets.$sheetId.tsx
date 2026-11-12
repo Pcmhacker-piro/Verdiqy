@@ -32,6 +32,14 @@ export const Route = createFileRoute("/sheets/$sheetId")({
         content:
           "Work through a custom practice sheet — filter, check off progress, jot notes, and bookmark problems for your profile.",
       },
+      { property: "og:title", content: "Sheet \u00b7 Verdiqy" },
+      {
+        property: "og:description",
+        content:
+          "Work through a custom practice sheet \u2014 filter, check off progress, jot notes, and bookmark problems for your profile.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: SheetDetailPage,
@@ -142,9 +150,7 @@ function SheetDetailPage() {
         });
       }
       localStorage.setItem(BOOKMARKS_KEY, JSON.stringify(filtered));
-      toast.success(
-        nextBookmarked ? "Bookmarked to your profile" : "Bookmark removed",
-      );
+      toast.success(nextBookmarked ? "Bookmarked to your profile" : "Bookmark removed");
     } catch {
       /* ignore */
     }
@@ -182,14 +188,13 @@ function SheetDetailPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sheet, minR, maxR, tag, q, statusFilter, progress]);
 
-  const doneCount = useMemo(
-    () => Object.values(progress).filter((p) => p.done).length,
-    [progress],
-  );
+  const doneCount = useMemo(() => Object.values(progress).filter((p) => p.done).length, [progress]);
 
   if (notFound) {
     return (
-      <AppShell breadcrumb={[{ label: "Cheat Library", to: "/cheatsheets" }, { label: "Not found" }]}>
+      <AppShell
+        breadcrumb={[{ label: "Cheat Library", to: "/cheatsheets" }, { label: "Not found" }]}
+      >
         <div className="mx-auto max-w-md px-6 py-16 text-center">
           <h1 className="font-display text-2xl font-semibold">Sheet not found</h1>
           <p className="mt-2 text-sm text-muted-foreground">
@@ -217,12 +222,7 @@ function SheetDetailPage() {
   const pct = total ? Math.round((doneCount / total) * 100) : 0;
 
   return (
-    <AppShell
-      breadcrumb={[
-        { label: "Cheat Library", to: "/cheatsheets" },
-        { label: sheet.name },
-      ]}
-    >
+    <AppShell breadcrumb={[{ label: "Cheat Library", to: "/cheatsheets" }, { label: sheet.name }]}>
       <div className="mx-auto max-w-5xl px-4 py-6 lg:px-6">
         {/* Header */}
         <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
@@ -278,8 +278,15 @@ function SheetDetailPage() {
                   });
                   const ws = XLSX.utils.json_to_sheet(rows);
                   ws["!cols"] = [
-                    { wch: 8 }, { wch: 11 }, { wch: 8 }, { wch: 6 },
-                    { wch: 42 }, { wch: 8 }, { wch: 32 }, { wch: 44 }, { wch: 40 },
+                    { wch: 8 },
+                    { wch: 11 },
+                    { wch: 8 },
+                    { wch: 6 },
+                    { wch: 42 },
+                    { wch: 8 },
+                    { wch: 32 },
+                    { wch: 44 },
+                    { wch: 40 },
                   ];
                   const wb = XLSX.utils.book_new();
                   const safeName = sheet.name.slice(0, 28).replace(/[\\/*?:[\]]/g, " ") || "Sheet";
@@ -304,10 +311,7 @@ function SheetDetailPage() {
                 </span>
               </div>
               <div className="mt-2 h-2 overflow-hidden rounded-full bg-muted/50">
-                <div
-                  className="h-full bg-primary transition-all"
-                  style={{ width: `${pct}%` }}
-                />
+                <div className="h-full bg-primary transition-all" style={{ width: `${pct}%` }} />
               </div>
             </div>
           </div>
@@ -374,9 +378,7 @@ function SheetDetailPage() {
             </label>
             <select
               value={statusFilter}
-              onChange={(e) =>
-                setStatusFilter(e.target.value as typeof statusFilter)
-              }
+              onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
               className="h-8 rounded-md border border-input bg-background px-2 text-xs"
             >
               <option value="all">All</option>
@@ -500,16 +502,11 @@ Walk me through:
               </span>
             )}
             {problem.tags.slice(0, 5).map((t) => (
-              <span
-                key={t}
-                className="rounded-full bg-muted/50 px-1.5 py-0.5"
-              >
+              <span key={t} className="rounded-full bg-muted/50 px-1.5 py-0.5">
                 {t}
               </span>
             ))}
-            {problem.tags.length > 5 && (
-              <span>+{problem.tags.length - 5}</span>
-            )}
+            {problem.tags.length > 5 && <span>+{problem.tags.length - 5}</span>}
           </div>
         </div>
 
@@ -546,9 +543,7 @@ Walk me through:
             aria-label={progress.bookmarked ? "Remove bookmark" : "Bookmark"}
             className={cn(
               "rounded p-1.5 hover:bg-muted/60",
-              progress.bookmarked
-                ? "text-primary"
-                : "text-muted-foreground hover:text-foreground",
+              progress.bookmarked ? "text-primary" : "text-muted-foreground hover:text-foreground",
             )}
           >
             {progress.bookmarked ? (

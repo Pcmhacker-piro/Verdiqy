@@ -1,8 +1,16 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import logoAsset from "@/assets/logo.png.asset.json";
+import logoImage from "@/assets/logo-small.webp";
 import { FloatingBugButton } from "@/components/app/floating-bug-button";
 import { useServerFn } from "@tanstack/react-start";
-import { useEffect, useMemo, useRef, useState, type FormEvent, type MouseEvent, type ReactNode } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type FormEvent,
+  type MouseEvent,
+  type ReactNode,
+} from "react";
 import {
   Bell,
   Gauge,
@@ -22,13 +30,11 @@ import {
   Rocket,
   Loader2,
   LogOut,
-  
   Search,
   Settings,
   Sparkles,
   Swords,
   Trophy,
-  
   UserCircle2,
   Users,
   Video,
@@ -39,6 +45,7 @@ import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
   DialogContent,
@@ -53,14 +60,14 @@ import { CommandMenu } from "@/components/app/command-menu";
 import { DemoBanner } from "@/components/app/demo-banner";
 import { cn } from "@/lib/utils";
 import { useIsAdmin } from "@/hooks/use-is-admin";
-import { useCurrentUser } from "@/hooks/use-current-user";
+import { useCurrentUser, useCurrentUserStatus } from "@/hooks/use-current-user";
 import { submitBugReport } from "@/lib/bug-report.functions";
 import { logBugReportEvent } from "@/lib/bug-report-events.functions";
 import { z } from "zod";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
-
+import { isSidebarShortcut } from "@/lib/sidebar-shortcut";
 
 interface NavItem {
   label: string;
@@ -81,7 +88,6 @@ const navSections: NavSection[] = [
   {
     label: "Practice",
     items: [
-      
       { label: "Problems", to: "/problems", icon: Compass, shortcut: "G P", key: "p" },
       {
         label: "Custom Contest",
@@ -97,7 +103,6 @@ const navSections: NavSection[] = [
   {
     label: "Analyze",
     items: [
-      
       { label: "Cheat Library", to: "/cheatsheets", icon: BookOpen, shortcut: "G H", key: "h" },
       { label: "Video Solutions", to: "/videos", icon: Video, shortcut: "G I", key: "i" },
       { label: "Compare", to: "/compare", icon: Swords, shortcut: "G C", key: "c" },
@@ -106,10 +111,25 @@ const navSections: NavSection[] = [
   {
     label: "You",
     items: [
-      { label: "Ask Verdiqy", to: "/search", icon: Wand2, shortcut: "G A", key: "a", authRequired: true },
-      { label: "Mentor", to: "/mentor", icon: Sparkles, shortcut: "G M", key: "m", badge: "2", authRequired: true },
+      {
+        label: "Ask Verdiqy",
+        to: "/search",
+        icon: Wand2,
+        shortcut: "G A",
+        key: "a",
+        authRequired: true,
+      },
+      {
+        label: "Mentor",
+        to: "/mentor",
+        icon: Sparkles,
+        shortcut: "G M",
+        key: "m",
+        badge: "2",
+        authRequired: true,
+      },
       { label: "Community", to: "/community", icon: Users, shortcut: "G Y", key: "y" },
-      
+
       { label: "Profile", to: "/profile", icon: UserCircle2, shortcut: "G U", key: "u" },
     ],
   },
@@ -127,7 +147,8 @@ function clearAuthStorage() {
   if (typeof window === "undefined") return;
   const shouldRemove = (key: string) =>
     key === "supabase.auth.token" ||
-    (key.startsWith("sb-") && (key.endsWith("-auth-token") || key.includes("auth-token-code-verifier")));
+    (key.startsWith("sb-") &&
+      (key.endsWith("-auth-token") || key.includes("auth-token-code-verifier")));
 
   [window.localStorage, window.sessionStorage].forEach((storage) => {
     for (let i = storage.length - 1; i >= 0; i -= 1) {
@@ -155,8 +176,6 @@ function buildSecondaryNav(isAdmin: boolean): NavItem[] {
   if (isAdmin || isDev) items.push(DESIGN_SYSTEM_NAV);
   return items;
 }
-
-
 
 interface AppShellProps {
   children: ReactNode;
@@ -227,6 +246,19 @@ export function AppShell({ children, breadcrumb, actions }: AppShellProps) {
         return;
       }
       if (isTypingTarget(e.target)) return;
+
+      if (isSidebarShortcut(e)) {
+        e.preventDefault();
+        if (window.matchMedia("(min-width: 768px)").matches) {
+          setSidebarCollapsed((collapsed) => {
+            rememberSidebarCollapsed(!collapsed);
+            return !collapsed;
+          });
+        } else {
+          setMobileNavOpen((open) => !open);
+        }
+        return;
+      }
 
       if (e.key === "/") {
         e.preventDefault();
@@ -305,7 +337,11 @@ export function AppShell({ children, breadcrumb, actions }: AppShellProps) {
           onExpandSidebar={expandSidebar}
         />
         <DemoBanner />
-        <main id="main-content" key={pathname} className="min-w-0 flex-1 overflow-x-hidden animate-page-enter">
+        <main
+          id="main-content"
+          key={pathname}
+          className="min-w-0 flex-1 overflow-x-hidden animate-page-enter"
+        >
           {children}
         </main>
       </div>
@@ -331,7 +367,6 @@ export function AppShell({ children, breadcrumb, actions }: AppShellProps) {
               setTimeout(() => setCmdOpen(true), 60);
             }}
           />
-
         </SheetContent>
       </Sheet>
 
@@ -412,7 +447,12 @@ function DesktopSidebar({
         {secondaryNav.length > 0 ? (
           <>
             <div className="my-2 h-px bg-border/60" />
-            <NavGroup label="System" items={secondaryNav} pathname={pathname} onNavigate={onCollapse} />
+            <NavGroup
+              label="System"
+              items={secondaryNav}
+              pathname={pathname}
+              onNavigate={onCollapse}
+            />
           </>
         ) : null}
       </nav>
@@ -460,7 +500,12 @@ function MobileNav({
         {secondaryNav.length > 0 ? (
           <>
             <div className="my-2 h-px bg-border/60" />
-            <NavGroup label="System" items={secondaryNav} pathname={pathname} onNavigate={onNavigate} />
+            <NavGroup
+              label="System"
+              items={secondaryNav}
+              pathname={pathname}
+              onNavigate={onNavigate}
+            />
           </>
         ) : null}
       </nav>
@@ -469,14 +514,13 @@ function MobileNav({
   );
 }
 
-
-
 function scheduleSidebarClose(onNavigate?: () => void) {
   if (!onNavigate) return;
   window.setTimeout(onNavigate, 0);
 }
 
 function Brand({ onNavigate }: { onNavigate?: () => void }) {
+  const { user, ready } = useCurrentUserStatus();
   return (
     <Link
       to="/"
@@ -485,15 +529,28 @@ function Brand({ onNavigate }: { onNavigate?: () => void }) {
       className="flex h-14 items-center gap-2 px-4 rounded-md transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       <div className="relative size-7 overflow-hidden rounded-xl shadow-[0_6px_20px_-4px_rgba(56,132,255,0.55)]">
-        <img src={logoAsset.url} alt="Verdiqy logo" className="size-full object-cover" />
+        <img
+          src={logoImage}
+          width={64}
+          height={64}
+          alt="Verdiqy logo"
+          className="size-full object-cover"
+        />
         <span className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-white/20" />
       </div>
       <div className="flex min-w-0 flex-col leading-tight">
         <span className="truncate text-sm font-semibold tracking-tight">Verdiqy</span>
-        <span className="truncate text-2xs text-muted-foreground">alex's workspace</span>
+        <span className="truncate text-2xs text-muted-foreground">
+          {user ? (
+            `${user.name}'s workspace`
+          ) : ready ? (
+            "Guest workspace"
+          ) : (
+            <Skeleton className="h-3 w-24" />
+          )}
+        </span>
       </div>
     </Link>
-
   );
 }
 
@@ -518,14 +575,19 @@ function SidebarFooter({
   isAdmin = false,
   onReportBug,
   onNavigate,
-}: { onOpenShortcuts?: () => void; isAdmin?: boolean; onReportBug?: () => void; onNavigate?: () => void } = {}) {
-  const user = useCurrentUser();
+}: {
+  onOpenShortcuts?: () => void;
+  isAdmin?: boolean;
+  onReportBug?: () => void;
+  onNavigate?: () => void;
+} = {}) {
+  const { user, ready } = useCurrentUserStatus();
   const queryClient = useQueryClient();
   const [signingOut, setSigningOut] = useState(false);
   const signingOutRef = useRef(false);
   const redirectedRef = useRef(false);
-  const name = user?.name ?? "Guest";
-  const initials = user?.initials ?? "?";
+  const name = user?.name ?? (ready ? "Guest" : "");
+  const initials = user?.initials ?? (ready ? "?" : "");
 
   const finishSignOut = () => {
     if (redirectedRef.current) return;
@@ -600,7 +662,7 @@ function SidebarFooter({
         <Link
           to="/profile"
           aria-label="Open profile"
-            onClick={() => scheduleSidebarClose(onNavigate)}
+          onClick={() => scheduleSidebarClose(onNavigate)}
           className="flex min-w-0 flex-1 items-center gap-2.5 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <Avatar className="size-7">
@@ -610,7 +672,15 @@ function SidebarFooter({
             </AvatarFallback>
           </Avatar>
           <div className="min-w-0 flex-1 leading-tight">
-            <p className="truncate text-xs font-medium">{name}</p>
+            {ready ? (
+              <p className="truncate text-xs font-medium">{name}</p>
+            ) : (
+              <span
+                role="status"
+                aria-label="Loading account"
+                className="block h-3 w-24 rounded bg-muted"
+              />
+            )}
             {user?.email ? (
               <p className="truncate text-2xs text-muted-foreground">{user.email}</p>
             ) : null}
@@ -628,7 +698,10 @@ function SidebarFooter({
           </Button>
         ) : null}
         <Button variant="ghost" size="icon" className="size-7" aria-label="Settings" asChild>
-          <Link to={isAdmin ? "/admin" : "/profile"} onClick={() => scheduleSidebarClose(onNavigate)}>
+          <Link
+            to={isAdmin ? "/admin" : "/profile"}
+            onClick={() => scheduleSidebarClose(onNavigate)}
+          >
             <Settings className="size-3.5" />
           </Link>
         </Button>
@@ -790,7 +863,10 @@ export function BugReportDialog({
         <form onSubmit={handleSubmit} noValidate className="grid gap-4">
           <label className="grid gap-1.5 text-sm font-medium">
             <span>
-              Title <span aria-hidden className="text-destructive">*</span>
+              Title{" "}
+              <span aria-hidden className="text-destructive">
+                *
+              </span>
             </span>
             <input
               value={title}
@@ -829,7 +905,10 @@ export function BugReportDialog({
           <label className="grid gap-1.5 text-sm font-medium">
             <span className="flex items-center justify-between">
               <span>
-                Details <span aria-hidden className="text-destructive">*</span>
+                Details{" "}
+                <span aria-hidden className="text-destructive">
+                  *
+                </span>
               </span>
               <span className="text-xs font-normal text-muted-foreground">
                 {description.trim().length}/2000
@@ -901,8 +980,6 @@ export function BugReportDialog({
     </Dialog>
   );
 }
-
-
 
 function NavGroup({
   label,
@@ -1001,7 +1078,6 @@ function NavGroup({
           >
             {commonInner}
           </Link>
-
         );
       })}
     </div>
@@ -1030,7 +1106,6 @@ function Header({
   const user = useCurrentUser();
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border/70 bg-background/85 px-4 backdrop-blur md:px-6">
-
       <Button
         variant="ghost"
         size="icon"
@@ -1057,13 +1132,18 @@ function Header({
             className="flex h-11 items-center gap-2.5 pl-4 pr-4 text-base font-semibold tracking-tight transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span className="relative size-7 overflow-hidden rounded-md shadow-[0_4px_14px_-4px_rgba(56,132,255,0.5)]">
-              <img src={logoAsset.url} alt="Verdiqy logo" className="size-full object-cover" />
+              <img
+                src={logoImage}
+                width={64}
+                height={64}
+                alt="Verdiqy logo"
+                className="size-full object-cover"
+              />
             </span>
             Verdiqy
           </Link>
         </div>
       ) : null}
-
 
       <nav aria-label="Breadcrumb" className="flex min-w-0 flex-1 items-center gap-1.5 text-sm">
         {(breadcrumb ?? [{ label: "Verdiqy" }]).map((c, i, arr) => (
@@ -1118,7 +1198,9 @@ function Header({
         </Button>
         {/* Page-level actions are duplicated in each route's body; hide from the
             cramped mobile header to prevent horizontal overflow. */}
-        {actions ? <div className="hidden min-w-0 items-center gap-1.5 sm:flex">{actions}</div> : null}
+        {actions ? (
+          <div className="hidden min-w-0 items-center gap-1.5 sm:flex">{actions}</div>
+        ) : null}
         <ThemeToggle className="hidden sm:inline-flex" />
         <Button
           asChild
@@ -1169,6 +1251,7 @@ function ShortcutsDialog({
         label: "General",
         items: [
           { keys: ["⌘", "K"], label: "Open command menu" },
+          { keys: ["⌘ / Ctrl", "B"], label: "Open / close sidebar" },
           { keys: ["/"], label: "Search or jump to…" },
           { keys: ["?"], label: "Show this dialog" },
           { keys: ["Esc"], label: "Close dialog / menu" },

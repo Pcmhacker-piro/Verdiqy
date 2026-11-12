@@ -5,7 +5,6 @@ import {
   Bug,
   Compass,
   Gauge,
-  
   Keyboard,
   Layers,
   LogIn,
@@ -69,12 +68,18 @@ export function CommandMenu({
             </CommandEmpty>
 
             <CommandGroup heading="Quick actions">
-              <CommandItem onSelect={() => go("/mentor")} keywords={["ai", "assistant", "atlas", "chat"]}>
+              <CommandItem
+                onSelect={() => go("/mentor")}
+                keywords={["ai", "assistant", "atlas", "chat"]}
+              >
                 <Wand2 className="size-4 text-primary" />
                 Ask Verdiqy anything…
                 <CommandShortcut>G A</CommandShortcut>
               </CommandItem>
-              <CommandItem onSelect={() => go("/problems")} keywords={["focus", "start", "practice"]}>
+              <CommandItem
+                onSelect={() => go("/problems")}
+                keywords={["focus", "start", "practice"]}
+              >
                 <Zap className="size-4 text-primary" />
                 Start a practice session
                 <CommandShortcut>⏎</CommandShortcut>

@@ -45,7 +45,6 @@ export function DemoBanner() {
 
   if (!visible || authed) return null;
 
-
   const dismiss = () => {
     setVisible(false);
     try {

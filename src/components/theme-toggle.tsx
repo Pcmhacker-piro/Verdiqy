@@ -16,21 +16,21 @@ export function useTheme() {
   const [theme, setThemeState] = useState<Theme>("light");
 
   useEffect(() => {
-    const stored = (typeof window !== "undefined"
-      ? (localStorage.getItem(STORAGE_KEY) as Theme | null)
-      : null);
+    const stored =
+      typeof window !== "undefined" ? (localStorage.getItem(STORAGE_KEY) as Theme | null) : null;
     const initial: Theme = stored ?? "light";
     setThemeState(initial);
     applyTheme(initial);
   }, []);
-
 
   const setTheme = (t: Theme) => {
     setThemeState(t);
     applyTheme(t);
     try {
       localStorage.setItem(STORAGE_KEY, t);
-    } catch {}
+    } catch {
+      /* ignore */
+    }
   };
 
   return { theme, setTheme, toggle: () => setTheme(theme === "dark" ? "light" : "dark") };
@@ -80,4 +80,3 @@ export function ThemeToggle({ className }: { className?: string }) {
     </button>
   );
 }
-

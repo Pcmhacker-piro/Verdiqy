@@ -2,7 +2,13 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Loader2, PlayCircle, Youtube } from "lucide-react";
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { searchVideos, type VideoResult } from "@/lib/videos.functions";
 import { CFSolutionBadge } from "./cf-solution-badge";
@@ -142,7 +148,6 @@ export function VideoSolutionsDialog({
                   >
                     <div className="relative aspect-video w-40 shrink-0 overflow-hidden rounded-lg bg-muted">
                       {v.thumbnail ? (
-                        // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={v.thumbnail}
                           alt=""
@@ -165,9 +170,7 @@ export function VideoSolutionsDialog({
                       <div className="line-clamp-2 text-sm font-medium group-hover:text-primary">
                         {v.title}
                       </div>
-                      <div className="mt-1 truncate text-xs text-muted-foreground">
-                        {v.channel}
-                      </div>
+                      <div className="mt-1 truncate text-xs text-muted-foreground">{v.channel}</div>
                       {v.views && (
                         <div className="mt-0.5 text-2xs text-muted-foreground">{v.views}</div>
                       )}
@@ -180,9 +183,7 @@ export function VideoSolutionsDialog({
         </div>
 
         <div className="flex items-center justify-between border-t border-border/50 pt-3 text-2xs text-muted-foreground">
-          <span>
-            {fromCache ? "Loaded from cache" : results ? "Fresh results" : ""}
-          </span>
+          <span>{fromCache ? "Loaded from cache" : results ? "Fresh results" : ""}</span>
           <Button
             type="button"
             size="sm"

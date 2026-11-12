@@ -20,8 +20,13 @@ const UA = { "User-Agent": "Atlas-Coach/1.0" };
 export async function fetchProblemset(): Promise<CFProblem[]> {
   const res = await fetch("https://codeforces.com/api/problemset.problems", { headers: UA });
   if (!res.ok) throw new Error(`Codeforces problemset ${res.status}`);
-  const data = (await res.json()) as { status: string; comment?: string; result?: { problems: CFProblem[] } };
-  if (data.status !== "OK" || !data.result) throw new Error(`Codeforces: ${data.comment ?? "unknown error"}`);
+  const data = (await res.json()) as {
+    status: string;
+    comment?: string;
+    result?: { problems: CFProblem[] };
+  };
+  if (data.status !== "OK" || !data.result)
+    throw new Error(`Codeforces: ${data.comment ?? "unknown error"}`);
   return data.result.problems;
 }
 
@@ -32,11 +37,14 @@ export async function fetchUserStatus(handle: string, count = 200): Promise<CFSu
   );
   if (!res.ok) throw new Error(`Codeforces user.status ${res.status}`);
   const data = (await res.json()) as { status: string; comment?: string; result?: CFSubmission[] };
-  if (data.status !== "OK" || !data.result) throw new Error(`Codeforces: ${data.comment ?? "unknown error"}`);
+  if (data.status !== "OK" || !data.result)
+    throw new Error(`Codeforces: ${data.comment ?? "unknown error"}`);
   return data.result;
 }
 
-export async function fetchUserInfo(handle: string): Promise<{ rating?: number; handle: string } | null> {
+export async function fetchUserInfo(
+  handle: string,
+): Promise<{ rating?: number; handle: string } | null> {
   try {
     const res = await fetch(
       `https://codeforces.com/api/user.info?handles=${encodeURIComponent(handle)}`,

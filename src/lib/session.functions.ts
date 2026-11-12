@@ -56,13 +56,14 @@ export interface SessionState {
   totalSolvedCount: number;
 }
 
-const KIND_LABELS: Record<TaskKind, { label: string; xp: number; ratingOffset: [number, number] }> = {
-  warmup: { label: "warmup", xp: 40, ratingOffset: [-300, -100] },
-  focus: { label: "focus", xp: 120, ratingOffset: [-100, 100] },
-  weak_topic: { label: "weak_topic", xp: 100, ratingOffset: [-150, 0] },
-  contest_prep: { label: "contest_prep", xp: 200, ratingOffset: [0, 200] },
-  review: { label: "review", xp: 60, ratingOffset: [-200, -50] },
-};
+const KIND_LABELS: Record<TaskKind, { label: string; xp: number; ratingOffset: [number, number] }> =
+  {
+    warmup: { label: "warmup", xp: 40, ratingOffset: [-300, -100] },
+    focus: { label: "focus", xp: 120, ratingOffset: [-100, 100] },
+    weak_topic: { label: "weak_topic", xp: 100, ratingOffset: [-150, 0] },
+    contest_prep: { label: "contest_prep", xp: 200, ratingOffset: [0, 200] },
+    review: { label: "review", xp: 60, ratingOffset: [-200, -50] },
+  };
 
 /**
  * P0-#6 fix — timezone-safe "today".
@@ -108,14 +109,18 @@ async function loadProfile(ctxSupabase: any, userId: string) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   let { data: profile } = await ctxSupabase
     .from("profiles")
-    .select("id, display_name, codeforces_handle, target_rating, current_streak, onboarded, timezone")
+    .select(
+      "id, display_name, codeforces_handle, target_rating, current_streak, onboarded, timezone",
+    )
     .eq("id", userId)
     .maybeSingle();
   if (!profile) {
     await supabaseAdmin.from("profiles").insert({ id: userId });
     const res = await ctxSupabase
       .from("profiles")
-      .select("id, display_name, codeforces_handle, target_rating, current_streak, onboarded, timezone")
+      .select(
+        "id, display_name, codeforces_handle, target_rating, current_streak, onboarded, timezone",
+      )
       .eq("id", userId)
       .maybeSingle();
     profile = res.data;
@@ -139,7 +144,9 @@ async function buildStateResponse(ctxSupabase: any, userId: string): Promise<Ses
 
   const { data: plan } = await ctxSupabase
     .from("daily_plans")
-    .select("id, plan_date, status, task_count, xp_earned, coach_note, ai_summary, started_at, completed_at")
+    .select(
+      "id, plan_date, status, task_count, xp_earned, coach_note, ai_summary, started_at, completed_at",
+    )
     .eq("user_id", userId)
     .eq("plan_date", today)
     .maybeSingle();
@@ -227,7 +234,7 @@ export const startTodaySession = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { callLovableAI } = await import("./ai-gateway.server");
+    const { callAI } = await import("./ai-gateway.server");
 
     const profile = await loadProfile(context.supabase, context.userId);
     const today = todayStr(profile.timezone);
@@ -319,9 +326,7 @@ export const startTodaySession = createServerFn({ method: "POST" })
           .gte("rating", Math.max(800, target - 400))
           .lte("rating", Math.min(3500, target + 300))
           .limit(60);
-        pool = (res.data ?? []).filter(
-          (p: any) => !solvedIds.has(p.id) && !usedIds.has(p.id),
-        );
+        pool = (res.data ?? []).filter((p: any) => !solvedIds.has(p.id) && !usedIds.has(p.id));
       }
       if (!pool.length) continue;
 
@@ -329,8 +334,8 @@ export const startTodaySession = createServerFn({ method: "POST" })
       usedIds.add(chosen.id);
       const focusTopic =
         kind === "weak_topic" && weakTopics.length
-          ? chosen.tags.find((t: string) => weakTopics.includes(t)) ?? chosen.tags[0]
-          : chosen.tags[0] ?? null;
+          ? (chosen.tags.find((t: string) => weakTopics.includes(t)) ?? chosen.tags[0])
+          : (chosen.tags[0] ?? null);
       picks.push({
         kind,
         problem: chosen,
@@ -370,7 +375,7 @@ export const startTodaySession = createServerFn({ method: "POST" })
           rating: p.problem.rating,
         })),
       });
-      const raw = await callLovableAI({
+      const raw = await callAI({
         system:
           "You are a warm, precise CP coach. In 2 short sentences (max 220 chars), tell the user how to approach today's session. Second person, present tense, no emojis, no lists.",
         user: prompt,
@@ -447,7 +452,11 @@ export const startTodaySession = createServerFn({ method: "POST" })
 export const completeTask = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((raw: unknown) => {
-    const d = raw as { taskId?: string; outcome?: "solved" | "skipped" | "too_hard"; attempts?: number };
+    const d = raw as {
+      taskId?: string;
+      outcome?: "solved" | "skipped" | "too_hard";
+      attempts?: number;
+    };
     if (!d?.taskId) throw new Error("taskId required");
     if (!["solved", "skipped", "too_hard"].includes(d.outcome ?? "")) {
       throw new Error("outcome required");
@@ -460,7 +469,7 @@ export const completeTask = createServerFn({ method: "POST" })
   })
   .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { callLovableAI } = await import("./ai-gateway.server");
+    const { callAI } = await import("./ai-gateway.server");
     const { updateMasteryScore } = await import("./mastery.server");
 
     const { data: rec } = await context.supabase
@@ -482,8 +491,7 @@ export const completeTask = createServerFn({ method: "POST" })
       return {
         xpEarned: 0,
         feedback:
-          rec.ai_feedback ??
-          "This task was already reviewed. Continue to your next problem.",
+          rec.ai_feedback ?? "This task was already reviewed. Continue to your next problem.",
         state,
       };
     }
@@ -535,7 +543,7 @@ export const completeTask = createServerFn({ method: "POST" })
         attempts: data.attempts,
         kind: rec.kind,
       });
-      const raw = await callLovableAI({
+      const raw = await callAI({
         system:
           "You are a supportive CP coach reviewing one attempt. In 2-3 sentences, tell the user what this attempt shows about their skills, and one concrete thing to remember for next time. Second person, warm, no emojis, no lists, max 320 chars.",
         user: prompt,
@@ -572,10 +580,7 @@ export const completeTask = createServerFn({ method: "POST" })
         .eq("id", rec.plan_id)
         .maybeSingle();
       const newXp = (plan?.xp_earned ?? 0) + xpEarned;
-      await supabaseAdmin
-        .from("daily_plans")
-        .update({ xp_earned: newXp })
-        .eq("id", rec.plan_id);
+      await supabaseAdmin.from("daily_plans").update({ xp_earned: newXp }).eq("id", rec.plan_id);
     }
 
     // Streak bump on solve — P0-#6 timezone-safe.
@@ -589,8 +594,7 @@ export const completeTask = createServerFn({ method: "POST" })
         .eq("id", context.userId)
         .maybeSingle();
       if (p?.last_active_date !== today) {
-        const streak =
-          p?.last_active_date === yesterday ? (p?.current_streak ?? 0) + 1 : 1;
+        const streak = p?.last_active_date === yesterday ? (p?.current_streak ?? 0) + 1 : 1;
         await supabaseAdmin
           .from("profiles")
           .update({ current_streak: streak, last_active_date: today })
@@ -651,13 +655,9 @@ export const advanceToNextTask = createServerFn({ method: "POST" })
       ? activeRec.position
       : Math.max(
           -1,
-          ...recs
-            .filter((r: any) => r.status !== "pending")
-            .map((r: any) => r.position),
+          ...recs.filter((r: any) => r.status !== "pending").map((r: any) => r.position),
         );
-    const next = recs.find(
-      (r: any) => r.status === "pending" && r.position > cursor,
-    );
+    const next = recs.find((r: any) => r.status === "pending" && r.position > cursor);
 
     if (next) {
       // Promote next → active. The partial unique index guarantees at most
@@ -672,7 +672,7 @@ export const advanceToNextTask = createServerFn({ method: "POST" })
       }
     } else {
       // No more tasks — finalize the session.
-      const { callLovableAI } = await import("./ai-gateway.server");
+      const { callAI } = await import("./ai-gateway.server");
       const { data: finalRecs } = await supabaseAdmin
         .from("recommendations")
         .select("kind, status, problem:problems(name, rating, tags)")
@@ -688,7 +688,7 @@ export const advanceToNextTask = createServerFn({ method: "POST" })
             rating: r.problem?.rating,
           })),
         });
-        const raw = await callLovableAI({
+        const raw = await callAI({
           system:
             "You are a CP coach recapping today's session in 2-3 sentences. Highlight what went well, one growth area, and what to focus on tomorrow. Second person, no emojis, no lists, max 360 chars.",
           user: prompt,

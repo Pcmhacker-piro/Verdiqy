@@ -93,16 +93,15 @@ export function useSheetAutoMigration() {
         const rawTrash = window.localStorage.getItem(LEGACY_TRASH_KEY);
         const active: LegacySheet[] = rawSheets ? JSON.parse(rawSheets) : [];
         const trashed: LegacySheet[] = rawTrash ? JSON.parse(rawTrash) : [];
-        const all = [...active, ...trashed].filter(
-          (s) => s && s.problems && s.problems.length > 0,
-        );
+        const all = [...active, ...trashed].filter((s) => s && s.problems && s.problems.length > 0);
         if (all.length === 0) {
           window.localStorage.setItem(LEGACY_MIGRATED_FLAG, "1");
           return;
         }
 
         const payload = all.map((s) => {
-          let progress: Record<string, { done?: boolean; note?: string; bookmarked?: boolean }> = {};
+          let progress: Record<string, { done?: boolean; note?: string; bookmarked?: boolean }> =
+            {};
           try {
             const p = window.localStorage.getItem(legacyProgressKey(s.id));
             if (p) progress = JSON.parse(p);
@@ -163,7 +162,8 @@ export function useSheet(id: string | undefined) {
   const { userId, ready } = useAuthUserId();
   return useQuery<SheetDTO | null>({
     queryKey: id ? [...sheetKey(id), userId ?? "anon"] : ["custom-sheet", "none"],
-    queryFn: () => (id ? (fetcher({ data: { id } }) as Promise<SheetDTO | null>) : Promise.resolve(null)),
+    queryFn: () =>
+      id ? (fetcher({ data: { id } }) as Promise<SheetDTO | null>) : Promise.resolve(null),
     enabled: !!id && ready && !!userId,
     staleTime: 15_000,
   });
@@ -295,7 +295,10 @@ export function useDeleteSheet() {
       await qc.cancelQueries({ queryKey: SHEETS_KEY });
       const prev = qc.getQueryData<SheetDTO[]>(SHEETS_KEY);
       if (prev) {
-        qc.setQueryData<SheetDTO[]>(SHEETS_KEY, prev.filter((s) => s.id !== id));
+        qc.setQueryData<SheetDTO[]>(
+          SHEETS_KEY,
+          prev.filter((s) => s.id !== id),
+        );
       }
       return { prev };
     },
@@ -321,7 +324,9 @@ export function useUpdateProgress(id: string | undefined) {
   const qc = useQueryClient();
   const call = useServerFn(updateSheetProgress);
   return useMutation({
-    mutationFn: (progress: Record<string, { done?: boolean; note?: string; bookmarked?: boolean }>) => {
+    mutationFn: (
+      progress: Record<string, { done?: boolean; note?: string; bookmarked?: boolean }>,
+    ) => {
       if (!id) throw new Error("no sheet id");
       return call({ data: { id, progress } });
     },

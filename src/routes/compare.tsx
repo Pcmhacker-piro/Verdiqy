@@ -14,11 +14,10 @@ import {
 } from "recharts";
 
 import { AppShell } from "@/components/app/app-shell";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { cfAvatarUrl } from "@/lib/cf-avatar";
+import { CodeforcesAvatar } from "@/components/app/cf-avatar";
 
 export const Route = createFileRoute("/compare")({
   head: () => ({
@@ -29,6 +28,14 @@ export const Route = createFileRoute("/compare")({
         content:
           "Compare two Codeforces profiles side by side — rank, rating, contests, and problems solved.",
       },
+      { property: "og:title", content: "Compare \u00b7 Verdiqy" },
+      {
+        property: "og:description",
+        content:
+          "Compare two Codeforces profiles side by side \u2014 rank, rating, contests, and problems solved.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: ComparePage,
@@ -259,9 +266,7 @@ function ProfileColumn({
               {loading ? <Loader2 className="size-4 animate-spin" /> : "Load"}
             </Button>
           </div>
-          <p className="text-2xs text-muted-foreground">
-            Pulls live data from the Codeforces API.
-          </p>
+          <p className="text-2xs text-muted-foreground">Pulls live data from the Codeforces API.</p>
         </form>
       ) : (
         <ProfileCard stats={stats} onClear={onClear} />
@@ -276,24 +281,27 @@ function ProfileCard({ stats, onClear }: { stats: ProfileStats; onClear: () => v
   return (
     <div>
       <div className="flex items-start gap-3">
-        <Avatar className="size-14 border border-border">
-          <AvatarImage src={cfAvatarUrl(user.titlePhoto ?? user.avatar)} alt={user.handle} />
-          <AvatarFallback>{user.handle.slice(0, 2).toUpperCase()}</AvatarFallback>
-        </Avatar>
+        <CodeforcesAvatar
+          handle={user.handle}
+          titlePhoto={user.titlePhoto}
+          avatar={user.avatar}
+          className="size-14 border border-border"
+        />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <a
               href={`https://codeforces.com/profile/${user.handle}`}
               target="_blank"
               rel="noreferrer"
-              className={cn("text-base font-semibold hover:underline", rankColor(user.rank, user.rating))}
+              className={cn(
+                "text-base font-semibold hover:underline",
+                rankColor(user.rank, user.rating),
+              )}
             >
               {user.handle}
             </a>
           </div>
-          {fullName ? (
-            <div className="text-xs text-muted-foreground">{fullName}</div>
-          ) : null}
+          {fullName ? <div className="text-xs text-muted-foreground">{fullName}</div> : null}
           <div className="mt-0.5 text-2xs capitalize text-muted-foreground">
             {user.rank ?? "unrated"}
             {user.country ? ` · ${user.country}` : ""}
@@ -310,13 +318,25 @@ function ProfileCard({ stats, onClear }: { stats: ProfileStats; onClear: () => v
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-2 text-sm">
-        <Stat label="Rating" value={user.rating ?? "—"} accent={rankColor(user.rank, user.rating)} />
-        <Stat label="Max rating" value={user.maxRating ?? "—"} accent={rankColor(user.maxRank, user.maxRating)} />
+        <Stat
+          label="Rating"
+          value={user.rating ?? "—"}
+          accent={rankColor(user.rank, user.rating)}
+        />
+        <Stat
+          label="Max rating"
+          value={user.maxRating ?? "—"}
+          accent={rankColor(user.maxRank, user.maxRating)}
+        />
         <Stat label="Contests" value={stats.contests} />
         <Stat
           label="Best rank"
           value={stats.bestRank != null ? `#${stats.bestRank}` : "—"}
-          icon={stats.bestRank && stats.bestRank <= 100 ? <Trophy className="size-3 text-amber-400" /> : null}
+          icon={
+            stats.bestRank && stats.bestRank <= 100 ? (
+              <Trophy className="size-3 text-amber-400" />
+            ) : null
+          }
         />
         <Stat label="Solved" value={stats.solved} />
         <Stat label="Tried" value={stats.tried} />
@@ -368,7 +388,12 @@ function Stat({
 // ---------- comparison table ----------
 
 function ComparisonTable({ a, b }: { a: ProfileStats; b: ProfileStats }) {
-  const rows: { label: string; av: number | null; bv: number | null; format?: (n: number) => string }[] = [
+  const rows: {
+    label: string;
+    av: number | null;
+    bv: number | null;
+    format?: (n: number) => string;
+  }[] = [
     { label: "Current rating", av: a.user.rating ?? null, bv: b.user.rating ?? null },
     { label: "Max rating", av: a.user.maxRating ?? null, bv: b.user.maxRating ?? null },
     { label: "Contests played", av: a.contests, bv: b.contests },
@@ -439,8 +464,6 @@ function ComparisonTable({ a, b }: { a: ProfileStats; b: ProfileStats }) {
       </div>
 
       <RadarCompare a={a} b={b} />
-
-
 
       <div className="mt-5">
         <div className="mb-2 text-2xs uppercase tracking-widest text-muted-foreground">

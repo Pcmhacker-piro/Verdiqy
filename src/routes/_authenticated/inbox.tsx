@@ -1,5 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Archive, ArchiveRestore, Check, CheckCircle2, Inbox, MessageSquare, Sparkles } from "lucide-react";
+import {
+  Archive,
+  ArchiveRestore,
+  Check,
+  CheckCircle2,
+  Inbox,
+  MessageSquare,
+  Sparkles,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -15,12 +23,14 @@ export const Route = createFileRoute("/_authenticated/inbox")({
       { title: "Inbox · Verdiqy" },
       {
         name: "description",
-        content: "Review coaching updates, community replies, and practice reminders in your Verdiqy inbox.",
+        content:
+          "Review coaching updates, community replies, and practice reminders in your Verdiqy inbox.",
       },
       { property: "og:title", content: "Inbox · Verdiqy" },
       {
         property: "og:description",
-        content: "Your Verdiqy inbox for coaching updates, community replies, and practice reminders.",
+        content:
+          "Your Verdiqy inbox for coaching updates, community replies, and practice reminders.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -96,10 +106,7 @@ function InboxPage() {
     () => messages.filter((m) => (showArchived ? m.archived : !m.archived)),
     [messages, showArchived],
   );
-  const unread = useMemo(
-    () => messages.filter((m) => !m.archived && m.unread).length,
-    [messages],
-  );
+  const unread = useMemo(() => messages.filter((m) => !m.archived && m.unread).length, [messages]);
   const archivedCount = useMemo(() => messages.filter((m) => m.archived).length, [messages]);
   const readInInbox = useMemo(
     () => messages.filter((m) => !m.archived && !m.unread).length,
@@ -107,9 +114,7 @@ function InboxPage() {
   );
 
   const markOne = (id: string) => {
-    setMessages((prev) =>
-      prev.map((m) => (m.id === id && m.unread ? { ...m, unread: false } : m)),
-    );
+    setMessages((prev) => prev.map((m) => (m.id === id && m.unread ? { ...m, unread: false } : m)));
   };
 
   const markAllRead = () => {
@@ -132,7 +137,9 @@ function InboxPage() {
       toast.info("No read messages to archive");
       return;
     }
-    setMessages((prev) => prev.map((m) => (!m.archived && !m.unread ? { ...m, archived: true } : m)));
+    setMessages((prev) =>
+      prev.map((m) => (!m.archived && !m.unread ? { ...m, archived: true } : m)),
+    );
     toast.success(`Archived ${readInInbox} message${readInInbox === 1 ? "" : "s"}`);
   };
 
@@ -156,7 +163,9 @@ function InboxPage() {
               onClick={() => setShowArchived((v) => !v)}
             >
               <ArchiveRestore className="size-4" />
-              {showArchived ? `Inbox (${messages.length - archivedCount})` : `Archived (${archivedCount})`}
+              {showArchived
+                ? `Inbox (${messages.length - archivedCount})`
+                : `Archived (${archivedCount})`}
             </Button>
             <Button variant="outline" size="sm" onClick={archiveRead} disabled={readInInbox === 0}>
               <Archive className="size-4" />
@@ -202,7 +211,9 @@ function InboxPage() {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-medium text-foreground">{message.from}</p>
+                          <p className="truncate text-sm font-medium text-foreground">
+                            {message.from}
+                          </p>
                           <h2 className="mt-0.5 truncate text-sm font-semibold text-foreground">
                             {message.title}
                           </h2>
@@ -275,7 +286,10 @@ function InboxPage() {
                   .filter((m) => !m.archived && m.unread)
                   .slice(0, 3)
                   .map((m) => (
-                    <li key={m.id} className="flex items-start gap-2 text-2xs text-muted-foreground">
+                    <li
+                      key={m.id}
+                      className="flex items-start gap-2 text-2xs text-muted-foreground"
+                    >
                       <span className="mt-1 size-1.5 shrink-0 rounded-full bg-primary" />
                       <span className="truncate">
                         <span className="font-medium text-foreground">{m.from}</span> — {m.title}

@@ -42,6 +42,8 @@ export const Route = createFileRoute("/_authenticated/mistakes")({
         content:
           "Understand why your submissions fail — not just that they failed. Every mistake gets a diagnosis and a fix plan.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: MistakesPage,
@@ -52,14 +54,7 @@ export const Route = createFileRoute("/_authenticated/mistakes")({
  * ============================================================ */
 
 type ClusterId =
-  | "impl"
-  | "greedy"
-  | "binsearch"
-  | "dp"
-  | "overflow"
-  | "edge"
-  | "offbyone"
-  | "graph";
+  "impl" | "greedy" | "binsearch" | "dp" | "overflow" | "edge" | "offbyone" | "graph";
 
 interface Cluster {
   id: ClusterId;

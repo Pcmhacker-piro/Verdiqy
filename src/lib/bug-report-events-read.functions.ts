@@ -18,11 +18,19 @@ export const listBugReportEvents = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const db = context.supabase as unknown as {
-      rpc: (fn: string, args: Record<string, unknown>) => Promise<{ data: boolean | null; error: { message: string } | null }>;
+      rpc: (
+        fn: string,
+        args: Record<string, unknown>,
+      ) => Promise<{ data: boolean | null; error: { message: string } | null }>;
       from: (table: string) => {
         select: (cols: string) => {
-          order: (col: string, opts: { ascending: boolean }) => {
-            limit: (n: number) => Promise<{ data: DbRow[] | null; error: { message: string } | null }>;
+          order: (
+            col: string,
+            opts: { ascending: boolean },
+          ) => {
+            limit: (
+              n: number,
+            ) => Promise<{ data: DbRow[] | null; error: { message: string } | null }>;
           };
         };
       };

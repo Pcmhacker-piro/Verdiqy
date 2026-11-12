@@ -21,20 +21,14 @@ const buttonVariants = cva(
           "bg-primary text-primary-foreground shadow-sm hover:bg-primary/92 hover:shadow-brand-sm",
         gradient:
           "text-primary-foreground shadow-brand-sm hover:shadow-brand-md [background-image:var(--gradient-primary)] [background-size:180%_180%] [background-position:0%_50%] hover:[background-position:100%_50%] transition-[background-position,box-shadow,transform] duration-300",
-        destructive:
-          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
-        success:
-          "bg-success text-success-foreground shadow-sm hover:bg-success/90",
+        destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+        success: "bg-success text-success-foreground shadow-sm hover:bg-success/90",
         outline:
           "border border-border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground hover:border-border-strong",
-        secondary:
-          "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/70",
-        ghost:
-          "hover:bg-accent hover:text-accent-foreground",
-        subtle:
-          "bg-primary/10 text-primary hover:bg-primary/15",
-        link:
-          "text-primary underline-offset-4 hover:underline active:scale-100",
+        secondary: "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/70",
+        ghost: "hover:bg-accent hover:text-accent-foreground",
+        subtle: "bg-primary/10 text-primary hover:bg-primary/15",
+        link: "text-primary underline-offset-4 hover:underline active:scale-100",
       },
       size: {
         default: "h-9 px-4 py-2",

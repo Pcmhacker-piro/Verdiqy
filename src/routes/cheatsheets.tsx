@@ -58,6 +58,14 @@ export const Route = createFileRoute("/cheatsheets")({
         content:
           "Your personal cheat library — saved custom practice sheets plus visual notes on core competitive programming techniques.",
       },
+      { property: "og:title", content: "Cheat Library \u00b7 Verdiqy" },
+      {
+        property: "og:description",
+        content:
+          "Your personal cheat library \u2014 saved custom practice sheets plus visual notes on core competitive programming techniques.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: CheatsheetsPage,
@@ -695,7 +703,6 @@ function CheatsheetsPage() {
     </AppShell>
   );
 }
-
 
 // ---------------- library rail ----------------
 
@@ -1544,7 +1551,10 @@ function SavedSheetsBox() {
             Your saved sheets
           </div>
           <h2 className="font-display text-lg font-semibold">
-            My Cheat Library {sheets.length ? <span className="text-muted-foreground">({sheets.length})</span> : null}
+            My Cheat Library{" "}
+            {sheets.length ? (
+              <span className="text-muted-foreground">({sheets.length})</span>
+            ) : null}
           </h2>
         </div>
         <div className="flex items-center gap-2">
@@ -1578,8 +1588,8 @@ function SavedSheetsBox() {
           <BookOpen className="mx-auto mb-2 size-5 text-muted-foreground" />
           <p className="text-sm font-medium">No saved sheets yet</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Head to Codeforces Intelligence, filter problems by rating / tag / contest,
-            and click <span className="font-medium text-foreground">Create sheet</span> to save one here.
+            Head to Codeforces Intelligence, filter problems by rating / tag / contest, and click{" "}
+            <span className="font-medium text-foreground">Create sheet</span> to save one here.
           </p>
         </div>
       ) : (
@@ -1660,9 +1670,7 @@ function SavedSheetsBox() {
                     </span>
                   ))}
                   {s.tags.length > 4 ? (
-                    <span className="text-[10px] text-muted-foreground">
-                      +{s.tags.length - 4}
-                    </span>
+                    <span className="text-[10px] text-muted-foreground">+{s.tags.length - 4}</span>
                   ) : null}
                 </div>
               ) : null}
@@ -1729,10 +1737,7 @@ function SavedSheetsBox() {
               ) : (
                 <ul className="space-y-2">
                   {trash.map((t) => (
-                    <li
-                      key={t.id}
-                      className="rounded-lg border border-border/60 bg-surface/40 p-3"
-                    >
+                    <li key={t.id} className="rounded-lg border border-border/60 bg-surface/40 p-3">
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0">
                           <div className="truncate text-sm font-medium" title={t.name}>
@@ -1792,5 +1797,3 @@ function SavedSheetsBox() {
     </div>
   );
 }
-
-

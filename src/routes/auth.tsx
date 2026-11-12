@@ -1,4 +1,3 @@
-import { lovable } from "@/integrations/lovable/index";
 import { createFileRoute, useNavigate, useSearch, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { ArrowLeft, Loader2, Sparkles } from "lucide-react";
@@ -26,7 +25,8 @@ export const Route = createFileRoute("/auth")({
       { property: "og:title", content: "Sign in · Verdiqy" },
       {
         property: "og:description",
-        content: "Click Start Next. Solve. Repeat. Verdiqy keeps picking the exact problem you should do next.",
+        content:
+          "Click Start Next. Solve. Repeat. Verdiqy keeps picking the exact problem you should do next.",
       },
     ],
   }),
@@ -46,15 +46,15 @@ function safeNext(next: string | undefined): string {
 
 type OAuthOutcome = { error?: { message?: string } | null; redirected?: boolean };
 
-async function startOAuth(
-  provider: "google" | "apple",
-  returnUrl: string,
-): Promise<OAuthOutcome> {
-  void returnUrl;
-  const result = await lovable.auth.signInWithOAuth(provider, {
-    redirect_uri: window.location.origin,
+async function startOAuth(provider: "google" | "apple", returnUrl: string): Promise<OAuthOutcome> {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider,
+    options: {
+      redirectTo: returnUrl,
+    },
   });
-  return { error: result.error ?? null, redirected: !!result.redirected };
+  if (error) return { error: { message: error.message } };
+  return { redirected: true };
 }
 
 function AuthPage() {
@@ -168,7 +168,10 @@ function AuthPage() {
           <div className="absolute -right-10 bottom-10 h-80 w-80 rounded-full bg-info/20 blur-3xl" />
         </div>
         <div className="relative flex h-full flex-col justify-between p-10">
-          <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+          >
             <ArrowLeft className="size-4" /> Back to home
           </Link>
           <div>
@@ -179,8 +182,8 @@ function AuthPage() {
               Stop deciding what to solve.
             </h1>
             <p className="mt-4 max-w-md text-muted-foreground">
-              Sign in and click <span className="font-medium text-foreground">Start Next</span>. Verdiqy picks
-              the exact problem you should do — every time.
+              Sign in and click <span className="font-medium text-foreground">Start Next</span>.
+              Verdiqy picks the exact problem you should do — every time.
             </p>
           </div>
           <p className="text-xs text-muted-foreground">© 2026 Verdiqy Labs</p>
@@ -213,19 +216,19 @@ function AuthPage() {
 
           <>
             <Button
-                type="button"
-                variant="outline"
-                className="mt-6 h-11 w-full rounded-full"
-                onClick={onGoogle}
-                disabled={googleLoading || appleLoading || loading}
-              >
-                {googleLoading ? (
-                  <Loader2 className="mr-2 size-4 animate-spin" />
-                ) : (
-                  <GoogleIcon className="mr-2 size-4" />
-                )}
-                Continue with Google
-              </Button>
+              type="button"
+              variant="outline"
+              className="mt-6 h-11 w-full rounded-full"
+              onClick={onGoogle}
+              disabled={googleLoading || appleLoading || loading}
+            >
+              {googleLoading ? (
+                <Loader2 className="mr-2 size-4 animate-spin" />
+              ) : (
+                <GoogleIcon className="mr-2 size-4" />
+              )}
+              Continue with Google
+            </Button>
 
             {appleAvailable && (
               <Button

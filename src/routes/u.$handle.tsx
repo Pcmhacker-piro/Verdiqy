@@ -378,10 +378,7 @@ function ShareButton() {
   const [copied, setCopied] = useState(false);
   const copy = async () => {
     try {
-      const url =
-        typeof window !== "undefined"
-          ? window.location.href
-          : `/u/${PROFILE.handle}`;
+      const url = typeof window !== "undefined" ? window.location.href : `/u/${PROFILE.handle}`;
       await navigator.clipboard.writeText(url);
       setCopied(true);
       setTimeout(() => setCopied(false), 1600);

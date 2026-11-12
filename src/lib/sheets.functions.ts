@@ -75,22 +75,20 @@ const progressSchema = z.object({
 const migrateSchema = z.object({
   sheets: z
     .array(
-      createSchema
-        .omit({ problems: true })
-        .extend({
-          problems: z.array(problemSchema).max(5000).optional().default([]),
-          createdAt: z.number().optional(),
-          progress: z
-            .record(
-              z.string().max(64),
-              z.object({
-                done: z.boolean().optional(),
-                note: z.string().max(2000).optional(),
-                bookmarked: z.boolean().optional(),
-              }),
-            )
-            .optional(),
-        }),
+      createSchema.omit({ problems: true }).extend({
+        problems: z.array(problemSchema).max(5000).optional().default([]),
+        createdAt: z.number().optional(),
+        progress: z
+          .record(
+            z.string().max(64),
+            z.object({
+              done: z.boolean().optional(),
+              note: z.string().max(2000).optional(),
+              bookmarked: z.boolean().optional(),
+            }),
+          )
+          .optional(),
+      }),
     )
     .max(200),
 });

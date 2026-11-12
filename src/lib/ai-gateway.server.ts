@@ -1,4 +1,4 @@
-// Server-only helper to call LLM providers (Gemini, OpenAI, or compatible gateways).
+// Server-only helper to call LLM providers (Gemini or OpenAI).
 // Never import this in client code.
 
 export type UserContentPart =
@@ -17,31 +17,22 @@ export interface AICallOptions {
 export async function callAI(opts: AICallOptions): Promise<string> {
   const geminiKey = process.env.GEMINI_API_KEY;
   const openaiKey = process.env.OPENAI_API_KEY;
-  
-  let endpoint = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
-  let apiKey = geminiKey;
-  let defaultModel = "gemini-2.0-flash";
+
+  let endpoint: string;
+  let defaultModel: string;
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
 
-  const gatewayKey = process.env.LOVABLE_API_KEY;
-  if (!geminiKey && !openaiKey && gatewayKey) {
-    endpoint = "https://ai.gateway.lovable.dev/v1/chat/completions";
-    apiKey = gatewayKey;
-    defaultModel = "google/gemini-3-flash-preview";
-    headers["Authorization"] = `Bearer ${gatewayKey}`;
-  } else if (geminiKey) {
+  if (geminiKey) {
     endpoint = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
-    apiKey = geminiKey;
     defaultModel = "gemini-2.0-flash";
     headers["Authorization"] = `Bearer ${geminiKey}`;
   } else if (openaiKey) {
     endpoint = "https://api.openai.com/v1/chat/completions";
-    apiKey = openaiKey;
     defaultModel = "gpt-4o-mini";
     headers["Authorization"] = `Bearer ${openaiKey}`;
-        } else {
+  } else {
     throw new Error(
       "No AI API key configured. Please set GEMINI_API_KEY or OPENAI_API_KEY in your .env file.",
     );
@@ -79,9 +70,6 @@ export async function callAI(opts: AICallOptions): Promise<string> {
   if (!content) throw new Error("AI returned an empty response");
   return content;
 }
-
-// Backward compatibility alias for existing server function calls
-export const callLovableAI = callAI;
 
 export function tryParseJSON<T>(text: string): T | null {
   try {

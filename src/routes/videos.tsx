@@ -21,6 +21,14 @@ export const Route = createFileRoute("/videos")({
         content:
           "Look up any Codeforces problem by ID and pull the best YouTube walkthroughs, one at a time.",
       },
+      { property: "og:title", content: "Video Solutions \u00b7 Verdiqy" },
+      {
+        property: "og:description",
+        content:
+          "Look up any Codeforces problem by ID and pull the best YouTube walkthroughs, one at a time.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: VideosPage,
@@ -53,7 +61,10 @@ function writeCache(c: Cache) {
 
 // Accepts "1832E", "1832 E", "1832-E", " 1832e "
 function parseProblemId(raw: string): { key: string; contestId: string; index: string } | null {
-  const clean = raw.trim().toUpperCase().replace(/[\s\-_/]+/g, "");
+  const clean = raw
+    .trim()
+    .toUpperCase()
+    .replace(/[\s\-_/]+/g, "");
   const m = clean.match(/^(\d{1,5})([A-Z][0-9]?)$/);
   if (!m) return null;
   return { key: `${m[1]}${m[2]}`, contestId: m[1], index: m[2] };
@@ -236,9 +247,7 @@ function VideosPage() {
                       <div className="line-clamp-2 text-sm font-medium group-hover:text-primary">
                         {v.title}
                       </div>
-                      <div className="mt-1 truncate text-xs text-muted-foreground">
-                        {v.channel}
-                      </div>
+                      <div className="mt-1 truncate text-xs text-muted-foreground">{v.channel}</div>
                       {v.views && (
                         <div className="mt-0.5 text-2xs text-muted-foreground">{v.views}</div>
                       )}

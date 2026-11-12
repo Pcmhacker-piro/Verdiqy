@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { supabase } from "@/integrations/supabase/client";
+import { useCurrentUserStatus } from "@/hooks/use-current-user";
+import { searchAccess } from "@/lib/search-access";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
   ArrowRight,
@@ -397,25 +398,13 @@ function answerFor(parsed: Parsed): AnswerResult {
 
 function SearchPage() {
   const navigate = useNavigate();
-  const [authState, setAuthState] = useState<"checking" | "authed" | "guest">("checking");
+  const { ready, user } = useCurrentUserStatus();
+  const access = searchAccess(ready, user !== null);
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const { data } = await supabase.auth.getSession();
-      if (cancelled) return;
-      if (!data.session) {
-        toast.error("Login required", {
-          description: "Please sign in to use Ask Verdiqy.",
-        });
-        setAuthState("guest");
-      } else {
-        setAuthState("authed");
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [navigate]);
+    if (access === "sign-in") {
+      void navigate({ to: "/auth", search: { next: "/search", mode: "signin" }, replace: true });
+    }
+  }, [access, navigate]);
 
   const ask = useServerFn(askMentor);
   const [query, setQuery] = useState("");
@@ -480,11 +469,11 @@ function SearchPage() {
     inputRef.current?.focus();
   };
 
-  if (authState !== "authed") {
+  if (access !== "authenticated") {
     return (
       <AppShell breadcrumb={[{ label: "Ask Verdiqy" }]}>
         <div className="flex min-h-[60vh] items-center justify-center text-sm text-muted-foreground">
-          {authState === "checking" ? "Checking your session…" : "Redirecting to sign in…"}
+          {access === "pending" ? "Checking your session…" : "Redirecting to sign in…"}
         </div>
       </AppShell>
     );
@@ -677,11 +666,7 @@ function SearchBar({
                   key={`img-${i}`}
                   className="inline-flex items-center gap-1.5 rounded-md border border-border/70 bg-surface-muted/60 py-1 pl-1 pr-1.5 text-2xs"
                 >
-                  <img
-                    src={img.dataUrl}
-                    alt={img.name}
-                    className="size-6 rounded object-cover"
-                  />
+                  <img src={img.dataUrl} alt={img.name} className="size-6 rounded object-cover" />
                   <span className="max-w-[9rem] truncate">{img.name}</span>
                   <button
                     type="button"
@@ -776,7 +761,6 @@ function SearchBar({
     </div>
   );
 }
-
 
 // ---------------- suggestions / recent ----------------
 
@@ -1152,7 +1136,11 @@ function ContextRail({ parsed, result }: { parsed: Parsed; result: AnswerResult 
     sources.push({ title: "Codeforces problem index", hint: `${result.problems.length} matches` });
   }
   if (result.concept)
-    sources.push({ title: "Verdiqy cheat sheet", hint: result.concept.title, hash: result.concept.id });
+    sources.push({
+      title: "Verdiqy cheat sheet",
+      hint: result.concept.title,
+      hash: result.concept.id,
+    });
   if (parsed.author)
     sources.push({ title: `@${parsed.author} · public submissions`, hint: "sorted by rating" });
   if (sources.length === 0)

@@ -17,9 +17,7 @@ export interface MetaInput {
 }
 
 export type MetaTag =
-  | { title: string }
-  | { name: string; content: string }
-  | { property: string; content: string };
+  { title: string } | { name: string; content: string } | { property: string; content: string };
 
 export function buildMeta(input: MetaInput): MetaTag[] {
   const {
@@ -42,10 +40,7 @@ export function buildMeta(input: MetaInput): MetaTag[] {
   ];
 
   if (image) {
-    tags.push(
-      { property: "og:image", content: image },
-      { name: "twitter:image", content: image },
-    );
+    tags.push({ property: "og:image", content: image }, { name: "twitter:image", content: image });
   }
 
   return tags;

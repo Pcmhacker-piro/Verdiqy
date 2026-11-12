@@ -27,4 +27,3 @@ export function CFSolutionBadge({ className }: { className?: string }) {
     </span>
   );
 }
-

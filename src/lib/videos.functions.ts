@@ -24,7 +24,6 @@ function checkRateLimit(key: string, limit: number) {
   }
 }
 
-
 export interface VideoResult {
   videoId: string;
   title: string;
@@ -69,8 +68,7 @@ async function fetchYouTube(query: string): Promise<VideoResult[]> {
     const vr = anyNode.videoRenderer as Record<string, unknown> | undefined;
     if (vr && typeof vr.videoId === "string" && !seen.has(vr.videoId)) {
       seen.add(vr.videoId);
-      const title =
-        (vr.title as { runs?: { text?: string }[] } | undefined)?.runs?.[0]?.text ?? "";
+      const title = (vr.title as { runs?: { text?: string }[] } | undefined)?.runs?.[0]?.text ?? "";
       const channel =
         (vr.ownerText as { runs?: { text?: string }[] } | undefined)?.runs?.[0]?.text ??
         (vr.longBylineText as { runs?: { text?: string }[] } | undefined)?.runs?.[0]?.text ??

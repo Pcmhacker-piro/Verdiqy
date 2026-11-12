@@ -1,5 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Bell, CalendarClock, Check, CheckCircle2, MessageSquare, Sparkles, Trophy } from "lucide-react";
+import {
+  Bell,
+  CalendarClock,
+  Check,
+  CheckCircle2,
+  MessageSquare,
+  Sparkles,
+  Trophy,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -14,12 +22,14 @@ export const Route = createFileRoute("/_authenticated/notifications")({
       { title: "Notifications · Verdiqy" },
       {
         name: "description",
-        content: "Stay current with contest reminders, mentor alerts, and progress milestones in Verdiqy.",
+        content:
+          "Stay current with contest reminders, mentor alerts, and progress milestones in Verdiqy.",
       },
       { property: "og:title", content: "Notifications · Verdiqy" },
       {
         property: "og:description",
-        content: "Contest reminders, mentor alerts, and milestone updates for your Verdiqy workspace.",
+        content:
+          "Contest reminders, mentor alerts, and milestone updates for your Verdiqy workspace.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -151,7 +161,9 @@ function NotificationsPage() {
                       </Badge>
                       {item.unread ? <span className="size-2 rounded-full bg-primary" /> : null}
                     </div>
-                    <h2 className="mt-2 truncate text-sm font-semibold text-foreground">{item.title}</h2>
+                    <h2 className="mt-2 truncate text-sm font-semibold text-foreground">
+                      {item.title}
+                    </h2>
                     <p className="mt-1 text-sm leading-6 text-muted-foreground">{item.detail}</p>
                   </div>
                   <div className="flex flex-col items-end gap-2">

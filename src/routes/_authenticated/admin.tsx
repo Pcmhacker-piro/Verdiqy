@@ -57,6 +57,8 @@ export const Route = createFileRoute("/_authenticated/admin")({
         content:
           "Operate Verdiqy end-to-end: growth, MRR, cohorts, incidents, and feature rollouts — all in one place.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: AdminPage,
@@ -574,43 +576,50 @@ function SubscriptionsPanel() {
     <Section id="subs" title="Subscriptions" desc="Plan mix, upgrades, and churn.">
       <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_320px]">
         <Card className="overflow-hidden">
-          <div className="w-full overflow-x-auto"><table className="w-full min-w-[640px] text-sm">
-            <thead className="bg-surface-muted/40 text-2xs uppercase tracking-[0.1em] text-muted-foreground">
-              <tr>
-                <th className="px-4 py-2 text-left font-medium">Plan</th>
-                <th className="px-4 py-2 text-right font-medium">Users</th>
-                <th className="px-4 py-2 text-right font-medium">MRR</th>
-                <th className="px-4 py-2 text-right font-medium">Growth</th>
-                <th className="px-4 py-2"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {plans.map((p) => (
-                <tr key={p.name} className="border-t border-border/60">
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <span className={cn("size-2 rounded-sm", p.color)} />
-                      <span className="font-medium">{p.name}</span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-right font-mono tabular-nums">
-                    {p.users.toLocaleString()}
-                  </td>
-                  <td className="px-4 py-3 text-right font-mono tabular-nums">
-                    ${p.mrr.toLocaleString()}
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <Delta v={p.delta} />
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <Button variant="ghost" size="icon" className="size-7" aria-label="Row actions">
-                      <MoreHorizontal className="size-3.5" />
-                    </Button>
-                  </td>
+          <div className="w-full overflow-x-auto">
+            <table className="w-full min-w-[640px] text-sm">
+              <thead className="bg-surface-muted/40 text-2xs uppercase tracking-[0.1em] text-muted-foreground">
+                <tr>
+                  <th className="px-4 py-2 text-left font-medium">Plan</th>
+                  <th className="px-4 py-2 text-right font-medium">Users</th>
+                  <th className="px-4 py-2 text-right font-medium">MRR</th>
+                  <th className="px-4 py-2 text-right font-medium">Growth</th>
+                  <th className="px-4 py-2"></th>
                 </tr>
-              ))}
-            </tbody>
-          </table></div>
+              </thead>
+              <tbody>
+                {plans.map((p) => (
+                  <tr key={p.name} className="border-t border-border/60">
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <span className={cn("size-2 rounded-sm", p.color)} />
+                        <span className="font-medium">{p.name}</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-right font-mono tabular-nums">
+                      {p.users.toLocaleString()}
+                    </td>
+                    <td className="px-4 py-3 text-right font-mono tabular-nums">
+                      ${p.mrr.toLocaleString()}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <Delta v={p.delta} />
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="size-7"
+                        aria-label="Row actions"
+                      >
+                        <MoreHorizontal className="size-3.5" />
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </Card>
 
         <Card className="p-4">
@@ -859,36 +868,38 @@ function ContestsPanel() {
       </div>
 
       <Card className="overflow-hidden">
-        <div className="w-full overflow-x-auto"><table className="w-full min-w-[640px] text-sm">
-          <thead className="bg-surface-muted/40 text-2xs uppercase tracking-[0.1em] text-muted-foreground">
-            <tr>
-              <th className="px-4 py-2 text-left font-medium">Contest</th>
-              <th className="px-4 py-2 text-left font-medium">When</th>
-              <th className="px-4 py-2 text-right font-medium">Registered</th>
-              <th className="px-4 py-2 text-right font-medium">Participated</th>
-              <th className="px-4 py-2 text-right font-medium">Avg. rating</th>
-              <th className="px-4 py-2 text-right font-medium">Solved</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r) => (
-              <tr key={r.name} className="border-t border-border/60">
-                <td className="px-4 py-3 font-medium">{r.name}</td>
-                <td className="px-4 py-3 text-muted-foreground">{r.when}</td>
-                <td className="px-4 py-3 text-right font-mono tabular-nums">
-                  {r.registered.toLocaleString()}
-                </td>
-                <td className="px-4 py-3 text-right font-mono tabular-nums">
-                  {r.participated.toLocaleString()}
-                </td>
-                <td className="px-4 py-3 text-right font-mono tabular-nums">{r.avgRating}</td>
-                <td className="px-4 py-3 text-right font-mono tabular-nums">
-                  {r.solved.toFixed(1)}
-                </td>
+        <div className="w-full overflow-x-auto">
+          <table className="w-full min-w-[640px] text-sm">
+            <thead className="bg-surface-muted/40 text-2xs uppercase tracking-[0.1em] text-muted-foreground">
+              <tr>
+                <th className="px-4 py-2 text-left font-medium">Contest</th>
+                <th className="px-4 py-2 text-left font-medium">When</th>
+                <th className="px-4 py-2 text-right font-medium">Registered</th>
+                <th className="px-4 py-2 text-right font-medium">Participated</th>
+                <th className="px-4 py-2 text-right font-medium">Avg. rating</th>
+                <th className="px-4 py-2 text-right font-medium">Solved</th>
               </tr>
-            ))}
-          </tbody>
-        </table></div>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.name} className="border-t border-border/60">
+                  <td className="px-4 py-3 font-medium">{r.name}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{r.when}</td>
+                  <td className="px-4 py-3 text-right font-mono tabular-nums">
+                    {r.registered.toLocaleString()}
+                  </td>
+                  <td className="px-4 py-3 text-right font-mono tabular-nums">
+                    {r.participated.toLocaleString()}
+                  </td>
+                  <td className="px-4 py-3 text-right font-mono tabular-nums">{r.avgRating}</td>
+                  <td className="px-4 py-3 text-right font-mono tabular-nums">
+                    {r.solved.toFixed(1)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </Card>
     </Section>
   );
@@ -921,34 +932,36 @@ function ContentPanel() {
   return (
     <Section id="content" title="Popular cheat sheets" desc="Top community resources this week.">
       <Card className="overflow-hidden">
-        <div className="w-full overflow-x-auto"><table className="w-full min-w-[640px] text-sm">
-          <thead className="bg-surface-muted/40 text-2xs uppercase tracking-[0.1em] text-muted-foreground">
-            <tr>
-              <th className="px-4 py-2 text-left font-medium">Title</th>
-              <th className="px-4 py-2 text-left font-medium">Author</th>
-              <th className="px-4 py-2 text-right font-medium">Views</th>
-              <th className="px-4 py-2 text-right font-medium">Stars</th>
-              <th className="px-4 py-2 text-right font-medium">Δ 7d</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sheets.map((s) => (
-              <tr key={s.title} className="border-t border-border/60 hover:bg-surface-muted/30">
-                <td className="px-4 py-3 font-medium">{s.title}</td>
-                <td className="px-4 py-3 text-muted-foreground">{s.author}</td>
-                <td className="px-4 py-3 text-right font-mono tabular-nums">
-                  {s.views.toLocaleString()}
-                </td>
-                <td className="px-4 py-3 text-right font-mono tabular-nums">
-                  {s.stars.toLocaleString()}
-                </td>
-                <td className="px-4 py-3 text-right">
-                  <Delta v={s.delta} />
-                </td>
+        <div className="w-full overflow-x-auto">
+          <table className="w-full min-w-[640px] text-sm">
+            <thead className="bg-surface-muted/40 text-2xs uppercase tracking-[0.1em] text-muted-foreground">
+              <tr>
+                <th className="px-4 py-2 text-left font-medium">Title</th>
+                <th className="px-4 py-2 text-left font-medium">Author</th>
+                <th className="px-4 py-2 text-right font-medium">Views</th>
+                <th className="px-4 py-2 text-right font-medium">Stars</th>
+                <th className="px-4 py-2 text-right font-medium">Δ 7d</th>
               </tr>
-            ))}
-          </tbody>
-        </table></div>
+            </thead>
+            <tbody>
+              {sheets.map((s) => (
+                <tr key={s.title} className="border-t border-border/60 hover:bg-surface-muted/30">
+                  <td className="px-4 py-3 font-medium">{s.title}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{s.author}</td>
+                  <td className="px-4 py-3 text-right font-mono tabular-nums">
+                    {s.views.toLocaleString()}
+                  </td>
+                  <td className="px-4 py-3 text-right font-mono tabular-nums">
+                    {s.stars.toLocaleString()}
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <Delta v={s.delta} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </Card>
     </Section>
   );
@@ -1064,41 +1077,43 @@ function SearchPanel() {
             <Copy className="size-3.5" /> Export CSV
           </Button>
         </div>
-        <div className="w-full overflow-x-auto"><table className="w-full min-w-[640px] text-sm">
-          <thead className="bg-surface-muted/40 text-2xs uppercase tracking-[0.1em] text-muted-foreground">
-            <tr>
-              <th className="px-4 py-2 text-left font-medium">Query</th>
-              <th className="px-4 py-2 text-right font-medium">Searches</th>
-              <th className="px-4 py-2 text-right font-medium">CTR</th>
-              <th className="px-4 py-2 text-right font-medium">Zero result</th>
-            </tr>
-          </thead>
-          <tbody>
-            {queries.map((q) => (
-              <tr key={q.q} className="border-t border-border/60">
-                <td className="px-4 py-3 font-mono text-xs">{q.q}</td>
-                <td className="px-4 py-3 text-right font-mono tabular-nums">
-                  {q.n.toLocaleString()}
-                </td>
-                <td className="px-4 py-3 text-right font-mono tabular-nums">{q.ctr}%</td>
-                <td className="px-4 py-3 text-right">
-                  <span
-                    className={cn(
-                      "inline-block rounded-md px-1.5 py-0.5 font-mono text-2xs",
-                      q.zero > 20
-                        ? "bg-rose-500/10 text-rose-500"
-                        : q.zero > 5
-                          ? "bg-amber-500/10 text-amber-600"
-                          : "bg-emerald-500/10 text-emerald-600",
-                    )}
-                  >
-                    {q.zero}%
-                  </span>
-                </td>
+        <div className="w-full overflow-x-auto">
+          <table className="w-full min-w-[640px] text-sm">
+            <thead className="bg-surface-muted/40 text-2xs uppercase tracking-[0.1em] text-muted-foreground">
+              <tr>
+                <th className="px-4 py-2 text-left font-medium">Query</th>
+                <th className="px-4 py-2 text-right font-medium">Searches</th>
+                <th className="px-4 py-2 text-right font-medium">CTR</th>
+                <th className="px-4 py-2 text-right font-medium">Zero result</th>
               </tr>
-            ))}
-          </tbody>
-        </table></div>
+            </thead>
+            <tbody>
+              {queries.map((q) => (
+                <tr key={q.q} className="border-t border-border/60">
+                  <td className="px-4 py-3 font-mono text-xs">{q.q}</td>
+                  <td className="px-4 py-3 text-right font-mono tabular-nums">
+                    {q.n.toLocaleString()}
+                  </td>
+                  <td className="px-4 py-3 text-right font-mono tabular-nums">{q.ctr}%</td>
+                  <td className="px-4 py-3 text-right">
+                    <span
+                      className={cn(
+                        "inline-block rounded-md px-1.5 py-0.5 font-mono text-2xs",
+                        q.zero > 20
+                          ? "bg-rose-500/10 text-rose-500"
+                          : q.zero > 5
+                            ? "bg-amber-500/10 text-amber-600"
+                            : "bg-emerald-500/10 text-emerald-600",
+                      )}
+                    >
+                      {q.zero}%
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </Card>
     </Section>
   );
@@ -1192,7 +1207,12 @@ function FeedbackPanel() {
                     <Button variant="ghost" size="sm" className="h-7 gap-1 text-2xs">
                       <Check className="size-3" /> Resolve
                     </Button>
-                    <Button variant="ghost" size="icon" className="size-7" aria-label="More actions">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-7"
+                      aria-label="More actions"
+                    >
                       <MoreHorizontal className="size-3.5" />
                     </Button>
                   </div>

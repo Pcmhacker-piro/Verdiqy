@@ -59,7 +59,12 @@ export function MentorMarkdown({ content }: { content: string }) {
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
-          code({ inline, className, children, ...props }: {
+          code({
+            inline,
+            className,
+            children,
+            ...props
+          }: {
             inline?: boolean;
             className?: string;
             children?: React.ReactNode;

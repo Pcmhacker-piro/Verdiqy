@@ -67,10 +67,30 @@ const BADGE_OPTIONS: BadgeOption[] = [
   { id: "pro", label: "Pro", description: "Verdiqy Pro subscriber", icon: Sparkles },
   { id: "streak", label: "On a streak", description: "Show your active-day streak", icon: Flame },
   { id: "mentor", label: "Mentor", description: "You help others in the community", icon: Shield },
-  { id: "contest_winner", label: "Contest winner", description: "Placed top-3 in a contest", icon: Trophy },
-  { id: "early_adopter", label: "Early adopter", description: "Joined during early access", icon: Rocket },
-  { id: "top_solver", label: "Top solver", description: "High solve count this month", icon: Medal },
-  { id: "verified", label: "Verified", description: "Codeforces handle verified", icon: CheckCircle2 },
+  {
+    id: "contest_winner",
+    label: "Contest winner",
+    description: "Placed top-3 in a contest",
+    icon: Trophy,
+  },
+  {
+    id: "early_adopter",
+    label: "Early adopter",
+    description: "Joined during early access",
+    icon: Rocket,
+  },
+  {
+    id: "top_solver",
+    label: "Top solver",
+    description: "High solve count this month",
+    icon: Medal,
+  },
+  {
+    id: "verified",
+    label: "Verified",
+    description: "Codeforces handle verified",
+    icon: CheckCircle2,
+  },
   { id: "rising_star", label: "Rising star", description: "Rating trending up", icon: Star },
 ];
 
@@ -92,9 +112,7 @@ function ProfileSettingsPage() {
   useEffect(() => {
     setDisplayName(profile?.display_name ?? "");
     setHandle(profile?.codeforces_handle ?? "");
-    setBadges(
-      (profile as { public_badges?: string[] } | null | undefined)?.public_badges ?? [],
-    );
+    setBadges((profile as { public_badges?: string[] } | null | undefined)?.public_badges ?? []);
   }, [profile?.display_name, profile?.codeforces_handle, profile]);
 
   const saveName = useMutation({
@@ -194,16 +212,13 @@ function ProfileSettingsPage() {
   })();
 
   const avatarUrl = profile?.avatar_signed_url ?? profile?.cf_title_photo ?? undefined;
-  const initial = (profile?.display_name ?? profile?.codeforces_handle ?? "?").charAt(0).toUpperCase();
+  const initial = (profile?.display_name ?? profile?.codeforces_handle ?? "?")
+    .charAt(0)
+    .toUpperCase();
   const linked = Boolean(profile?.codeforces_handle);
 
   return (
-    <AppShell
-      breadcrumb={[
-        { label: "Profile", to: "/profile" },
-        { label: "Settings" },
-      ]}
-    >
+    <AppShell breadcrumb={[{ label: "Profile", to: "/profile" }, { label: "Settings" }]}>
       <div className="mx-auto max-w-3xl space-y-6 px-6 py-6 sm:px-8">
         <header className="flex items-start justify-between gap-4">
           <div>
@@ -309,7 +324,11 @@ function ProfileSettingsPage() {
             />
             <Button
               onClick={() => linkMut.mutate(handle.trim())}
-              disabled={linkMut.isPending || !handle.trim() || handle.trim() === (profile?.codeforces_handle ?? "")}
+              disabled={
+                linkMut.isPending ||
+                !handle.trim() ||
+                handle.trim() === (profile?.codeforces_handle ?? "")
+              }
             >
               {linkMut.isPending ? (
                 <Loader2 className="size-3.5 animate-spin" />
@@ -336,7 +355,8 @@ function ProfileSettingsPage() {
           </div>
           {profile?.cf_rating != null ? (
             <p className="mt-3 text-xs text-muted-foreground">
-              Current rating: <span className="font-medium text-foreground tabular-nums">{profile.cf_rating}</span>
+              Current rating:{" "}
+              <span className="font-medium text-foreground tabular-nums">{profile.cf_rating}</span>
               {profile.cf_rank ? ` · ${profile.cf_rank}` : ""}
             </p>
           ) : null}
@@ -414,11 +434,7 @@ function ProfileSettingsPage() {
               onClick={() => saveBadges.mutate(badges)}
               disabled={!badgesDirty || saveBadges.isPending}
             >
-              {saveBadges.isPending ? (
-                <Loader2 className="size-3.5 animate-spin" />
-              ) : (
-                "Save badges"
-              )}
+              {saveBadges.isPending ? <Loader2 className="size-3.5 animate-spin" /> : "Save badges"}
             </Button>
           </div>
         </section>

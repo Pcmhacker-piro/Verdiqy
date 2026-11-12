@@ -48,7 +48,7 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Kbd } from "@/components/ds/kbd";
 import { cn } from "@/lib/utils";
-import { cfAvatarUrl } from "@/lib/cf-avatar";
+import { CodeforcesAvatar } from "@/components/app/cf-avatar";
 import {
   getCodeforcesJourney,
   type CFJourney,
@@ -70,6 +70,8 @@ export const Route = createFileRoute("/problems")({
         content:
           "Turn any Codeforces profile into a personalised practice journey — solved history, topic mastery, and AI-generated sheets.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: ProblemsPage,
@@ -107,10 +109,7 @@ function ProblemsPage() {
       setHandle(h);
       setTab("overview");
       try {
-        localStorage.setItem(
-          CACHE_KEY(h),
-          JSON.stringify({ data, at: Date.now() }),
-        );
+        localStorage.setItem(CACHE_KEY(h), JSON.stringify({ data, at: Date.now() }));
         const next = [h, ...history.filter((x) => x.toLowerCase() !== h.toLowerCase())].slice(0, 8);
         setHistory(next);
         localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
@@ -142,7 +141,7 @@ function ProblemsPage() {
   const submit = (h: string, force = false) => {
     const clean = h.trim();
     if (!clean) return;
-    if (!/^[A-Za-z0-9_.\-]{1,32}$/.test(clean)) {
+    if (!/^[A-Za-z0-9_.-]{1,32}$/.test(clean)) {
       toast.error("That doesn't look like a valid Codeforces handle.");
       return;
     }
@@ -156,10 +155,7 @@ function ProblemsPage() {
       mutation.mutate(clean, {
         onSuccess: () => toast.success(`Updated ${clean}`, { id: tId }),
         onError: (err) =>
-          toast.error(
-            err instanceof Error ? err.message : "Refresh failed",
-            { id: tId },
-          ),
+          toast.error(err instanceof Error ? err.message : "Refresh failed", { id: tId }),
       });
       return;
     }
@@ -180,8 +176,6 @@ function ProblemsPage() {
     }
     mutation.mutate(clean);
   };
-
-
 
   return (
     <AppShell
@@ -216,7 +210,6 @@ function ProblemsPage() {
             setTab("overview");
           }}
         />
-
       )}
 
       <AnimatePresence>
@@ -285,8 +278,8 @@ function SearchLanding({
         transition={{ delay: 0.1, duration: 0.4 }}
         className="mt-4 max-w-xl text-center text-muted-foreground"
       >
-        Type any Codeforces username. We turn their solving history into a structured
-        practice journey — analytics, weak topics, and AI-generated sheets you can start today.
+        Type any Codeforces username. We turn their solving history into a structured practice
+        journey — analytics, weak topics, and AI-generated sheets you can start today.
       </motion.p>
 
       <motion.form
@@ -485,8 +478,13 @@ function JourneyView({
 }) {
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-6">
-      <ProfileHeader journey={journey} onOpenSheet={onOpenSheet} onRefresh={onRefresh} refreshing={refreshing} onChangeProfile={onChangeProfile} />
-
+      <ProfileHeader
+        journey={journey}
+        onOpenSheet={onOpenSheet}
+        onRefresh={onRefresh}
+        refreshing={refreshing}
+        onChangeProfile={onChangeProfile}
+      />
 
       <div className="sticky top-0 z-10 -mx-4 mt-6 border-b border-border/60 bg-background/80 px-4 backdrop-blur">
         <div className="flex gap-1 overflow-x-auto">
@@ -504,9 +502,7 @@ function JourneyView({
               onClick={() => setTab(t.id)}
               className={cn(
                 "relative flex shrink-0 items-center gap-1.5 px-3 py-3 text-sm transition-colors",
-                tab === t.id
-                  ? "text-foreground"
-                  : "text-muted-foreground hover:text-foreground",
+                tab === t.id ? "text-foreground" : "text-muted-foreground hover:text-foreground",
               )}
             >
               <t.icon className="size-3.5" />
@@ -601,7 +597,6 @@ function ProfileHeader({
     }
   };
 
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
@@ -610,20 +605,11 @@ function ProfileHeader({
     >
       <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
         <div className="flex items-start gap-4">
-          <img
-            src={cfAvatarUrl(user.titlePhoto || user.avatar)}
-            alt={user.handle}
+          <CodeforcesAvatar
+            handle={user.handle}
+            titlePhoto={user.titlePhoto}
+            avatar={user.avatar}
             className="size-16 rounded-full border-2 border-border object-cover md:size-20"
-            referrerPolicy="no-referrer"
-            onError={(e) => {
-              const img = e.currentTarget as HTMLImageElement;
-              if (img.dataset["fallback"]) return;
-              img.dataset["fallback"] = "1";
-              const letter = (user.handle?.[0] ?? "?").toUpperCase();
-              img.src = `data:image/svg+xml;utf8,${encodeURIComponent(
-                `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'><rect width='80' height='80' fill='#6366f1'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='36' font-weight='700' fill='#fff'>${letter}</text></svg>`,
-              )}`;
-            }}
           />
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
@@ -639,9 +625,7 @@ function ProfileHeader({
                 {user.rank}
               </Badge>
             </div>
-            {fullName && (
-              <div className="text-sm text-muted-foreground">{fullName}</div>
-            )}
+            {fullName && <div className="text-sm text-muted-foreground">{fullName}</div>}
             <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-2xs text-muted-foreground">
               {user.country && (
                 <span className="inline-flex items-center gap-1">
@@ -654,19 +638,17 @@ function ProfileHeader({
                   <Users className="size-3" /> {user.organization}
                 </span>
               )}
-              <span>Joined {registered.toLocaleDateString(undefined, { year: "numeric", month: "short" })}</span>
+              <span>
+                Joined{" "}
+                {registered.toLocaleDateString(undefined, { year: "numeric", month: "short" })}
+              </span>
               <span>Last active {relativeTime(lastActive)}</span>
             </div>
           </div>
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <Button
-            size="sm"
-            variant="outline"
-            className="gap-1.5"
-            onClick={onChangeProfile}
-          >
+          <Button size="sm" variant="outline" className="gap-1.5" onClick={onChangeProfile}>
             <Search className="size-3.5" /> Change
           </Button>
           <Button
@@ -679,8 +661,12 @@ function ProfileHeader({
             <RefreshCw className={cn("size-3.5", refreshing && "animate-spin")} /> Refresh
           </Button>
 
-
-          <Button size="sm" variant={following ? "default" : "outline"} className="gap-1.5" onClick={toggleFollow}>
+          <Button
+            size="sm"
+            variant={following ? "default" : "outline"}
+            className="gap-1.5"
+            onClick={toggleFollow}
+          >
             <Users className="size-3.5" /> {following ? "Following" : "Follow"}
           </Button>
           <Button size="sm" variant="outline" className="gap-1.5" onClick={share}>
@@ -731,12 +717,7 @@ function Stat({
   return (
     <div className="rounded-xl border border-border/40 bg-background/60 p-3">
       <div className="text-2xs uppercase tracking-widest text-muted-foreground">{label}</div>
-      <div
-        className={cn(
-          "mt-1 font-display text-xl font-semibold tabular-nums",
-          accent,
-        )}
-      >
+      <div className={cn("mt-1 font-display text-xl font-semibold tabular-nums", accent)}>
         {value}
       </div>
     </div>
@@ -755,7 +736,9 @@ function OverviewTab({ journey }: { journey: CFJourney }) {
       const y = new Date(s.solvedAt * 1000).getFullYear();
       map.set(String(y), (map.get(String(y)) ?? 0) + 1);
     }
-    return [...map.entries()].sort((a, b) => Number(a[0]) - Number(b[0])).map(([y, n]) => ({ y, n }));
+    return [...map.entries()]
+      .sort((a, b) => Number(a[0]) - Number(b[0]))
+      .map(([y, n]) => ({ y, n }));
   }, [journey.solved]);
 
   const avgRating = useMemo(() => {
@@ -813,262 +796,259 @@ function OverviewTab({ journey }: { journey: CFJourney }) {
   // Custom sheet builder (opened from the filter bar)
   const [customSheetOpen, setCustomSheetOpen] = useState(false);
 
-
-
-
   return (
     <>
-    <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-      <Card title="Rating progression" className="lg:col-span-2">
-        <CodeforcesRatingChart
-          data={dashboard.ratingHistory}
-          handle={journey.user.handle}
-        />
-      </Card>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <Card title="Rating progression" className="lg:col-span-2">
+          <CodeforcesRatingChart data={dashboard.ratingHistory} handle={journey.user.handle} />
+        </Card>
 
-      <Card title="Highlights">
-        <div className="space-y-3">
-          {dashboard.storyItems.length === 0 && (
-            <div className="text-sm text-muted-foreground">
-              Not enough activity yet to build a story.
-            </div>
-          )}
-          {dashboard.storyItems.map((s, i) => {
-            const Icon = s.icon === "trophy" ? Trophy : s.icon === "flame" ? Flame : Sparkles;
-            return (
-              <div key={i} className="flex gap-3">
-                <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                  <Icon className="size-4" />
-                </div>
-                <div className="min-w-0">
-                  <div className="text-sm font-medium">{s.headline}</div>
-                  <div className="text-xs text-muted-foreground">{s.body}</div>
-                </div>
+        <Card title="Highlights">
+          <div className="space-y-3">
+            {dashboard.storyItems.length === 0 && (
+              <div className="text-sm text-muted-foreground">
+                Not enough activity yet to build a story.
               </div>
-            );
-          })}
-          <div className="border-t border-border/40 pt-3 text-xs text-muted-foreground">
-            Avg. problem rating solved: <span className="font-medium text-foreground">{avgRating || "—"}</span>
-          </div>
-        </div>
-      </Card>
-
-      <Card title="Solved per year">
-        <div className="h-40">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={solvedByYear}>
-              <XAxis dataKey="y" tick={{ fontSize: 10 }} />
-              <YAxis tick={{ fontSize: 10 }} width={30} />
-              <RTooltip content={<ChartTooltip />} />
-              <Bar dataKey="n" fill="var(--primary)" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </Card>
-
-      <Card title="Difficulty distribution">
-        <div className="h-40">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={dashboard.difficultyBuckets}>
-              <XAxis dataKey="r" tick={{ fontSize: 10 }} />
-              <YAxis tick={{ fontSize: 10 }} width={30} />
-              <RTooltip content={<ChartTooltip />} />
-              <Bar dataKey="n" fill="var(--chart-2)" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </Card>
-
-      <Card title="Favorite tags">
-        <div className="flex flex-wrap gap-1.5">
-          {dashboard.topics.slice(0, 12).map((t) => (
-            <Badge key={t.tag} variant="secondary" className="gap-1">
-              {t.tag}
-              <span className="text-2xs text-muted-foreground">{t.solved}</span>
-            </Badge>
-          ))}
-        </div>
-      </Card>
-
-      <Card title="Activity heatmap (last year)" className="lg:col-span-3">
-        <Heatmap cells={dashboard.activityMatrix} />
-      </Card>
-
-      <Card title={`Solved problems (showing ${Math.min(visibleSolved, filteredSolved.length)} of ${filteredSolved.length}${filteredSolved.length !== solvedSorted.length ? ` · ${solvedSorted.length} total` : ""})`} className="lg:col-span-3">
-        <div className="mb-3 flex flex-wrap items-end gap-2 border-b border-border/40 pb-3">
-          <div className="flex flex-col gap-1">
-            <label className="text-[10px] uppercase tracking-widest text-muted-foreground">
-              Rating
-            </label>
-            <div className="flex items-center gap-1">
-              <Input
-                type="number"
-                inputMode="numeric"
-                placeholder="min"
-                value={minRating}
-                onChange={(e) => setMinRating(e.target.value)}
-                className="h-8 w-20 text-xs"
-              />
-              <span className="text-xs text-muted-foreground">–</span>
-              <Input
-                type="number"
-                inputMode="numeric"
-                placeholder="max"
-                value={maxRating}
-                onChange={(e) => setMaxRating(e.target.value)}
-                className="h-8 w-20 text-xs"
-              />
+            )}
+            {dashboard.storyItems.map((s, i) => {
+              const Icon = s.icon === "trophy" ? Trophy : s.icon === "flame" ? Flame : Sparkles;
+              return (
+                <div key={i} className="flex gap-3">
+                  <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <Icon className="size-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-sm font-medium">{s.headline}</div>
+                    <div className="text-xs text-muted-foreground">{s.body}</div>
+                  </div>
+                </div>
+              );
+            })}
+            <div className="border-t border-border/40 pt-3 text-xs text-muted-foreground">
+              Avg. problem rating solved:{" "}
+              <span className="font-medium text-foreground">{avgRating || "—"}</span>
             </div>
           </div>
-          <div className="flex flex-col gap-1">
-            <label className="text-[10px] uppercase tracking-widest text-muted-foreground">
-              Tag
-            </label>
-            <select
-              value={tagFilter}
-              onChange={(e) => setTagFilter(e.target.value)}
-              className="h-8 rounded-md border border-input bg-background px-2 text-xs"
-            >
-              <option value="all">All tags</option>
-              {allTags.map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="flex flex-col gap-1">
-            <label className="text-[10px] uppercase tracking-widest text-muted-foreground">
-              Status
-            </label>
-            <select
-              value={attemptFilter}
-              onChange={(e) => setAttemptFilter(e.target.value as "all" | "first" | "multi")}
-              className="h-8 rounded-md border border-input bg-background px-2 text-xs"
-            >
-              <option value="all">All solved</option>
-              <option value="first">Solved first try</option>
-              <option value="multi">Solved after multiple tries</option>
-            </select>
-          </div>
-          {(minRating || maxRating || tagFilter !== "all" || attemptFilter !== "all") && (
-            <Button variant="ghost" size="sm" onClick={resetFilters} className="h-8 text-xs">
-              Clear
-            </Button>
-          )}
-          <div className="ml-auto">
-            <Button
-              size="sm"
-              className="h-8 gap-1.5 text-xs"
-              onClick={() => setCustomSheetOpen(true)}
-            >
-              <Sparkles className="size-3.5" /> Create sheet
-            </Button>
-          </div>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="text-2xs uppercase tracking-widest text-muted-foreground">
-              <tr className="border-b border-border/50">
-                <th className="py-2 pr-3 text-left font-normal">#</th>
-                <th className="py-2 pr-3 text-left font-normal">Name</th>
-                <th className="py-2 pr-3 text-left font-normal">Tags</th>
-                <th className="py-2 pr-3 text-right font-normal">Rating</th>
-                <th className="py-2 pr-3 text-right font-normal">Tries</th>
-                <th className="py-2 pr-3 text-right font-normal">Solved</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredSolved.slice(0, visibleSolved).map((p) => (
-                <tr key={p.key} className="border-b border-border/30 hover:bg-muted/30">
-                  <td className="py-2 pr-3 font-mono text-xs text-muted-foreground">
-                    {p.contestId ? `${p.contestId}${p.index}` : p.index}
-                  </td>
-                  <td className="py-2 pr-3">
-                    <a
-                      href={p.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="font-medium hover:text-primary hover:underline"
-                    >
-                      {p.name}
-                    </a>
-                  </td>
-                  <td className="py-2 pr-3">
-                    <div className="flex flex-wrap gap-1">
-                      {p.tags.slice(0, 3).map((t) => (
-                        <Badge key={t} variant="secondary" className="text-[10px] font-normal">
-                          {t}
-                        </Badge>
-                      ))}
-                      {p.tags.length > 3 && (
-                        <span className="text-[10px] text-muted-foreground">
-                          +{p.tags.length - 3}
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                  <td
-                    className={cn(
-                      "py-2 pr-3 text-right font-mono text-xs tabular-nums",
-                      p.rating ? ratingColor(p.rating) : "text-muted-foreground",
-                    )}
-                  >
-                    {p.rating ?? "—"}
-                  </td>
-                  <td
-                    className={cn(
-                      "py-2 pr-3 text-right font-mono text-xs tabular-nums",
-                      p.attempts > 1 ? "text-amber-500" : "text-emerald-500",
-                    )}
-                  >
-                    {p.attempts}
-                  </td>
-                  <td className="py-2 pr-3 text-right text-xs text-muted-foreground">
-                    {new Date(p.solvedAt * 1000).toISOString().slice(0, 10)}
-                  </td>
-                </tr>
-              ))}
-              {filteredSolved.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="py-6 text-center text-muted-foreground">
-                    No problems match these filters.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-        {visibleSolved < filteredSolved.length && (
-          <div className="mt-3 flex flex-col items-center gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setVisibleSolved((v) => v + 50)}
-              className="text-xs"
-            >
-              Show more
-            </Button>
-            <p className="text-[10px] text-muted-foreground">
-              Showing {visibleSolved} of {filteredSolved.length}
-            </p>
-          </div>
-        )}
-      </Card>
+        </Card>
 
-    </div>
-    <AnimatePresence>
-      {customSheetOpen && (
-        <CustomSheetDialog
-          solved={solvedSorted}
-          allTags={allTags}
-          initialMin={minRating}
-          initialMax={maxRating}
-          initialTag={tagFilter}
-          onClose={() => setCustomSheetOpen(false)}
-        />
-      )}
-    </AnimatePresence>
+        <Card title="Solved per year">
+          <div className="h-40">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={solvedByYear}>
+                <XAxis dataKey="y" tick={{ fontSize: 10 }} />
+                <YAxis tick={{ fontSize: 10 }} width={30} />
+                <RTooltip content={<ChartTooltip />} />
+                <Bar dataKey="n" fill="var(--primary)" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+
+        <Card title="Difficulty distribution">
+          <div className="h-40">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={dashboard.difficultyBuckets}>
+                <XAxis dataKey="r" tick={{ fontSize: 10 }} />
+                <YAxis tick={{ fontSize: 10 }} width={30} />
+                <RTooltip content={<ChartTooltip />} />
+                <Bar dataKey="n" fill="var(--chart-2)" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+
+        <Card title="Favorite tags">
+          <div className="flex flex-wrap gap-1.5">
+            {dashboard.topics.slice(0, 12).map((t) => (
+              <Badge key={t.tag} variant="secondary" className="gap-1">
+                {t.tag}
+                <span className="text-2xs text-muted-foreground">{t.solved}</span>
+              </Badge>
+            ))}
+          </div>
+        </Card>
+
+        <Card title="Activity heatmap (last year)" className="lg:col-span-3">
+          <Heatmap cells={dashboard.activityMatrix} />
+        </Card>
+
+        <Card
+          title={`Solved problems (showing ${Math.min(visibleSolved, filteredSolved.length)} of ${filteredSolved.length}${filteredSolved.length !== solvedSorted.length ? ` · ${solvedSorted.length} total` : ""})`}
+          className="lg:col-span-3"
+        >
+          <div className="mb-3 flex flex-wrap items-end gap-2 border-b border-border/40 pb-3">
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                Rating
+              </label>
+              <div className="flex items-center gap-1">
+                <Input
+                  type="number"
+                  inputMode="numeric"
+                  placeholder="min"
+                  value={minRating}
+                  onChange={(e) => setMinRating(e.target.value)}
+                  className="h-8 w-20 text-xs"
+                />
+                <span className="text-xs text-muted-foreground">–</span>
+                <Input
+                  type="number"
+                  inputMode="numeric"
+                  placeholder="max"
+                  value={maxRating}
+                  onChange={(e) => setMaxRating(e.target.value)}
+                  className="h-8 w-20 text-xs"
+                />
+              </div>
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                Tag
+              </label>
+              <select
+                value={tagFilter}
+                onChange={(e) => setTagFilter(e.target.value)}
+                className="h-8 rounded-md border border-input bg-background px-2 text-xs"
+              >
+                <option value="all">All tags</option>
+                {allTags.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                Status
+              </label>
+              <select
+                value={attemptFilter}
+                onChange={(e) => setAttemptFilter(e.target.value as "all" | "first" | "multi")}
+                className="h-8 rounded-md border border-input bg-background px-2 text-xs"
+              >
+                <option value="all">All solved</option>
+                <option value="first">Solved first try</option>
+                <option value="multi">Solved after multiple tries</option>
+              </select>
+            </div>
+            {(minRating || maxRating || tagFilter !== "all" || attemptFilter !== "all") && (
+              <Button variant="ghost" size="sm" onClick={resetFilters} className="h-8 text-xs">
+                Clear
+              </Button>
+            )}
+            <div className="ml-auto">
+              <Button
+                size="sm"
+                className="h-8 gap-1.5 text-xs"
+                onClick={() => setCustomSheetOpen(true)}
+              >
+                <Sparkles className="size-3.5" /> Create sheet
+              </Button>
+            </div>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="text-2xs uppercase tracking-widest text-muted-foreground">
+                <tr className="border-b border-border/50">
+                  <th className="py-2 pr-3 text-left font-normal">#</th>
+                  <th className="py-2 pr-3 text-left font-normal">Name</th>
+                  <th className="py-2 pr-3 text-left font-normal">Tags</th>
+                  <th className="py-2 pr-3 text-right font-normal">Rating</th>
+                  <th className="py-2 pr-3 text-right font-normal">Tries</th>
+                  <th className="py-2 pr-3 text-right font-normal">Solved</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredSolved.slice(0, visibleSolved).map((p) => (
+                  <tr key={p.key} className="border-b border-border/30 hover:bg-muted/30">
+                    <td className="py-2 pr-3 font-mono text-xs text-muted-foreground">
+                      {p.contestId ? `${p.contestId}${p.index}` : p.index}
+                    </td>
+                    <td className="py-2 pr-3">
+                      <a
+                        href={p.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="font-medium hover:text-primary hover:underline"
+                      >
+                        {p.name}
+                      </a>
+                    </td>
+                    <td className="py-2 pr-3">
+                      <div className="flex flex-wrap gap-1">
+                        {p.tags.slice(0, 3).map((t) => (
+                          <Badge key={t} variant="secondary" className="text-[10px] font-normal">
+                            {t}
+                          </Badge>
+                        ))}
+                        {p.tags.length > 3 && (
+                          <span className="text-[10px] text-muted-foreground">
+                            +{p.tags.length - 3}
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td
+                      className={cn(
+                        "py-2 pr-3 text-right font-mono text-xs tabular-nums",
+                        p.rating ? ratingColor(p.rating) : "text-muted-foreground",
+                      )}
+                    >
+                      {p.rating ?? "—"}
+                    </td>
+                    <td
+                      className={cn(
+                        "py-2 pr-3 text-right font-mono text-xs tabular-nums",
+                        p.attempts > 1 ? "text-amber-500" : "text-emerald-500",
+                      )}
+                    >
+                      {p.attempts}
+                    </td>
+                    <td className="py-2 pr-3 text-right text-xs text-muted-foreground">
+                      {new Date(p.solvedAt * 1000).toISOString().slice(0, 10)}
+                    </td>
+                  </tr>
+                ))}
+                {filteredSolved.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="py-6 text-center text-muted-foreground">
+                      No problems match these filters.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+          {visibleSolved < filteredSolved.length && (
+            <div className="mt-3 flex flex-col items-center gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setVisibleSolved((v) => v + 50)}
+                className="text-xs"
+              >
+                Show more
+              </Button>
+              <p className="text-[10px] text-muted-foreground">
+                Showing {visibleSolved} of {filteredSolved.length}
+              </p>
+            </div>
+          )}
+        </Card>
+      </div>
+      <AnimatePresence>
+        {customSheetOpen && (
+          <CustomSheetDialog
+            solved={solvedSorted}
+            allTags={allTags}
+            initialMin={minRating}
+            initialMax={maxRating}
+            initialTag={tagFilter}
+            onClose={() => setCustomSheetOpen(false)}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 }
@@ -1112,8 +1092,7 @@ function SolvedTab({ journey }: { journey: CFJourney }) {
       return true;
     });
     if (sort === "oldest") list = [...list].sort((a, b) => a.solvedAt - b.solvedAt);
-    else if (sort === "rating")
-      list = [...list].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+    else if (sort === "rating") list = [...list].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
     else list = [...list].sort((a, b) => b.solvedAt - a.solvedAt);
     return list;
   }, [journey.solved, q, tag, ratingRange, year, sort]);
@@ -1195,7 +1174,8 @@ function SolvedTab({ journey }: { journey: CFJourney }) {
       </div>
 
       <div className="text-2xs uppercase tracking-widest text-muted-foreground">
-        {filtered.length.toLocaleString()} of {journey.solved.length.toLocaleString()} solved problems
+        {filtered.length.toLocaleString()} of {journey.solved.length.toLocaleString()} solved
+        problems
       </div>
 
       <div className="mt-3 overflow-hidden rounded-xl border border-border/60">
@@ -1258,10 +1238,7 @@ function SolvedRow({ p }: { p: CFSolvedProblem }) {
       <td className="px-3 py-2">
         <div className="flex flex-wrap gap-1">
           {p.tags.slice(0, 3).map((t) => (
-            <span
-              key={t}
-              className="rounded bg-muted px-1.5 py-0.5 text-2xs text-muted-foreground"
-            >
+            <span key={t} className="rounded bg-muted px-1.5 py-0.5 text-2xs text-muted-foreground">
               {t}
             </span>
           ))}
@@ -1418,8 +1395,7 @@ function TopicBars({
   items: { tag: string; mastery: number; solved: number }[];
   tone: "success" | "destructive";
 }) {
-  const barColor =
-    tone === "success" ? "bg-emerald-500" : "bg-red-500";
+  const barColor = tone === "success" ? "bg-emerald-500" : "bg-red-500";
   return (
     <div className="space-y-2">
       {items.map((t) => (
@@ -1436,9 +1412,7 @@ function TopicBars({
           </div>
         </div>
       ))}
-      {items.length === 0 && (
-        <div className="text-sm text-muted-foreground">Not enough data.</div>
-      )}
+      {items.length === 0 && <div className="text-sm text-muted-foreground">Not enough data.</div>}
     </div>
   );
 }
@@ -1462,8 +1436,8 @@ function CompareTab({ journey }: { journey: CFJourney }) {
       <Swords className="mx-auto mb-3 size-6 text-muted-foreground" />
       <div className="font-display text-lg font-semibold">Compare with your account</div>
       <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-        Connect your Codeforces handle in Profile settings to compare topic mastery,
-        shared solves, and missing problems against <span className="font-medium">{journey.user.handle}</span>.
+        Connect your Codeforces handle in Profile settings to compare topic mastery, shared solves,
+        and missing problems against <span className="font-medium">{journey.user.handle}</span>.
       </p>
       <div className="mt-4 flex justify-center gap-2">
         <Button size="sm" variant="outline" asChild>
@@ -1559,12 +1533,7 @@ function Card({
   className?: string;
 }) {
   return (
-    <div
-      className={cn(
-        "rounded-2xl border border-border/60 bg-surface/40 p-4",
-        className,
-      )}
-    >
+    <div className={cn("rounded-2xl border border-border/60 bg-surface/40 p-4", className)}>
       <div className="mb-3 text-2xs font-medium uppercase tracking-widest text-muted-foreground">
         {title}
       </div>
@@ -1575,7 +1544,7 @@ function Card({
 
 // Codeforces-official rating bands (background stripes on the rating chart)
 const CF_BANDS: { from: number; to: number; color: string; label: string }[] = [
-  { from: 0,    to: 1200, color: "#CCCCCC", label: "Newbie" },
+  { from: 0, to: 1200, color: "#CCCCCC", label: "Newbie" },
   { from: 1200, to: 1400, color: "#77FF77", label: "Pupil" },
   { from: 1400, to: 1600, color: "#77DDBB", label: "Specialist" },
   { from: 1600, to: 1900, color: "#AAAAFF", label: "Expert" },
@@ -1605,8 +1574,7 @@ function CodeforcesRatingChart({
   const min = data.reduce((m, d) => Math.min(m, d.rating), Infinity);
   const yMin = Math.max(0, Math.floor((min - 200) / 100) * 100);
   const yMax = Math.max(3200, Math.ceil((peak + 200) / 100) * 100);
-  const ticks = CF_BANDS
-    .flatMap((b) => [b.from, b.to])
+  const ticks = CF_BANDS.flatMap((b) => [b.from, b.to])
     .filter((v, i, a) => a.indexOf(v) === i && v >= yMin && v <= yMax)
     .sort((a, b) => a - b);
 
@@ -1675,8 +1643,6 @@ function CodeforcesRatingChart({
   );
 }
 
-
-
 function ChartTooltip({
   active,
   payload,
@@ -1689,15 +1655,10 @@ function ChartTooltip({
   if (!active || !payload?.length) return null;
   return (
     <div className="rounded-md border border-border/60 bg-background/95 px-2 py-1 text-xs shadow-md">
-      {label != null && (
-        <div className="mb-1 font-medium">{String(label)}</div>
-      )}
+      {label != null && <div className="mb-1 font-medium">{String(label)}</div>}
       {payload.map((p, i) => (
         <div key={i} className="flex items-center gap-2">
-          <span
-            className="size-2 rounded-full"
-            style={{ background: p.color }}
-          />
+          <span className="size-2 rounded-full" style={{ background: p.color }} />
           <span className="text-muted-foreground">{p.name}</span>
           <span className="ml-auto tabular-nums">{p.value}</span>
         </div>
@@ -1717,8 +1678,21 @@ function Heatmap({ cells }: { cells: number[] }) {
     "bg-emerald-500/75",
     "bg-emerald-500",
   ];
-  const MONTH_LABELS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  const DAY_LABELS = ["Mon","","Wed","","Fri","",""];
+  const MONTH_LABELS = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const DAY_LABELS = ["Mon", "", "Wed", "", "Fri", "", ""];
 
   const end = new Date();
   end.setHours(0, 0, 0, 0);
@@ -1754,10 +1728,7 @@ function Heatmap({ cells }: { cells: number[] }) {
       <div className="inline-flex flex-col gap-1">
         <div className="flex gap-[3px] pl-8">
           {monthHeader.map((label, i) => (
-            <div
-              key={i}
-              className="w-[11px] text-[10px] leading-none text-muted-foreground"
-            >
+            <div key={i} className="w-[11px] text-[10px] leading-none text-muted-foreground">
               {label}
             </div>
           ))}
@@ -1765,7 +1736,9 @@ function Heatmap({ cells }: { cells: number[] }) {
         <div className="flex gap-2">
           <div className="flex w-6 flex-col gap-[3px] pt-[1px] text-[10px] leading-none text-muted-foreground">
             {DAY_LABELS.map((d, i) => (
-              <div key={i} className="h-[11px]">{d}</div>
+              <div key={i} className="h-[11px]">
+                {d}
+              </div>
             ))}
           </div>
           <div className="flex gap-[3px]">
@@ -1783,7 +1756,9 @@ function Heatmap({ cells }: { cells: number[] }) {
           </div>
         </div>
         <div className="flex items-center justify-between pl-8 pt-1 text-[10px] text-muted-foreground">
-          <span>{gridStart.toISOString().slice(0, 10)} → {gridEnd.toISOString().slice(0, 10)}</span>
+          <span>
+            {gridStart.toISOString().slice(0, 10)} → {gridEnd.toISOString().slice(0, 10)}
+          </span>
           <div className="flex items-center gap-1">
             <span>Less</span>
             {tone.map((t, i) => (
@@ -1803,7 +1778,6 @@ function Heatmap({ cells }: { cells: number[] }) {
 /* ============================================================
  * CUSTOM SHEET DIALOG (from filter bar)
  * ============================================================ */
-
 
 function CustomSheetDialog({
   solved,
@@ -1827,7 +1801,6 @@ function CustomSheetDialog({
   const [contest, setContest] = useState("");
   const createMut = useCreateSheet();
   const navigate = useNavigate();
-
 
   const toggleTag = (t: string) =>
     setTags((prev) => (prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]));
@@ -1858,7 +1831,12 @@ function CustomSheetDialog({
       navigate({ to: "/auth", search: { redirect: "/problems" } as never });
       return;
     }
-    if (!minR.trim() || !maxR.trim() || !Number.isFinite(Number(minR)) || !Number.isFinite(Number(maxR))) {
+    if (
+      !minR.trim() ||
+      !maxR.trim() ||
+      !Number.isFinite(Number(minR)) ||
+      !Number.isFinite(Number(maxR))
+    ) {
       toast.error("Min and max rating are required.");
       return;
     }
@@ -1870,7 +1848,8 @@ function CustomSheetDialog({
       toast.error("No problems match those filters.");
       return;
     }
-    const autoName = name.trim() || `Sheet ${minR}–${maxR}${contest.trim() ? ` · ${contest.trim()}` : ""}`;
+    const autoName =
+      name.trim() || `Sheet ${minR}–${maxR}${contest.trim() ? ` · ${contest.trim()}` : ""}`;
     try {
       const created = await createMut.mutateAsync({
         name: autoName,
@@ -1892,14 +1871,16 @@ function CustomSheetDialog({
       onClose();
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Couldn't save sheet.";
-      if (msg.toLowerCase().includes("unauthorized") || msg.toLowerCase().includes("no authorization")) {
+      if (
+        msg.toLowerCase().includes("unauthorized") ||
+        msg.toLowerCase().includes("no authorization")
+      ) {
         toast.error("Please sign in to save sheets.");
       } else {
         toast.error(msg);
       }
     }
   };
-
 
   return (
     <motion.div
@@ -2026,32 +2007,32 @@ function CustomSheetDialog({
   );
 }
 
-
-
 /* ============================================================
  * PRACTICE SHEET MODAL
  * ============================================================ */
 
 const SHEET_TEMPLATES: { id: string; label: string; hint: string }[] = [
-  { id: "complete", label: "Complete journey", hint: "Full curated path inspired by this profile." },
+  {
+    id: "complete",
+    label: "Complete journey",
+    hint: "Full curated path inspired by this profile.",
+  },
   { id: "beginner", label: "Beginner sheet", hint: "800–1400 rating problems, foundations first." },
   { id: "rating", label: "Rating sheet", hint: "Focused on climbing to your target rating." },
   { id: "topic", label: "Topic sheet", hint: "One or more topics you pick." },
   { id: "contest", label: "Contest prep", hint: "Mixed rating simulating a real round." },
   { id: "last500", label: "Last 500 solves", hint: "Recreate their last 500 solved problems." },
-  { id: "fastest", label: "Fastest growth path", hint: "Problems that historically produced rating jumps." },
+  {
+    id: "fastest",
+    label: "Fastest growth path",
+    hint: "Problems that historically produced rating jumps.",
+  },
   { id: "graphs", label: "Only graphs", hint: "" },
   { id: "dp", label: "Only DP", hint: "" },
   { id: "greedy", label: "Only greedy", hint: "" },
 ];
 
-function PracticeSheetModal({
-  journey,
-  onClose,
-}: {
-  journey: CFJourney;
-  onClose: () => void;
-}) {
+function PracticeSheetModal({ journey, onClose }: { journey: CFJourney; onClose: () => void }) {
   const [template, setTemplate] = useState("complete");
   const [target, setTarget] = useState(1600);
   const [dailyMins, setDailyMins] = useState(60);
@@ -2117,9 +2098,7 @@ function PracticeSheetModal({
                   )}
                 >
                   <div className="font-medium">{t.label}</div>
-                  {t.hint && (
-                    <div className="text-2xs text-muted-foreground">{t.hint}</div>
-                  )}
+                  {t.hint && <div className="text-2xs text-muted-foreground">{t.hint}</div>}
                 </button>
               ))}
             </div>
@@ -2244,13 +2223,18 @@ function buildInsights(journey: CFJourney) {
   const { dashboard, solved } = journey;
   const strong = [...dashboard.topics].sort((a, b) => b.mastery - a.mastery).slice(0, 6);
   const weak = [...dashboard.topics].sort((a, b) => a.mastery - b.mastery).slice(0, 6);
-  const repeated = [...dashboard.topics].sort((a, b) => b.solved - a.solved).slice(0, 12).map((t) => ({ tag: t.tag, n: t.solved }));
+  const repeated = [...dashboard.topics]
+    .sort((a, b) => b.solved - a.solved)
+    .slice(0, 12)
+    .map((t) => ({ tag: t.tag, n: t.solved }));
 
   const totalMins = solved.length * 25; // heuristic 25 min per solve
   const hours = Math.round(totalMins / 60);
 
   // Streaks over solved dates
-  const dates = [...new Set(solved.map((s) => new Date(s.solvedAt * 1000).toISOString().slice(0, 10)))].sort();
+  const dates = [
+    ...new Set(solved.map((s) => new Date(s.solvedAt * 1000).toISOString().slice(0, 10))),
+  ].sort();
   let longestStreak = 0;
   let longestGap = 0;
   let cur = 0;
@@ -2294,7 +2278,17 @@ function buildInsights(journey: CFJourney) {
       detail: v.peak > 0 ? `Hardest: ${v.peak}-rated.` : "Building foundations.",
     }));
 
-  return { strong, weak, repeated, hours, longestStreak, longestGap, consistency, bestJumps, timeline };
+  return {
+    strong,
+    weak,
+    repeated,
+    hours,
+    longestStreak,
+    longestGap,
+    consistency,
+    bestJumps,
+    timeline,
+  };
 }
 
 function buildSheetPreview(
@@ -2305,12 +2299,20 @@ function buildSheetPreview(
 ) {
   let pool = journey.solved.filter((p) => p.rating);
   if (template === "beginner") pool = pool.filter((p) => (p.rating ?? 0) <= 1400);
-  else if (template === "rating") pool = pool.filter((p) => Math.abs((p.rating ?? 0) - target) <= 200);
-  else if (template === "graphs") pool = pool.filter((p) => p.tags.some((t) => t.includes("graph") || t === "dfs and similar" || t === "trees" || t === "shortest paths"));
+  else if (template === "rating")
+    pool = pool.filter((p) => Math.abs((p.rating ?? 0) - target) <= 200);
+  else if (template === "graphs")
+    pool = pool.filter((p) =>
+      p.tags.some(
+        (t) =>
+          t.includes("graph") || t === "dfs and similar" || t === "trees" || t === "shortest paths",
+      ),
+    );
   else if (template === "dp") pool = pool.filter((p) => p.tags.includes("dp"));
   else if (template === "greedy") pool = pool.filter((p) => p.tags.includes("greedy"));
   else if (template === "last500") pool = journey.solved.slice(0, 500);
-  else if (template === "contest") pool = pool.filter((p) => (p.rating ?? 0) >= target - 300 && (p.rating ?? 0) <= target + 300);
+  else if (template === "contest")
+    pool = pool.filter((p) => (p.rating ?? 0) >= target - 300 && (p.rating ?? 0) <= target + 300);
 
   const problems = pool.slice(0, maxProblems);
   const avgRating = problems.length

@@ -1,6 +1,14 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { toast } from "sonner";
 import { askMentor } from "@/lib/mentor.functions";
 import { supabase } from "@/integrations/supabase/client";
@@ -65,6 +73,14 @@ export const Route = createFileRoute("/mentor")({
         content:
           "A private competitive programming coach that reads your practice history and gives you the next specific move.",
       },
+      { property: "og:title", content: "Mentor \u00b7 Verdiqy" },
+      {
+        property: "og:description",
+        content:
+          "A private competitive programming coach that reads your practice history and gives you the next specific move.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: MentorPage,
@@ -240,7 +256,12 @@ const timeline = [
 // ---------- Chat state ----------
 
 type ChatImage = { dataUrl: string };
-type ChatMessage = { role: "user" | "assistant"; content: string; id: string; images?: ChatImage[] };
+type ChatMessage = {
+  role: "user" | "assistant";
+  content: string;
+  id: string;
+  images?: ChatImage[];
+};
 type MentorConversation = {
   id: string;
   title: string;
@@ -280,7 +301,8 @@ function normalizeMessages(value: unknown): ChatMessage[] {
       (m): m is { role: "user" | "assistant"; content: string; id?: string } =>
         m != null &&
         typeof m === "object" &&
-        ((m as { role?: unknown }).role === "user" || (m as { role?: unknown }).role === "assistant") &&
+        ((m as { role?: unknown }).role === "user" ||
+          (m as { role?: unknown }).role === "assistant") &&
         typeof (m as { content?: unknown }).content === "string",
     )
     .map((m) => ({ role: m.role, content: m.content, id: m.id ?? crypto.randomUUID() }));
@@ -401,7 +423,11 @@ function ChatProvider({ children }: { children: ReactNode }) {
           })),
         },
       });
-      const assistantMsg: ChatMessage = { role: "assistant", content: reply, id: crypto.randomUUID() };
+      const assistantMsg: ChatMessage = {
+        role: "assistant",
+        content: reply,
+        id: crypto.randomUUID(),
+      };
       setMessages((cur) => [...cur, assistantMsg]);
       await saveConversation([...next, assistantMsg]);
     } catch (e) {
@@ -520,7 +546,6 @@ function MentorPage() {
   );
 }
 
-
 function MentorPageInner() {
   const { reset, openHistory, send, pending } = useChat();
   const sentRef = useRef(false);
@@ -573,7 +598,14 @@ function MentorPageInner() {
 }
 
 function HistorySheet() {
-  const { history, historyOpen, historyLoading, setHistoryOpen, loadConversation, deleteConversation } = useChat();
+  const {
+    history,
+    historyOpen,
+    historyLoading,
+    setHistoryOpen,
+    loadConversation,
+    deleteConversation,
+  } = useChat();
   return (
     <Sheet open={historyOpen} onOpenChange={setHistoryOpen}>
       <SheetContent className="flex w-full flex-col gap-0 p-0 sm:max-w-md">
@@ -608,7 +640,8 @@ function HistorySheet() {
                       {conversation.title}
                     </span>
                     <span className="mt-1 block text-xs text-muted-foreground">
-                      {conversation.messages.length} messages · {new Date(conversation.updated_at).toLocaleDateString()}
+                      {conversation.messages.length} messages ·{" "}
+                      {new Date(conversation.updated_at).toLocaleDateString()}
                     </span>
                   </button>
                   <button
@@ -705,8 +738,7 @@ function WelcomeHero() {
         </span>
       </h1>
       <p className="mt-3 max-w-md text-sm text-muted-foreground md:text-base">
-        How can I help you today? Ask about a problem, a contest, or your next
-        training plan.
+        How can I help you today? Ask about a problem, a contest, or your next training plan.
       </p>
       <div
         aria-hidden={hasDraft}
@@ -723,100 +755,101 @@ function WelcomeHero() {
 
 // ---------- Conversation ----------
 
-
 function Conversation() {
   const { showDemo } = useChat();
   return (
     <div className="flex flex-col gap-8">
       {showDemo ? (
-      <>
-      
-      <MentorTurn timestamp="Today · 09:12">
-        <Prose>
-          Morning, Alex. I looked at your last 30 days. You&apos;re{" "}
-          <strong className="font-medium text-foreground">plateaued on Binary Search</strong> and
-          your <strong className="font-medium text-foreground">Graph Theory acceptance</strong> is
-          quietly climbing. Here&apos;s what I think we should do this week.
-        </Prose>
+        <>
+          <MentorTurn timestamp="Today · 09:12">
+            <Prose>
+              Morning, Alex. I looked at your last 30 days. You&apos;re{" "}
+              <strong className="font-medium text-foreground">plateaued on Binary Search</strong>{" "}
+              and your{" "}
+              <strong className="font-medium text-foreground">Graph Theory acceptance</strong> is
+              quietly climbing. Here&apos;s what I think we should do this week.
+            </Prose>
 
-        <VerdictCard />
+            <VerdictCard />
 
-        <Prose>
-          The <em>why</em>: your rating gain in the last 6 weeks is entirely from ad-hoc and greedy.
-          That&apos;s a fragile base for Candidate Master. Graphs are the shortest path to a real
-          ceiling raise.
-        </Prose>
+            <Prose>
+              The <em>why</em>: your rating gain in the last 6 weeks is entirely from ad-hoc and
+              greedy. That&apos;s a fragile base for Candidate Master. Graphs are the shortest path
+              to a real ceiling raise.
+            </Prose>
 
-        <RatingCard />
-      </MentorTurn>
+            <RatingCard />
+          </MentorTurn>
 
-      <UserTurn>Okay — what specifically should I do this week?</UserTurn>
+          <UserTurn>Okay — what specifically should I do this week?</UserTurn>
 
-      <MentorTurn timestamp="Today · 09:12">
-        <Prose>
-          A concrete 7-day plan. It&apos;s tuned to your evening schedule (avg 68 min/session) and
-          leaves Saturday for rest — you skipped 4 of the last 5, so I&apos;m making it official.
-        </Prose>
+          <MentorTurn timestamp="Today · 09:12">
+            <Prose>
+              A concrete 7-day plan. It&apos;s tuned to your evening schedule (avg 68 min/session)
+              and leaves Saturday for rest — you skipped 4 of the last 5, so I&apos;m making it
+              official.
+            </Prose>
 
-        <WeekPlan />
+            <WeekPlan />
 
-        <Prose>
-          Before you touch a graph problem though —{" "}
-          <strong className="font-medium text-foreground">
-            avoid 1800-rated DP problems until you finish these 12
-          </strong>
-          . You&apos;ve been guessing transitions instead of deriving them. That habit will calcify.
-        </Prose>
+            <Prose>
+              Before you touch a graph problem though —{" "}
+              <strong className="font-medium text-foreground">
+                avoid 1800-rated DP problems until you finish these 12
+              </strong>
+              . You&apos;ve been guessing transitions instead of deriving them. That habit will
+              calcify.
+            </Prose>
 
-        <PrerequisiteCard />
-      </MentorTurn>
+            <PrerequisiteCard />
+          </MentorTurn>
 
-      <UserTurn>Why is my Binary Search stuck?</UserTurn>
+          <UserTurn>Why is my Binary Search stuck?</UserTurn>
 
-      <MentorTurn timestamp="Today · 09:13">
-        <Prose>
-          Not a knowledge gap — a{" "}
-          <strong className="font-medium text-foreground">templating gap</strong>. You re-derive the
-          invariant every time. Your first-submission accuracy hasn&apos;t moved in six months:
-        </Prose>
+          <MentorTurn timestamp="Today · 09:13">
+            <Prose>
+              Not a knowledge gap — a{" "}
+              <strong className="font-medium text-foreground">templating gap</strong>. You re-derive
+              the invariant every time. Your first-submission accuracy hasn&apos;t moved in six
+              months:
+            </Prose>
 
-        <BinarySearchCard />
+            <BinarySearchCard />
 
-        <Prose>
-          Fix: memorize one canonical template (I&apos;ll pin it), then solve 5 problems where you{" "}
-          <em>must</em> use it. After that, you&apos;ll stop losing 8 minutes per problem to
-          off-by-one edits.
-        </Prose>
+            <Prose>
+              Fix: memorize one canonical template (I&apos;ll pin it), then solve 5 problems where
+              you <em>must</em> use it. After that, you&apos;ll stop losing 8 minutes per problem to
+              off-by-one edits.
+            </Prose>
 
-        <ActionRow
-          primary={{ label: "Pin the template", icon: BookOpen }}
-          secondary={[
-            { label: "Queue 5 problems", icon: Target },
-            { label: "Show me the losses", icon: LineChartIcon },
-          ]}
-        />
-      </MentorTurn>
+            <ActionRow
+              primary={{ label: "Pin the template", icon: BookOpen }}
+              secondary={[
+                { label: "Queue 5 problems", icon: Target },
+                { label: "Show me the losses", icon: LineChartIcon },
+              ]}
+            />
+          </MentorTurn>
 
-      <UserTurn>Am I ready for Candidate Master?</UserTurn>
+          <UserTurn>Am I ready for Candidate Master?</UserTurn>
 
-      <MentorTurn timestamp="Today · 09:13">
-        <Prose>
-          Honestly? <strong className="font-medium text-foreground">Not this month.</strong> You
-          could get lucky in one round, but your unlucky-round floor is 1680. That&apos;s the number
-          that matters.
-        </Prose>
+          <MentorTurn timestamp="Today · 09:13">
+            <Prose>
+              Honestly? <strong className="font-medium text-foreground">Not this month.</strong> You
+              could get lucky in one round, but your unlucky-round floor is 1680. That&apos;s the
+              number that matters.
+            </Prose>
 
-        <ReadinessCard />
+            <ReadinessCard />
 
-        <Prose>
-          Two things need to land before I&apos;d bet on it: the graph plan above, and a clean
-          virtual contest at Div. 2 pace. Hit both — I&apos;ll change my answer.
-        </Prose>
+            <Prose>
+              Two things need to land before I&apos;d bet on it: the graph plan above, and a clean
+              virtual contest at Div. 2 pace. Hit both — I&apos;ll change my answer.
+            </Prose>
 
-        <SuggestionRow />
-      </MentorTurn>
-
-      </>
+            <SuggestionRow />
+          </MentorTurn>
+        </>
       ) : null}
 
       <LiveConversation />
@@ -1083,16 +1116,8 @@ function RatingCard() {
             <AreaChart data={ratingSeries} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="rg" x1="0" y1="0" x2="0" y2="1">
-                  <stop
-                    offset="0%"
-                    stopColor="var(--chart-primary)"
-                    stopOpacity={0.25}
-                  />
-                  <stop
-                    offset="100%"
-                    stopColor="var(--chart-primary)"
-                    stopOpacity={0}
-                  />
+                  <stop offset="0%" stopColor="var(--chart-primary)" stopOpacity={0.25} />
+                  <stop offset="100%" stopColor="var(--chart-primary)" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" vertical={false} />
@@ -1307,7 +1332,6 @@ function PrerequisiteCard() {
           {showAll ? "Show fewer" : `Show all ${total}`} <ChevronRight className="size-3.5" />
         </Button>
       </div>
-
     </Card>
   );
 }
@@ -1660,7 +1684,6 @@ function Composer() {
 
   // ⌘/Ctrl+K is reserved for the global command palette (app-shell).
 
-
   const hint = useMemo(
     () => [
       "Draft a 4-week plan for reaching CM",
@@ -1788,42 +1811,42 @@ function Composer() {
           </Button>
         </div>
         {hasChatted ? null : (
-        <div className="mt-2 flex items-center justify-between gap-3 border-t border-border/70 px-2 pt-2">
-          <div className="flex flex-wrap items-center gap-1">
-            {hint.map((h) => (
+          <div className="mt-2 flex items-center justify-between gap-3 border-t border-border/70 px-2 pt-2">
+            <div className="flex flex-wrap items-center gap-1">
+              {hint.map((h) => (
+                <button
+                  type="button"
+                  key={h}
+                  onClick={() => setValue(h)}
+                  className="rounded-md px-1.5 py-0.5 text-2xs text-muted-foreground transition-colors hover:bg-surface-muted hover:text-foreground"
+                >
+                  {h}
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center gap-1 text-2xs text-muted-foreground">
+              <Kbd>↵</Kbd>
+              <span className="ml-1 hidden sm:inline">to send</span>
+              <span className="mx-1 hidden sm:inline">·</span>
+              <Kbd>⇧</Kbd>
+              <Kbd>↵</Kbd>
+              <span className="ml-1 hidden sm:inline">newline</span>
               <button
                 type="button"
-                key={h}
-                onClick={() => setValue(h)}
-                className="rounded-md px-1.5 py-0.5 text-2xs text-muted-foreground transition-colors hover:bg-surface-muted hover:text-foreground"
+                onClick={() => {
+                  setValue("");
+                  setImages([]);
+                  ref.current?.focus();
+                }}
+                disabled={pending}
+                className="ml-2 grid size-6 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-surface-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
+                aria-label="Clear input"
+                title="Clear input"
               >
-                {h}
+                <X className="size-3.5" />
               </button>
-            ))}
+            </div>
           </div>
-          <div className="flex items-center gap-1 text-2xs text-muted-foreground">
-            <Kbd>↵</Kbd>
-            <span className="ml-1 hidden sm:inline">to send</span>
-            <span className="mx-1 hidden sm:inline">·</span>
-            <Kbd>⇧</Kbd>
-            <Kbd>↵</Kbd>
-            <span className="ml-1 hidden sm:inline">newline</span>
-            <button
-              type="button"
-              onClick={() => {
-                setValue("");
-                setImages([]);
-                ref.current?.focus();
-              }}
-              disabled={pending}
-              className="ml-2 grid size-6 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-surface-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
-              aria-label="Clear input"
-              title="Clear input"
-            >
-              <X className="size-3.5" />
-            </button>
-          </div>
-        </div>
         )}
       </form>
       <p className="mt-2 text-center text-2xs text-muted-foreground">

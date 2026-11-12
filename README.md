@@ -4,42 +4,42 @@
 
 ### AI-powered training platform for Codeforces and competitive programming.
 
-*Practice smarter. Debug faster. Rate higher.*
+_Practice smarter. Debug faster. Rate higher._
 
 <p>
-  <img src="https://verdiqy.vercel.app/__l5e/assets-v1/c30864ae-38a9-4519-bc18-f0ddaf0f17b8/verdiqy-hero-preview.png" alt="Verdiqy — AI-powered Codeforces training platform" width="920" />
+  <img src="public/screenshots/verdiqy-hero-preview.png" alt="Verdiqy — AI-powered Codeforces training platform" width="920" />
 </p>
 
 <p>
-  <img src="https://verdiqy.vercel.app/__l5e/assets-v1/da7c58e5-80c1-4c54-97c4-96fdb0b4e3f8/verdiqy-dashboard-preview.png" alt="Verdiqy — Codeforces Intelligence dashboard" width="920" />
+  <img src="public/screenshots/verdiqy-dashboard-preview.png" alt="Verdiqy — Codeforces Intelligence dashboard" width="920" />
 </p>
 
 <p>
-  <img src="https://verdiqy.vercel.app/__l5e/assets-v1/daf699e8-f3e2-40ef-945c-964c58db3475/verdiqy-custom-contest-preview.png" alt="Verdiqy — Custom Contest builder" width="920" />
+  <img src="public/screenshots/verdiqy-custom-contest-preview.png" alt="Verdiqy — Custom Contest builder" width="920" />
 </p>
 
 <p>
-  <img src="https://verdiqy.vercel.app/__l5e/assets-v1/76c1df20-4f64-4a9e-b473-78bc346d4a9e/verdiqy-contests-preview.png" alt="Verdiqy — Contest tracker calendar" width="920" />
+  <img src="public/screenshots/verdiqy-contests-preview.png" alt="Verdiqy — Contest tracker calendar" width="920" />
 </p>
 
 <p>
-  <img src="https://verdiqy.vercel.app/__l5e/assets-v1/a7efa4d7-7b3e-444f-b0c8-ad9ca6171efb/verdiqy-cheat-library-preview.png" alt="Verdiqy — Cheat Library" width="920" />
+  <img src="public/screenshots/verdiqy-cheat-library-preview.png" alt="Verdiqy — Cheat Library" width="920" />
 </p>
 
 <p>
-  <img src="https://verdiqy.vercel.app/__l5e/assets-v1/fca7d4ac-1191-429a-8698-33898e75050f/verdiqy-video-solutions-preview.png" alt="Verdiqy — Video Solutions walkthrough" width="920" />
+  <img src="public/screenshots/verdiqy-video-solutions-preview.png" alt="Verdiqy — Video Solutions walkthrough" width="920" />
 </p>
 
 <p>
-  <img src="https://verdiqy.vercel.app/__l5e/assets-v1/b732727e-4014-44e1-921b-83d7ddd97b80/verdiqy-compare-preview.png" alt="Verdiqy — Compare two Codeforces profiles" width="920" />
+  <img src="public/screenshots/verdiqy-compare-preview.png" alt="Verdiqy — Compare two Codeforces profiles" width="920" />
 </p>
 
 <p>
-  <img src="https://verdiqy.vercel.app/__l5e/assets-v1/a82171b5-d804-4eee-b61e-266b92a1dcbc/verdiqy-intelligence-preview.png" alt="Verdiqy — Codeforces Intelligence handle search" width="920" />
+  <img src="public/screenshots/verdiqy-intelligence-preview.png" alt="Verdiqy — Codeforces Intelligence handle search" width="920" />
 </p>
 
 <p>
-  <img src="https://verdiqy.vercel.app/__l5e/assets-v1/3c26d1ec-6a80-4bc1-acb9-9f4a4095a883/verdiqy-profile-preview.png" alt="Verdiqy — Profile with activity heatmap and stats" width="920" />
+  <img src="public/screenshots/verdiqy-profile-preview.png" alt="Verdiqy — Profile with activity heatmap and stats" width="920" />
 </p>
 
 <p>
@@ -56,7 +56,7 @@
   <img alt="Vite" src="https://img.shields.io/badge/Vite-7-646cff?logo=vite&logoColor=white&style=flat-square" />
   <img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind-4-38bdf8?logo=tailwindcss&logoColor=white&style=flat-square" />
   <img alt="Supabase" src="https://img.shields.io/badge/Supabase-Postgres-3ecf8e?logo=supabase&logoColor=white&style=flat-square" />
-  
+
   <img alt="shadcn/ui" src="https://img.shields.io/badge/shadcn%2Fui-New%20York-000?style=flat-square" />
 </p>
 
@@ -94,30 +94,32 @@ back.
 
 - Codeforces users grinding from Pupil → Expert → Candidate Master and beyond
 - ICPC / ACM teams that need shared, curated sheets
-- Self-taught DSA learners who want a mentor that explains *their* WA
+- Self-taught DSA learners who want a mentor that explains _their_ WA
 - Educators building custom problem sets for a class or cohort
 
 ### What it solves
 
-| Problem | Verdiqy |
-| --- | --- |
-| "I don't know what to solve next." | AI recommendations from your rating + weak tags |
-| "The editorial is too terse." | AI problem explanations with worked intuition |
-| "Why is this a WA?" | Paste code or a screenshot — mentor reviews it |
-| "Am I actually improving?" | Rating deltas, topic mastery, streaks, mistake log |
-| "Contest prep is chaos." | Contest tracker + virtual contest simulator |
+| Problem                            | Verdiqy                                            |
+| ---------------------------------- | -------------------------------------------------- |
+| "I don't know what to solve next." | AI recommendations from your rating + weak tags    |
+| "The editorial is too terse."      | AI problem explanations with worked intuition      |
+| "Why is this a WA?"                | Paste code or a screenshot — mentor reviews it     |
+| "Am I actually improving?"         | Rating deltas, topic mastery, streaks, mistake log |
+| "Contest prep is chaos."           | Contest tracker + virtual contest simulator        |
 
 ---
 
 ## ✨ Features
 
 ### 🧠 AI
+
 - **AI mentor** (`/mentor`) — multi-turn chat that accepts **text, screenshots, and PDFs** (problem statements, editorials, submission images). Powered by Google Gemini API.
 - **AI problem explanations** — plain-English intuition, complexity, and a nudge before the full solution.
 - **AI-generated practice sheets** — rating band + tag mix → a curated set of problems with balanced difficulty.
 - **AI recommendations** — "what to solve next" driven by your CF submission history and topic mastery.
 
 ### 📊 Codeforces analytics
+
 - **Profile dashboard** with rating graph, verdict breakdown, tag heatmap, and streaks
 - **Rating analytics** — deltas per contest, best/worst tags, performance vs. expected
 - **Topic mastery** — per-tag accuracy, average rating solved, and a "next level" target
@@ -125,6 +127,7 @@ back.
 - **Compare** (`/compare`) — side-by-side profile comparison against a friend or rival
 
 ### 🏁 Practice & contests
+
 - **Problem explorer** (`/problems`) — filter by rating, tag, contest, solved status
 - **Custom sheet builder** (`/sheets/$sheetId`) — create, share, duplicate, archive, favorite, restore
 - **Contest tracker** (`/contests`) — upcoming rounds with countdown, division, and registration
@@ -133,16 +136,19 @@ back.
 - **Cheatsheets** (`/cheatsheets`) — DSA templates and snippets
 
 ### 👥 Community
+
 - **Public profiles** (`/u/$handle`) with shareable OG cards
 - **Community feed** (`/community`) — activity from other trainees
 
 ### 🔐 Auth & platform
+
 - Email/password + **Google OAuth** via Supabase Auth
 - Row-Level-Security-enforced Postgres (Supabase (PostgreSQL))
 - Admin dashboard with bug-report inbox
 - End-to-end typed **server functions** (TanStack Start `createServerFn`)
 
 ### 🎨 UX polish
+
 - Fully **responsive** (mobile → 4K)
 - Native **dark mode** + light mode with a persistent theme toggle
 - Global **`⌘K` / `Ctrl+K` command palette** on every route
@@ -243,6 +249,7 @@ verdiqy/
 ## 🚀 Installation
 
 ### Prerequisites
+
 - **Bun** ≥ 1.1 (or Node.js ≥ 20)
 - A **Supabase** project (PostgreSQL database with Auth) — free at [supabase.com](https://supabase.com)
 - A **Google Gemini API Key** (free at [aistudio.google.com](https://aistudio.google.com/)) or **OpenAI API Key** for the AI mentor
@@ -269,16 +276,16 @@ cp .env.example .env
 
 ### 4 — Run
 
-| Task | Command |
-| --- | --- |
-| Start dev server (HMR, port 8080) | `bun run dev` |
-| Type-check + production build | `bun run build` |
-| Development build (unminified) | `bun run build:dev` |
-| Preview production build | `bun run preview` |
-| Lint | `bun run lint` |
-| Format | `bun run format` |
-| Regenerate PWA icons | `bun run icons` |
-| Visual regression tests | `bun run test:visual` |
+| Task                              | Command               |
+| --------------------------------- | --------------------- |
+| Start dev server (HMR, port 8080) | `bun run dev`         |
+| Type-check + production build     | `bun run build`       |
+| Development build (unminified)    | `bun run build:dev`   |
+| Preview production build          | `bun run preview`     |
+| Lint                              | `bun run lint`        |
+| Format                            | `bun run format`      |
+| Regenerate PWA icons              | `bun run icons`       |
+| Visual regression tests           | `bun run test:visual` |
 
 Then open <http://localhost:8080>.
 
@@ -387,6 +394,7 @@ RESEND_API_KEY="re_..."
 ## 🗺 Roadmap
 
 **Shipped**
+
 - [x] Codeforces handle linking + submission sync
 - [x] AI mentor with image + PDF attachments
 - [x] Custom sheet builder with archive / restore / favorite
@@ -398,6 +406,7 @@ RESEND_API_KEY="re_..."
 - [x] Admin bug-report inbox
 
 **Next**
+
 - [ ] Team / cohort accounts with shared sheets
 - [ ] AtCoder + LeetCode integration
 - [ ] AI code-review on paste (line-level annotations)
@@ -470,7 +479,6 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 - **[Codeforces](https://codeforces.com)** — for the problems, the contests, and the public API that makes this platform possible. Mike Mirzayanov & team, thank you.
 - **The competitive programming community** — Errichto, William Lin, SecondThread, cp-algorithms.com, USACO Guide, and every blog author who has ever written an editorial.
 - **Open-source contributors** behind React, TanStack, Vite, Tailwind, shadcn/ui, Radix, Supabase, Recharts, three.js, framer-motion, and countless others.
-
 
 ---
 

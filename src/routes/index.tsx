@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -26,8 +26,8 @@ import {
   MessageSquare,
   Rocket,
 } from "lucide-react";
-import heroImage from "@/assets/home-hero.jpg";
-import logoAsset from "@/assets/logo.png.asset.json";
+import heroImage from "@/assets/home-hero.webp";
+import logoImage from "@/assets/logo-small.webp";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -48,7 +48,9 @@ export const Route = createFileRoute("/")({
           "Curated sheets, problem tracking, contest calendars and video walkthroughs — an organized workspace for competitive programmers.",
       },
       { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "preload", as: "image", href: heroImage, fetchpriority: "high" }],
   }),
   component: LandingPage,
 });
@@ -99,7 +101,9 @@ function HeaderAuthCta() {
       asChild
       className="rounded-full bg-[rgb(var(--lp-ink))] text-black hover:bg-[rgb(var(--lp-ink)/90%)]"
     >
-      <Link to="/auth" search={{ mode: "signup" }}>Sign up</Link>
+      <Link to="/auth" search={{ mode: "signup" }}>
+        Sign up
+      </Link>
     </Button>
   );
 }
@@ -109,14 +113,13 @@ function Hero() {
     <section className="landing-hero relative overflow-hidden">
       {/* Hero background */}
       <div aria-hidden className="absolute inset-[-4%]">
-        <motion.img
+        <img
           src={heroImage}
           alt=""
           width={1920}
           height={1280}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          loading="eager"
+          fetchPriority="high"
           className="absolute inset-0 h-full w-full scale-[1.06] object-cover"
         />
 
@@ -152,16 +155,25 @@ function Hero() {
           aria-label="Verdiqy — home"
           className="inline-flex items-center gap-2 rounded-full bg-white/95 py-1 pl-1 pr-4 text-sm font-semibold text-slate-900 backdrop-blur"
         >
-          <span aria-hidden="true" className="relative grid size-6 place-items-center overflow-hidden rounded-full shadow-[0_6px_20px_-4px_rgba(56,132,255,0.55)]">
-            <img src={logoAsset.url} alt="" className="size-full object-cover" />
+          <span
+            aria-hidden="true"
+            className="relative grid size-6 place-items-center overflow-hidden rounded-full shadow-[0_6px_20px_-4px_rgba(56,132,255,0.55)]"
+          >
+            <img src={logoImage} width={64} height={64} alt="" className="size-full object-cover" />
             <span className="pointer-events-none absolute inset-0 rounded-full ring-1 ring-inset ring-white/20" />
           </span>
           Verdiqy
         </Link>
         <nav className="hidden items-center gap-8 text-sm text-[rgb(var(--lp-ink)/80%)] md:flex">
-          <a href="#features" className="hover:text-[rgb(var(--lp-ink))]">Features</a>
-          <a href="#how" className="hover:text-[rgb(var(--lp-ink))]">How it works</a>
-          <a href="#showcase" className="hover:text-[rgb(var(--lp-ink))]">Showcase</a>
+          <a href="#features" className="hover:text-[rgb(var(--lp-ink))]">
+            Features
+          </a>
+          <a href="#how" className="hover:text-[rgb(var(--lp-ink))]">
+            How it works
+          </a>
+          <a href="#showcase" className="hover:text-[rgb(var(--lp-ink))]">
+            Showcase
+          </a>
         </nav>
         <div className="flex items-center gap-3">
           <ThemeToggle className="border-[rgb(var(--lp-ink)/25%)] bg-[rgb(var(--lp-ink)/10%)] text-[rgb(var(--lp-ink))] hover:bg-[rgb(var(--lp-ink)/20%)] hover:text-[rgb(var(--lp-ink))]" />
@@ -198,9 +210,8 @@ function Hero() {
           transition={{ duration: 0.9, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
           className="mt-6 max-w-xl text-base leading-relaxed text-[rgb(var(--lp-ink)/85%)] sm:text-lg"
         >
-          Curated problem sheets, honest progress tracking, contest reminders
-          and video walkthroughs — your competitive programming workspace, in
-          one calm place.
+          Curated problem sheets, honest progress tracking, contest reminders and video walkthroughs
+          — your competitive programming workspace, in one calm place.
         </motion.p>
 
         <motion.div
@@ -227,19 +238,19 @@ function Hero() {
           transition={{ duration: 0.9, delay: 0.55 }}
           className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-[rgb(var(--lp-ink)/80%)]"
         >
-           <li>✨ Free to use</li>
-           <li aria-hidden className="size-1 rounded-full bg-[rgb(var(--lp-ink)/50%)]" />
-           <li className="inline-flex items-center gap-1.5">
-             <span aria-hidden className="inline-flex items-end gap-[2px] align-middle">
-               <span className="block h-2 w-[3px] rounded-[1px] bg-[#1F8ACB]" />
-               <span className="block h-3 w-[3px] rounded-[1px] bg-[#1F8ACB]" />
-               <span className="block h-4 w-[3px] rounded-[1px] bg-[#E60000]" />
-               <span className="block h-3 w-[3px] rounded-[1px] bg-[#FFB800]" />
-             </span>
-             Codeforces integrated
-           </li>
-           <li aria-hidden className="size-1 rounded-full bg-[rgb(var(--lp-ink)/50%)]" />
-           <li>🎬 Video editorials built-in</li>
+          <li>✨ Free to use</li>
+          <li aria-hidden className="size-1 rounded-full bg-[rgb(var(--lp-ink)/50%)]" />
+          <li className="inline-flex items-center gap-1.5">
+            <span aria-hidden className="inline-flex items-end gap-[2px] align-middle">
+              <span className="block h-2 w-[3px] rounded-[1px] bg-[#1F8ACB]" />
+              <span className="block h-3 w-[3px] rounded-[1px] bg-[#1F8ACB]" />
+              <span className="block h-4 w-[3px] rounded-[1px] bg-[#E60000]" />
+              <span className="block h-3 w-[3px] rounded-[1px] bg-[#FFB800]" />
+            </span>
+            Codeforces integrated
+          </li>
+          <li aria-hidden className="size-1 rounded-full bg-[rgb(var(--lp-ink)/50%)]" />
+          <li>🎬 Video editorials built-in</li>
         </motion.ul>
       </main>
     </section>
@@ -325,9 +336,8 @@ function Features() {
             </em>
           </h2>
           <p className="mt-4 text-base leading-relaxed text-[rgb(var(--lp-ink)/70%)]">
-            Stop juggling five tabs and a spreadsheet. Verdiqy pulls your
-            problems, progress, contests and editorials into a single quiet
-            surface.
+            Stop juggling five tabs and a spreadsheet. Verdiqy pulls your problems, progress,
+            contests and editorials into a single quiet surface.
           </p>
         </div>
 
@@ -335,17 +345,17 @@ function Features() {
           {FEATURES.map((f) => (
             <div
               key={f.title}
-             className="tilt-3d group relative bg-[var(--lp-bg)] p-8 transition-colors hover:bg-[var(--lp-elev)]"
+              className="tilt-3d group relative bg-[var(--lp-bg)] p-8 transition-colors hover:bg-[var(--lp-elev)]"
             >
-              <div className={`inline-flex size-10 items-center justify-center rounded-xl bg-gradient-to-br ${f.accent} ring-1 ring-white/10`}>
+              <div
+                className={`inline-flex size-10 items-center justify-center rounded-xl bg-gradient-to-br ${f.accent} ring-1 ring-white/10`}
+              >
                 <f.icon className="size-5" />
               </div>
               <h3 className="mt-6 font-display text-xl font-semibold text-[rgb(var(--lp-ink))]">
                 {f.title}
               </h3>
-              <p className="mt-2 text-sm leading-relaxed text-[rgb(var(--lp-ink)/65%)]">
-                {f.body}
-              </p>
+              <p className="mt-2 text-sm leading-relaxed text-[rgb(var(--lp-ink)/65%)]">{f.body}</p>
             </div>
           ))}
         </div>
@@ -392,8 +402,8 @@ function HowItWorks() {
             </h2>
           </div>
           <p className="max-w-sm text-sm leading-relaxed text-[rgb(var(--lp-ink)/65%)]">
-            Verdiqy is opinionated about what matters and quiet about what
-            doesn't. You show up, we handle the rest.
+            Verdiqy is opinionated about what matters and quiet about what doesn't. You show up, we
+            handle the rest.
           </p>
         </div>
 
@@ -401,7 +411,7 @@ function HowItWorks() {
           {STEPS.map((s) => (
             <li
               key={s.n}
-             className="tilt-3d rounded-2xl border border-[rgb(var(--lp-ink)/10%)] bg-[rgb(var(--lp-ink)/3%)] p-8 backdrop-blur"
+              className="tilt-3d rounded-2xl border border-[rgb(var(--lp-ink)/10%)] bg-[rgb(var(--lp-ink)/3%)] p-8 backdrop-blur"
             >
               <div className="font-mono text-xs tracking-widest text-[rgb(var(--lp-ink)/45%)]">
                 {s.n}
@@ -409,9 +419,7 @@ function HowItWorks() {
               <h3 className="mt-6 font-display text-xl font-semibold text-[rgb(var(--lp-ink))]">
                 {s.title}
               </h3>
-              <p className="mt-2 text-sm leading-relaxed text-[rgb(var(--lp-ink)/65%)]">
-                {s.body}
-              </p>
+              <p className="mt-2 text-sm leading-relaxed text-[rgb(var(--lp-ink)/65%)]">{s.body}</p>
             </li>
           ))}
         </ol>
@@ -428,10 +436,7 @@ function Showcase() {
     "One-click editorial and video for every problem",
   ];
   return (
-    <section
-      id="showcase"
-      className="bg-[var(--lp-elev)] py-24 sm:py-32"
-    >
+    <section id="showcase" className="bg-[var(--lp-elev)] py-24 sm:py-32">
       <div className="mx-auto grid max-w-6xl gap-14 px-6 sm:px-10 md:grid-cols-2 md:items-center">
         <div>
           <p className="text-xs uppercase tracking-[0.2em] text-[rgb(var(--lp-ink)/55%)]">
@@ -444,8 +449,8 @@ function Showcase() {
             </em>
           </h2>
           <p className="mt-4 text-base leading-relaxed text-[rgb(var(--lp-ink)/70%)]">
-            Every sheet is a real practice plan — not a wall of links. Track
-            what you've solved, what you skipped, and what's worth revisiting.
+            Every sheet is a real practice plan — not a wall of links. Track what you've solved,
+            what you skipped, and what's worth revisiting.
           </p>
           <ul className="mt-8 space-y-3">
             {bullets.map((b) => (
@@ -493,9 +498,7 @@ function Showcase() {
                       p.done ? "bg-emerald-400" : "bg-[rgb(var(--lp-ink)/25%)]"
                     }`}
                   />
-                  <span className="font-mono text-xs text-[rgb(var(--lp-ink)/55%)]">
-                    {p.id}
-                  </span>
+                  <span className="font-mono text-xs text-[rgb(var(--lp-ink)/55%)]">{p.id}</span>
                   <span className="text-[rgb(var(--lp-ink)/90%)]">{p.name}</span>
                 </div>
                 <span className="hidden text-[10px] uppercase tracking-widest text-[rgb(var(--lp-ink)/45%)] sm:inline">
@@ -522,8 +525,7 @@ const QUOTES = [
     role: "Expert · Codeforces",
   },
   {
-    quote:
-      "The mistake tags changed how I practice. I finally see the patterns I keep failing on.",
+    quote: "The mistake tags changed how I practice. I finally see the patterns I keep failing on.",
     name: "Sana K.",
     role: "Candidate Master",
   },
@@ -553,7 +555,7 @@ function Testimonials() {
           {QUOTES.map((q) => (
             <figure
               key={q.name}
-               className="tilt-3d flex h-full flex-col justify-between rounded-2xl border border-[rgb(var(--lp-ink)/10%)] bg-[rgb(var(--lp-ink)/3%)] p-8"
+              className="tilt-3d flex h-full flex-col justify-between rounded-2xl border border-[rgb(var(--lp-ink)/10%)] bg-[rgb(var(--lp-ink)/3%)] p-8"
             >
               <blockquote className="text-base leading-relaxed text-[rgb(var(--lp-ink)/85%)]">
                 &ldquo;{q.quote}&rdquo;
@@ -586,8 +588,8 @@ function FinalCta() {
           </em>
         </h2>
         <p className="mt-6 text-base leading-relaxed text-[rgb(var(--lp-ink)/70%)]">
-          Free to use, no credit card, no seat limits. Bring your handle and
-          we'll take it from there.
+          Free to use, no credit card, no seat limits. Bring your handle and we'll take it from
+          there.
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Button
@@ -619,17 +621,28 @@ function SiteFooter() {
     <footer className="border-t border-[rgb(var(--lp-ink)/10%)] bg-[var(--lp-bg)]">
       <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-6 py-10 text-sm text-[rgb(var(--lp-ink)/60%)] sm:px-10 md:flex-row md:items-center">
         <div className="flex items-center gap-2 text-[rgb(var(--lp-ink))]">
-          <span aria-hidden="true" className="relative grid size-6 place-items-center overflow-hidden rounded-full shadow-[0_6px_20px_-4px_rgba(56,132,255,0.55)]">
-            <img src={logoAsset.url} alt="" className="size-full object-cover" />
+          <span
+            aria-hidden="true"
+            className="relative grid size-6 place-items-center overflow-hidden rounded-full shadow-[0_6px_20px_-4px_rgba(56,132,255,0.55)]"
+          >
+            <img src={logoImage} width={64} height={64} alt="" className="size-full object-cover" />
           </span>
           <span className="font-semibold">Verdiqy</span>
           <span className="text-[rgb(var(--lp-ink)/40%)]">— practice, tracked.</span>
         </div>
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-          <a href="#features" className="hover:text-[rgb(var(--lp-ink))]">Features</a>
-          <a href="#how" className="hover:text-[rgb(var(--lp-ink))]">How it works</a>
-          <Link to="/problems" className="hover:text-[rgb(var(--lp-ink))]">Dashboard</Link>
-          <Link to="/auth" className="hover:text-[rgb(var(--lp-ink))]">Sign in</Link>
+          <a href="#features" className="hover:text-[rgb(var(--lp-ink))]">
+            Features
+          </a>
+          <a href="#how" className="hover:text-[rgb(var(--lp-ink))]">
+            How it works
+          </a>
+          <Link to="/problems" className="hover:text-[rgb(var(--lp-ink))]">
+            Dashboard
+          </Link>
+          <Link to="/auth" className="hover:text-[rgb(var(--lp-ink))]">
+            Sign in
+          </Link>
         </div>
         <div className="text-xs text-[rgb(var(--lp-ink)/40%)]">
           © {new Date().getFullYear()} Verdiqy
@@ -665,16 +678,11 @@ function TopicsMarquee() {
     <div
       className="relative flex overflow-hidden"
       style={{
-        maskImage:
-          "linear-gradient(90deg, transparent, black 12%, black 88%, transparent)",
-        WebkitMaskImage:
-          "linear-gradient(90deg, transparent, black 12%, black 88%, transparent)",
+        maskImage: "linear-gradient(90deg, transparent, black 12%, black 88%, transparent)",
+        WebkitMaskImage: "linear-gradient(90deg, transparent, black 12%, black 88%, transparent)",
       }}
     >
-      <div
-        className="flex shrink-0 gap-3 pr-3"
-        style={{ transform: `rotateX(${tilt}deg)` }}
-      >
+      <div className="flex shrink-0 gap-3 pr-3" style={{ transform: `rotateX(${tilt}deg)` }}>
         {[...TOPICS.slice(offset), ...TOPICS.slice(0, offset)].map((t) => (
           <span
             key={`${key}-${t}`}
@@ -701,8 +709,6 @@ function TopicsMarquee() {
     </section>
   );
 }
-
-
 
 function ProblemSolution() {
   const pain = [
@@ -782,9 +788,8 @@ function FeatureSpotlight() {
               </em>
             </h3>
             <p className="mt-4 text-base leading-relaxed text-[rgb(var(--lp-ink)/70%)]">
-              Every solve, skip, and mistake feeds a per-topic score. See the
-              tag you keep failing, the range you've outgrown, and the next
-              problem worth your time.
+              Every solve, skip, and mistake feeds a per-topic score. See the tag you keep failing,
+              the range you've outgrown, and the next problem worth your time.
             </p>
           </div>
           <MasteryCard />
@@ -826,9 +831,8 @@ function FeatureSpotlight() {
               </em>
             </h3>
             <p className="mt-4 text-base leading-relaxed text-[rgb(var(--lp-ink)/70%)]">
-              A single calendar for Codeforces, AtCoder, CodeChef and more.
-              Filter by division, set gentle reminders, add rounds to your own
-              calendar in one click.
+              A single calendar for Codeforces, AtCoder, CodeChef and more. Filter by division, set
+              gentle reminders, add rounds to your own calendar in one click.
             </p>
           </div>
         </div>
@@ -846,20 +850,17 @@ function FeatureSpotlight() {
               </em>
             </h3>
             <p className="mt-4 text-base leading-relaxed text-[rgb(var(--lp-ink)/70%)]">
-              Ask for a nudge and get one — a question, a technique to try, a
-              pattern to recognize. The mentor refuses to spoil the ending.
+              Ask for a nudge and get one — a question, a technique to try, a pattern to recognize.
+              The mentor refuses to spoil the ending.
             </p>
           </div>
           <div className="rounded-2xl border border-[rgb(var(--lp-ink)/10%)] bg-[var(--lp-panel)] p-6 font-mono text-xs leading-relaxed text-[rgb(var(--lp-ink)/80%)]">
             <div className="text-[rgb(var(--lp-ink)/45%)]">you</div>
-            <div className="mt-1">
-              I've tried DP on this but it's O(n²). Help?
-            </div>
+            <div className="mt-1">I've tried DP on this but it's O(n²). Help?</div>
             <div className="mt-5 text-[rgb(var(--lp-ink)/45%)]">mentor</div>
             <div className="mt-1 text-[rgb(var(--lp-ink)/90%)]">
-              Which quantity is monotone as you sweep from left to right? If
-              you find one, a data structure over indices might drop the inner
-              loop.
+              Which quantity is monotone as you sweep from left to right? If you find one, a data
+              structure over indices might drop the inner loop.
             </div>
             <div className="mt-5 flex gap-2">
               <span className="rounded-full bg-[rgb(var(--lp-ink)/10%)] px-2 py-1 text-[10px] uppercase tracking-widest">
@@ -888,9 +889,7 @@ function Compare() {
   return (
     <section className="bg-[var(--lp-bg)] py-24 sm:py-32">
       <div className="mx-auto max-w-5xl px-6 sm:px-10">
-        <p className="text-xs uppercase tracking-[0.2em] text-[rgb(var(--lp-ink)/55%)]">
-          Compare
-        </p>
+        <p className="text-xs uppercase tracking-[0.2em] text-[rgb(var(--lp-ink)/55%)]">Compare</p>
         <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight text-[rgb(var(--lp-ink))] sm:text-5xl">
           What you get{" "}
           <em className="font-serif italic font-normal text-[rgb(var(--lp-ink)/80%)]">
@@ -933,6 +932,7 @@ function Compare() {
 }
 
 function Integrations() {
+  const reduceMotion = useReducedMotion();
   const items = [
     { icon: Code2, name: "Codeforces" },
     { icon: Trophy, name: "AtCoder" },
@@ -956,22 +956,29 @@ function Integrations() {
             </h2>
           </div>
           <p className="max-w-sm text-sm leading-relaxed text-[rgb(var(--lp-ink)/65%)]">
-            Pull data from where you already practice. No re-solving, no
-            manual imports.
+            Pull data from where you already practice. No re-solving, no manual imports.
           </p>
         </div>
 
         <div className="mt-12 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-[rgb(var(--lp-ink)/10%)] bg-[rgb(var(--lp-ink)/10%)] sm:grid-cols-3 md:grid-cols-5">
-          {items.map((it) => (
-            <div
+          {items.map((it, index) => (
+            <motion.div
               key={it.name}
-              className="flex flex-col items-center justify-center gap-3 bg-[var(--lp-elev)] py-10 text-center transition-colors hover:bg-[var(--lp-elev)]"
+              initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{
+                duration: 0.45,
+                delay: reduceMotion ? 0 : index * 0.07,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              className="group flex flex-col items-center justify-center gap-3 bg-[var(--lp-elev)] py-10 text-center transition-colors duration-300 hover:bg-accent/30"
             >
-              <it.icon className="size-6 text-[rgb(var(--lp-ink)/75%)]" />
-              <span className="text-xs uppercase tracking-widest text-[rgb(var(--lp-ink)/60%)]">
+              <it.icon className="size-6 text-[rgb(var(--lp-ink)/75%)] transition-transform duration-300 ease-out motion-safe:group-hover:-translate-y-1 motion-safe:group-hover:scale-110" />
+              <span className="text-xs uppercase tracking-widest text-[rgb(var(--lp-ink)/60%)] transition-transform duration-300 ease-out motion-safe:group-hover:-translate-y-0.5">
                 {it.name}
               </span>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -1009,9 +1016,7 @@ function Roadmap() {
   return (
     <section className="bg-[var(--lp-bg)] py-24 sm:py-32">
       <div className="mx-auto max-w-6xl px-6 sm:px-10">
-        <p className="text-xs uppercase tracking-[0.2em] text-[rgb(var(--lp-ink)/55%)]">
-          Roadmap
-        </p>
+        <p className="text-xs uppercase tracking-[0.2em] text-[rgb(var(--lp-ink)/55%)]">Roadmap</p>
         <h2 className="mt-3 max-w-2xl font-display text-4xl font-semibold tracking-tight text-[rgb(var(--lp-ink))] sm:text-5xl">
           Built in public,{" "}
           <em className="font-serif italic font-normal text-[rgb(var(--lp-ink)/80%)]">
@@ -1034,8 +1039,8 @@ function Roadmap() {
                     r.status === "Shipped"
                       ? "bg-emerald-400/15 text-emerald-300"
                       : r.status === "In beta"
-                      ? "bg-amber-400/15 text-amber-200"
-                      : "bg-[rgb(var(--lp-ink)/10%)] text-[rgb(var(--lp-ink)/70%)]"
+                        ? "bg-amber-400/15 text-amber-200"
+                        : "bg-[rgb(var(--lp-ink)/10%)] text-[rgb(var(--lp-ink)/70%)]"
                   }`}
                 >
                   {r.status}
@@ -1084,17 +1089,12 @@ function Faq() {
         </p>
         <h2 className="mt-3 font-display text-4xl font-semibold tracking-tight text-[rgb(var(--lp-ink))] sm:text-5xl">
           Everything else,{" "}
-          <em className="font-serif italic font-normal text-[rgb(var(--lp-ink)/80%)]">
-            answered.
-          </em>
+          <em className="font-serif italic font-normal text-[rgb(var(--lp-ink)/80%)]">answered.</em>
         </h2>
 
         <div className="mt-12 divide-y divide-[rgb(var(--lp-ink)/10%)] border-y border-[rgb(var(--lp-ink)/10%)]">
           {FAQS.map((f) => (
-            <details
-              key={f.q}
-              className="group py-5"
-            >
+            <details key={f.q} className="group py-5">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-6 text-left">
                 <span className="font-display text-lg font-medium text-[rgb(var(--lp-ink))]">
                   {f.q}
@@ -1124,11 +1124,8 @@ function MasteryCard() {
   ];
   return (
     <div>
-      <div className="group relative rounded-2xl border border-[rgb(var(--lp-ink)/12%)] bg-[var(--lp-panel)] p-6 shadow-[0_20px_60px_-25px_rgba(0,0,0,0.55)]">
-
-        <div
-          className="relative flex items-center justify-between border-b border-[rgb(var(--lp-ink)/10%)] pb-3"
-        >
+      <div className="group relative rounded-2xl border border-[rgb(var(--lp-ink)/12%)] bg-[var(--lp-panel)] p-6 shadow-[0_20px_60px_-25px_rgba(0,0,0,0.55)] transition-transform duration-300 hover:-translate-y-1">
+        <div className="relative flex items-center justify-between border-b border-[rgb(var(--lp-ink)/10%)] pb-3">
           <div>
             <div className="text-xs uppercase tracking-[0.18em] text-[rgb(var(--lp-ink)/55%)]">
               Topic mastery
@@ -1138,32 +1135,32 @@ function MasteryCard() {
             </div>
           </div>
           <div className="rounded-full bg-[rgb(var(--lp-ink)/10%)] px-2.5 py-1 text-[10px] uppercase tracking-widest text-[rgb(var(--lp-ink)/70%)]">
+            <span className="mr-1.5 inline-block size-1.5 animate-pulse rounded-full bg-[rgb(120,150,255)] align-middle" />
             live
           </div>
         </div>
 
-        <div
-          className="relative mt-4 space-y-3"
-        >
-          {topics.map((t) => (
+        <div className="relative mt-4 space-y-3">
+          {topics.map((t, i) => (
             <div key={t.name}>
               <div className="flex justify-between text-xs">
                 <span className="text-[rgb(var(--lp-ink)/85%)]">{t.name}</span>
                 <span className="font-mono text-[rgb(var(--lp-ink)/60%)]">{t.pct}%</span>
               </div>
               <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-[rgb(var(--lp-ink)/8%)] shadow-[inset_0_1px_2px_rgba(0,0,0,0.15)]">
-                <div
+                <motion.div
                   className="h-full rounded-full bg-gradient-to-r from-[rgb(120,150,255)] via-[rgb(150,180,255)] to-[rgb(200,220,255)] shadow-[0_0_20px_rgba(120,150,255,0.6)]"
-                  style={{ width: `${t.pct}%` }}
+                  initial={{ width: 0 }}
+                  whileInView={{ width: `${t.pct}%` }}
+                  viewport={{ once: true, amount: 0.5 }}
+                  transition={{ duration: 0.9, delay: 0.1 + i * 0.08, ease: "easeOut" }}
                 />
               </div>
             </div>
           ))}
         </div>
 
-        <div
-          className="relative mt-6 flex items-center justify-between border-t border-[rgb(var(--lp-ink)/10%)] pt-4 text-xs text-[rgb(var(--lp-ink)/55%)]"
-        >
+        <div className="relative mt-6 flex items-center justify-between border-t border-[rgb(var(--lp-ink)/10%)] pt-4 text-xs text-[rgb(var(--lp-ink)/55%)]">
           <span>Avg mastery</span>
           <span className="font-mono text-[rgb(var(--lp-ink))]">63.8%</span>
         </div>
@@ -1171,4 +1168,3 @@ function MasteryCard() {
     </div>
   );
 }
-

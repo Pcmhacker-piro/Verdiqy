@@ -31,7 +31,9 @@ if (!existsSync(SRC)) {
 const source = sharp(SRC).ensureAlpha();
 const meta = await source.metadata();
 if (meta.width !== meta.height) {
-  console.warn(`  warn source logo is ${meta.width}x${meta.height} — expected square; output will be padded.`);
+  console.warn(
+    `  warn source logo is ${meta.width}x${meta.height} — expected square; output will be padded.`,
+  );
 }
 
 async function transparent(size, out) {
@@ -62,7 +64,9 @@ async function maskable(size, out) {
     .composite([{ input: resized, gravity: "center" }])
     .png()
     .toFile(resolve(OUT, out));
-  console.log(`  ok  ${out} (${size}x${size}, maskable ${Math.round(MASK_INNER_RATIO * 100)}% safe zone)`);
+  console.log(
+    `  ok  ${out} (${size}x${size}, maskable ${Math.round(MASK_INNER_RATIO * 100)}% safe zone)`,
+  );
 }
 
 // Favicons (transparent) and PWA/any-purpose icons (flat white)

@@ -30,8 +30,6 @@ import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ds/kbd";
 import { cn } from "@/lib/utils";
 
-
-
 export const Route = createFileRoute("/community")({
   head: () => ({
     meta: [
@@ -556,7 +554,11 @@ function LeftRail({
             </p>
             <button
               type="button"
-              onClick={() => toast.success("New collection", { description: "Give it a name after your next bookmark." })}
+              onClick={() =>
+                toast.success("New collection", {
+                  description: "Give it a name after your next bookmark.",
+                })
+              }
               className="rounded p-0.5 text-muted-foreground transition-colors hover:text-foreground"
               aria-label="New collection"
             >
@@ -910,7 +912,11 @@ function RightRail({
               const isFollowing = following.has(a.id);
               return (
                 <li key={a.id} className="flex items-start gap-2.5">
-                  <Link to="/u/$handle" params={{ handle: a.handle }} aria-label={`Open ${a.name}'s profile`}>
+                  <Link
+                    to="/u/$handle"
+                    params={{ handle: a.handle }}
+                    aria-label={`Open ${a.name}'s profile`}
+                  >
                     <Avatar className="size-8 shrink-0">
                       <AvatarFallback className={cn("text-2xs font-semibold", AVATAR_TONE[a.tone])}>
                         {a.initials}

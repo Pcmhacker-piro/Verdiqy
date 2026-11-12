@@ -146,7 +146,7 @@ export const recommendNext = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { callLovableAI, tryParseJSON } = await import("./ai-gateway.server");
+    const { callAI, tryParseJSON } = await import("./ai-gateway.server");
 
     // Ensure problems catalog has data — lazy sync on first use.
     const { count: pCount } = await supabaseAdmin
@@ -242,7 +242,7 @@ export const recommendNext = createServerFn({ method: "POST" })
       "You are an elite competitive-programming coach.",
       "Pick exactly ONE problem from the candidates that maximises the user's rating growth right now.",
       "Prefer problems that stretch weak topics but are still solvable in one sitting.",
-      "Return ONLY valid JSON matching: {\"problem_id\":\"<uuid from candidates>\",\"rationale\":\"<1-2 sentences, second person>\",\"focus_topic\":\"<one tag from the chosen problem>\",\"est_minutes\":<integer 15-60>}",
+      'Return ONLY valid JSON matching: {"problem_id":"<uuid from candidates>","rationale":"<1-2 sentences, second person>","focus_topic":"<one tag from the chosen problem>","est_minutes":<integer 15-60>}',
       "Never invent a problem_id — copy one from the list exactly.",
     ].join(" ");
 
@@ -263,7 +263,7 @@ export const recommendNext = createServerFn({ method: "POST" })
 
     let pick: AIRecommendationPick | null = null;
     try {
-      const raw = await callLovableAI({ system, user: userMsg, json: true, temperature: 0.4 });
+      const raw = await callAI({ system, user: userMsg, json: true, temperature: 0.4 });
       pick = tryParseJSON<AIRecommendationPick>(raw);
     } catch (e) {
       console.error("[recommendNext] AI call failed", e);
@@ -273,7 +273,8 @@ export const recommendNext = createServerFn({ method: "POST" })
     const fallback = sampled[0]!;
     const problem = chosen ?? fallback;
     const rationale =
-      pick?.rationale ?? "A problem in your target range to keep momentum — start with the observation about small cases.";
+      pick?.rationale ??
+      "A problem in your target range to keep momentum — start with the observation about small cases.";
     const focusTopic = pick?.focus_topic ?? problem.tags[0] ?? null;
     const estMinutes = pick?.est_minutes ?? 30;
 
@@ -299,7 +300,11 @@ export const recommendNext = createServerFn({ method: "POST" })
 export const recordAttempt = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((raw: unknown) => {
-    const d = raw as { recommendationId?: string; outcome?: "solved" | "skipped" | "too_hard"; attempts?: number };
+    const d = raw as {
+      recommendationId?: string;
+      outcome?: "solved" | "skipped" | "too_hard";
+      attempts?: number;
+    };
     if (!d?.recommendationId || typeof d.recommendationId !== "string") {
       throw new Error("recommendationId required");
     }
@@ -332,7 +337,8 @@ export const recordAttempt = createServerFn({ method: "POST" })
       .maybeSingle();
     if (!prob) throw new Error("Problem missing");
 
-    const verdict = data.outcome === "solved" ? "OK" : data.outcome === "too_hard" ? "TOO_HARD" : "SKIPPED";
+    const verdict =
+      data.outcome === "solved" ? "OK" : data.outcome === "too_hard" ? "TOO_HARD" : "SKIPPED";
     const outcomeScore = data.outcome === "solved" ? 1 : 0;
 
     // Insert submission
@@ -367,9 +373,7 @@ export const recordAttempt = createServerFn({ method: "POST" })
       };
     });
     if (upserts.length) {
-      await supabaseAdmin
-        .from("topic_mastery")
-        .upsert(upserts, { onConflict: "user_id,topic" });
+      await supabaseAdmin.from("topic_mastery").upsert(upserts, { onConflict: "user_id,topic" });
     }
 
     // Resolve recommendation
@@ -410,7 +414,7 @@ export const recordAttempt = createServerFn({ method: "POST" })
 export const generateCoachNote = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { callLovableAI } = await import("./ai-gateway.server");
+    const { callAI } = await import("./ai-gateway.server");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const today = new Date().toISOString().slice(0, 10);
@@ -443,7 +447,7 @@ export const generateCoachNote = createServerFn({ method: "POST" })
 
     let note = "Focus on one problem at a time. Read once, plan for 60 seconds, then code.";
     try {
-      note = await callLovableAI({
+      note = await callAI({
         system:
           "You are a warm, precise CP coach. In 2 short sentences (max 220 chars), tell the user what to focus on today given their weak topics and streak. Second person, present tense, no emojis, no lists.",
         user: prompt,

@@ -1,13 +1,18 @@
-import { useCallback, useEffect, useState } from "react";
+import {
+  createContext,
+  createElement,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
+import type { AuthChangeEvent, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
 export const PROFILE_UPDATED_EVENT = "verdiqy:profile-updated";
 
-/** Notify all mounted useCurrentUser() consumers to reload name/avatar. */
 export function notifyProfileUpdated() {
-  if (typeof window !== "undefined") {
-    window.dispatchEvent(new Event(PROFILE_UPDATED_EVENT));
-  }
+  if (typeof window !== "undefined") window.dispatchEvent(new Event(PROFILE_UPDATED_EVENT));
 }
 
 export interface CurrentUserInfo {
@@ -17,6 +22,11 @@ export interface CurrentUserInfo {
   avatarUrl: string | null;
 }
 
+const CurrentUserContext = createContext<{ user: CurrentUserInfo | null; ready: boolean }>({
+  user: null,
+  ready: false,
+});
+
 function computeInitials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
   if (parts.length === 0) return "?";
@@ -24,84 +34,126 @@ function computeInitials(name: string): string {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-/**
- * Returns the currently signed-in user's display name, initials, and email.
- * Falls back to email prefix when no display_name is set in user_metadata.
- */
-export function useCurrentUser(): CurrentUserInfo | null {
-  const [info, setInfo] = useState<CurrentUserInfo | null>(null);
-  const [nonce, setNonce] = useState(0);
-  const bump = useCallback(() => setNonce((n) => n + 1), []);
+/** One display-only identity for the entire app; route guards still own access. */
+export function CurrentUserProvider({
+  children,
+  onIdentityChange,
+}: {
+  children: ReactNode;
+  onIdentityChange?: (event: AuthChangeEvent) => void;
+}) {
+  const [state, setState] = useState<{ user: CurrentUserInfo | null; ready: boolean }>({
+    user: null,
+    ready: false,
+  });
 
   useEffect(() => {
     let cancelled = false;
+    let revision = 0;
+    let authChanged = false;
+    let activeUser: User | null = null;
+    let accountId: string | null = null;
+    let profileTimer: ReturnType<typeof setTimeout> | undefined;
 
-    async function load() {
-      const { data } = await supabase.auth.getUser();
-      const user = data.user;
+    function showUser(user: User | null, forceProfile = false) {
+      activeUser = user;
+      // Token refreshes and duplicate sign-in events must not refetch the profile.
+      if (!forceProfile && user && accountId === user.id) return;
+      const sameAccount = accountId === user?.id;
+      accountId = user?.id ?? null;
+      const currentRevision = ++revision;
+      clearTimeout(profileTimer);
       if (!user) {
-        if (!cancelled) setInfo(null);
+        if (!cancelled) setState({ user: null, ready: true });
         return;
       }
-      const meta = (user.user_metadata ?? {}) as Record<string, unknown>;
-      const metaName =
-        (typeof meta.display_name === "string" && meta.display_name) ||
-        (typeof meta.full_name === "string" && meta.full_name) ||
-        (typeof meta.name === "string" && meta.name) ||
-        "";
-      const emailPrefix = user.email ? user.email.split("@")[0] : "";
-      let name = (metaName || emailPrefix || "User").toString();
+      const id = user.id;
+      const email = user.email ?? null;
+      const meta = user.user_metadata ?? {};
+      let name =
+        [meta.display_name, meta.full_name, meta.name].find(
+          (value) => typeof value === "string" && value,
+        ) ||
+        email?.split("@")[0] ||
+        "User";
       let avatarUrl: string | null =
-        (typeof meta.avatar_url === "string" && meta.avatar_url) ||
-        (typeof meta.picture === "string" && meta.picture) ||
-        null;
+        [meta.avatar_url, meta.picture].find((value) => typeof value === "string" && value) || null;
+      if (!cancelled)
+        setState((previous) => ({
+          ready: true,
+          user:
+            sameAccount && previous.user
+              ? previous.user
+              : { name, initials: computeInitials(name), email, avatarUrl },
+        }));
 
-      // The profile row is the source of truth: it holds uploaded avatars
-      // (stored as a private storage path) and the edited display name.
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("display_name, avatar_url, cf_title_photo")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      if (profile?.display_name) name = profile.display_name;
-      const stored = profile?.avatar_url ?? null;
-      if (stored) {
-        if (/^https?:\/\//i.test(stored)) {
-          avatarUrl = stored;
-        } else {
-          const { data: signed } = await supabase.storage
-            .from("avatars")
-            .createSignedUrl(stored, 60 * 60 * 24);
-          if (signed?.signedUrl) avatarUrl = signed.signedUrl;
-        }
-      } else if (!avatarUrl && profile?.cf_title_photo) {
-        avatarUrl = profile.cf_title_photo;
-      }
-
-      if (!cancelled) {
-        setInfo({
-          name,
-          initials: computeInitials(name),
-          email: user.email ?? null,
-          avatarUrl,
-        });
+      profileTimer = setTimeout(() => {
+        void loadProfile().catch(() => undefined);
+      }, 0);
+      async function loadProfile() {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("display_name, avatar_url, cf_title_photo")
+          .eq("id", id)
+          .maybeSingle();
+        if (cancelled || revision !== currentRevision) return;
+        if (profile?.display_name) name = profile.display_name;
+        const stored = profile?.avatar_url;
+        if (stored) {
+          if (/^https?:\/\//i.test(stored)) avatarUrl = stored;
+          else {
+            const { data: signed } = await supabase.storage
+              .from("avatars")
+              .createSignedUrl(stored, 60 * 60 * 24);
+            if (signed?.signedUrl) avatarUrl = signed.signedUrl;
+          }
+        } else if (!avatarUrl && profile?.cf_title_photo) avatarUrl = profile.cf_title_photo;
+        if (!cancelled && revision === currentRevision)
+          setState({
+            ready: true,
+            user: { name, initials: computeInitials(name), email, avatarUrl },
+          });
       }
     }
 
-    load();
-    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED") {
-        load();
-      }
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      if (
+        event !== "INITIAL_SESSION" &&
+        event !== "SIGNED_IN" &&
+        event !== "SIGNED_OUT" &&
+        event !== "USER_UPDATED"
+      )
+        return;
+      authChanged = true;
+      showUser(session?.user ?? null, event === "USER_UPDATED");
+      if (event !== "INITIAL_SESSION") onIdentityChange?.(event);
     });
-    window.addEventListener(PROFILE_UPDATED_EVENT, bump);
+    void supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        if (!cancelled && !authChanged) showUser(data.session?.user ?? null);
+      })
+      .catch(() => {
+        if (!cancelled && !authChanged) setState({ user: null, ready: true });
+      });
+    const refreshProfile = () => showUser(activeUser, true);
+    window.addEventListener(PROFILE_UPDATED_EVENT, refreshProfile);
     return () => {
       cancelled = true;
+      revision++;
+      clearTimeout(profileTimer);
       sub.subscription.unsubscribe();
-      window.removeEventListener(PROFILE_UPDATED_EVENT, bump);
+      window.removeEventListener(PROFILE_UPDATED_EVENT, refreshProfile);
     };
-  }, [nonce, bump]);
+  }, [onIdentityChange]);
 
-  return info;
+  return createElement(CurrentUserContext.Provider, { value: state }, children);
+}
+
+export function useCurrentUser(): CurrentUserInfo | null {
+  return useContext(CurrentUserContext).user;
+}
+
+export function useCurrentUserStatus() {
+  return useContext(CurrentUserContext);
 }

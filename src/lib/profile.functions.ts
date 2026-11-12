@@ -33,10 +33,7 @@ async function signAvatar(
   supabase: {
     storage: {
       from: (b: string) => {
-        createSignedUrl: (
-          p: string,
-          e: number,
-        ) => Promise<{ data: { signedUrl: string } | null }>;
+        createSignedUrl: (p: string, e: number) => Promise<{ data: { signedUrl: string } | null }>;
       };
     };
   },
@@ -100,7 +97,6 @@ export const getMyProfile = createServerFn({ method: "GET" })
     return { ...fresh, avatar_signed_url };
   });
 
-
 export const updateMyProfile = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((raw: unknown) => {
@@ -112,17 +108,16 @@ export const updateMyProfile = createServerFn({ method: "POST" })
       avatar_url?: unknown;
       public_badges?: unknown;
     };
-    const badges =
-      Array.isArray(d.public_badges)
-        ? Array.from(
-            new Set(
-              d.public_badges
-                .filter((b): b is string => typeof b === "string")
-                .map((b) => b.trim().slice(0, 40))
-                .filter(Boolean),
-            ),
-          ).slice(0, 20)
-        : undefined;
+    const badges = Array.isArray(d.public_badges)
+      ? Array.from(
+          new Set(
+            d.public_badges
+              .filter((b): b is string => typeof b === "string")
+              .map((b) => b.trim().slice(0, 40))
+              .filter(Boolean),
+          ),
+        ).slice(0, 20)
+      : undefined;
     return {
       display_name:
         typeof d.display_name === "string" ? d.display_name.trim().slice(0, 60) : undefined,
@@ -136,7 +131,11 @@ export const updateMyProfile = createServerFn({ method: "POST" })
           : undefined,
       onboarded: typeof d.onboarded === "boolean" ? d.onboarded : undefined,
       avatar_url:
-        typeof d.avatar_url === "string" ? d.avatar_url.slice(0, 500) : d.avatar_url === null ? null : undefined,
+        typeof d.avatar_url === "string"
+          ? d.avatar_url.slice(0, 500)
+          : d.avatar_url === null
+            ? null
+            : undefined,
       public_badges: badges,
     };
   })
@@ -165,8 +164,8 @@ export const updateMyProfile = createServerFn({ method: "POST" })
 export const syncProfileFromAuthIdentity = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const meta = ((context.claims as { user_metadata?: Record<string, unknown> })
-      .user_metadata ?? {}) as Record<string, unknown>;
+    const meta = ((context.claims as { user_metadata?: Record<string, unknown> }).user_metadata ??
+      {}) as Record<string, unknown>;
     const str = (v: unknown) => (typeof v === "string" && v.trim() ? v.trim() : null);
     const name = str(meta.display_name) ?? str(meta.full_name) ?? str(meta.name);
     const picture = str(meta.avatar_url) ?? str(meta.picture);

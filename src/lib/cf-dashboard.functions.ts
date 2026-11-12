@@ -35,7 +35,6 @@ export type CFSolvedProblem = {
   url: string;
 };
 
-
 // ---------- Codeforces API types (partial) ----------
 
 type CFRatingChange = {
@@ -95,21 +94,32 @@ export type Dashboard = {
   activityMatrix: number[]; // 53*7
   difficultyBuckets: { r: string; n: number }[];
   topics: { tag: string; solved: number; mastery: number }[];
-  submissionMix: { name: string; value: number; tone: "success" | "destructive" | "warning" | "muted" }[];
+  submissionMix: {
+    name: string;
+    value: number;
+    tone: "success" | "destructive" | "warning" | "muted";
+  }[];
   submissionTrend: { m: string; accepted: number; failed: number }[];
   habitMatrix: number[][]; // 7x24 Mon..Sun
   velocity: { w: string; gain: number }[];
   languages: { name: string; pct: number }[];
-  storyItems: { icon: "trophy" | "flame" | "star"; tone: "primary" | "warning" | "success"; headline: string; body: string }[];
+  storyItems: {
+    icon: "trophy" | "flame" | "star";
+    tone: "primary" | "warning" | "success";
+    headline: string;
+    body: string;
+  }[];
 };
 
 // ---------- Fetch helpers ----------
 
 async function cfFetch<T>(url: string): Promise<T | null> {
   const res = await fetch(url, { headers: { "user-agent": "atlas-app/1.0" } });
-  const json = (await res.json().catch(() => null)) as
-    | { status: string; result?: T; comment?: string }
-    | null;
+  const json = (await res.json().catch(() => null)) as {
+    status: string;
+    result?: T;
+    comment?: string;
+  } | null;
   if (!res.ok || !json) {
     // Codeforces returns 400 + { status:"FAILED", comment:"handle: ... not found" }
     // for missing users. Surface that as null so caller can 404, but throw on
@@ -132,7 +142,10 @@ function bucketRating(r: number): string {
   return String(b);
 }
 
-function verdictBucket(v?: string): { name: string; tone: "success" | "destructive" | "warning" | "muted" } {
+function verdictBucket(v?: string): {
+  name: string;
+  tone: "success" | "destructive" | "warning" | "muted";
+} {
   if (!v) return { name: "Other", tone: "muted" };
   if (v === "OK") return { name: "Accepted", tone: "success" };
   if (v === "WRONG_ANSWER") return { name: "Wrong answer", tone: "destructive" };
@@ -193,28 +206,26 @@ function computeDashboard(
     solvedInContest.get(s.contestId)!.add(key);
   }
 
-  const contestTimeline = [...ratings]
-    .reverse()
-    .map((r) => ({
-      id: r.contestName,
-      date: ymd(r.ratingUpdateTimeSeconds),
-      rating: r.newRating,
-      delta: r.newRating - r.oldRating,
-      rank: r.rank,
-      solved: solvedInContest.get(r.contestId)?.size ?? 0,
-      outOf: 0,
-      kind: /div\.?\s*1/i.test(r.contestName)
-        ? "Div. 1"
-        : /div\.?\s*2/i.test(r.contestName)
-          ? "Div. 2"
-          : /div\.?\s*3/i.test(r.contestName)
-            ? "Div. 3"
-            : /div\.?\s*4/i.test(r.contestName)
-              ? "Div. 4"
-              : /educational/i.test(r.contestName)
-                ? "Edu"
-                : "Rated",
-    }));
+  const contestTimeline = [...ratings].reverse().map((r) => ({
+    id: r.contestName,
+    date: ymd(r.ratingUpdateTimeSeconds),
+    rating: r.newRating,
+    delta: r.newRating - r.oldRating,
+    rank: r.rank,
+    solved: solvedInContest.get(r.contestId)?.size ?? 0,
+    outOf: 0,
+    kind: /div\.?\s*1/i.test(r.contestName)
+      ? "Div. 1"
+      : /div\.?\s*2/i.test(r.contestName)
+        ? "Div. 2"
+        : /div\.?\s*3/i.test(r.contestName)
+          ? "Div. 3"
+          : /div\.?\s*4/i.test(r.contestName)
+            ? "Div. 4"
+            : /educational/i.test(r.contestName)
+              ? "Edu"
+              : "Rated",
+  }));
 
   const bestRankEntry = ratings.reduce<CFRatingChange | null>(
     (best, r) => (best === null || r.rank < best.rank ? r : best),
@@ -229,7 +240,10 @@ function computeDashboard(
   const wrongByTag = new Map<string, number>();
 
   // Verdict mix
-  const verdictCounts = new Map<string, { value: number; tone: "success" | "destructive" | "warning" | "muted" }>();
+  const verdictCounts = new Map<
+    string,
+    { value: number; tone: "success" | "destructive" | "warning" | "muted" }
+  >();
 
   // Language totals
   const langCounts = new Map<string, number>();
@@ -318,7 +332,9 @@ function computeDashboard(
       // mastery: blend acceptance (0..1) with breadth (log scale on solved) minus penalty for wrongs
       const breadth = Math.min(1, Math.log10(solved + 1) / 2); // solved 100 -> ~1
       const penalty = attempts > 0 ? Math.min(0.3, wrong / (attempts * 2)) : 0;
-      const mastery = Math.round(Math.max(5, Math.min(99, (acc * 0.6 + breadth * 0.6 - penalty) * 100)));
+      const mastery = Math.round(
+        Math.max(5, Math.min(99, (acc * 0.6 + breadth * 0.6 - penalty) * 100)),
+      );
       return { tag, solved, mastery };
     })
     .sort((a, b) => b.solved - a.solved)
@@ -329,7 +345,11 @@ function computeDashboard(
   const submissionMix = [
     ...orderedNames
       .filter((n) => verdictCounts.has(n))
-      .map((n) => ({ name: n, value: verdictCounts.get(n)!.value, tone: verdictCounts.get(n)!.tone })),
+      .map((n) => ({
+        name: n,
+        value: verdictCounts.get(n)!.value,
+        tone: verdictCounts.get(n)!.tone,
+      })),
     ...[...verdictCounts.entries()]
       .filter(([n]) => !orderedNames.includes(n))
       .map(([n, v]) => ({ name: n, value: v.value, tone: v.tone })),
@@ -339,7 +359,11 @@ function computeDashboard(
   const submissionTrend = lastMonths.map((key) => {
     const [y, m] = key.split("-").map(Number);
     const bucket = monthTrend.get(key)!;
-    return { m: `${MONTHS[m]} ${String(y).slice(2)}`, accepted: bucket.accepted, failed: bucket.failed };
+    return {
+      m: `${MONTHS[m]} ${String(y).slice(2)}`,
+      accepted: bucket.accepted,
+      failed: bucket.failed,
+    };
   });
 
   // Languages: pct rounded, top 5
@@ -405,7 +429,8 @@ function computeDashboard(
 
   // Story items
   const bestRatingGain = ratings.reduce<CFRatingChange | null>(
-    (best, r) => (best === null || r.newRating - r.oldRating > best.newRating - best.oldRating ? r : best),
+    (best, r) =>
+      best === null || r.newRating - r.oldRating > best.newRating - best.oldRating ? r : best,
     null,
   );
   const longestStreak = (() => {
@@ -425,7 +450,8 @@ function computeDashboard(
   const hardestSolved = subs
     .filter((s) => s.verdict === "OK" && s.problem.rating)
     .reduce<CFSubmission | null>(
-      (best, s) => (best === null || (s.problem.rating ?? 0) > (best.problem.rating ?? 0) ? s : best),
+      (best, s) =>
+        best === null || (s.problem.rating ?? 0) > (best.problem.rating ?? 0) ? s : best,
       null,
     );
 
@@ -575,7 +601,7 @@ export const getCodeforcesJourney = createServerFn({ method: "POST" })
   .inputValidator((raw: unknown) => {
     const d = raw as { handle?: string };
     const handle = String(d?.handle ?? "").trim();
-    if (!handle || !/^[A-Za-z0-9_.\-]{1,32}$/.test(handle)) {
+    if (!handle || !/^[A-Za-z0-9_.-]{1,32}$/.test(handle)) {
       throw new Error("Invalid Codeforces handle");
     }
     return { handle };
@@ -585,7 +611,9 @@ export const getCodeforcesJourney = createServerFn({ method: "POST" })
     const [info, ratings, subs] = await Promise.all([
       cfFetch<CFUserInfoRaw[]>(`https://codeforces.com/api/user.info?handles=${h}`),
       cfFetch<CFRatingChange[]>(`https://codeforces.com/api/user.rating?handle=${h}`),
-      cfFetch<CFSubmission[]>(`https://codeforces.com/api/user.status?handle=${h}&from=1&count=10000`),
+      cfFetch<CFSubmission[]>(
+        `https://codeforces.com/api/user.status?handle=${h}&from=1&count=10000`,
+      ),
     ]);
     if (!info || !info[0]) throw new Error(`Codeforces handle "${data.handle}" not found`);
     const u = info[0];
@@ -611,4 +639,3 @@ export const getCodeforcesJourney = createServerFn({ method: "POST" })
     const solved = buildSolvedList(subs ?? []);
     return { user, dashboard, solved, fetchedAt: Date.now() };
   });
-
