@@ -7,39 +7,39 @@
 _Practice smarter. Debug faster. Rate higher._
 
 <p>
-  <img src="public/screenshots/verdiqy-hero-preview.png" alt="Verdiqy — AI-powered Codeforces training platform" width="920" />
+  <img src="./public/screenshots/verdiqy-hero-preview.png" alt="Verdiqy — AI-powered Codeforces training platform" width="920" />
 </p>
 
 <p>
-  <img src="public/screenshots/verdiqy-dashboard-preview.png" alt="Verdiqy — Codeforces Intelligence dashboard" width="920" />
+  <img src="./public/screenshots/verdiqy-dashboard-preview.png" alt="Verdiqy — Codeforces Intelligence dashboard" width="920" />
 </p>
 
 <p>
-  <img src="public/screenshots/verdiqy-custom-contest-preview.png" alt="Verdiqy — Custom Contest builder" width="920" />
+  <img src="./public/screenshots/verdiqy-custom-contest-preview.png" alt="Verdiqy — Custom Contest builder" width="920" />
 </p>
 
 <p>
-  <img src="public/screenshots/verdiqy-contests-preview.png" alt="Verdiqy — Contest tracker calendar" width="920" />
+  <img src="./public/screenshots/verdiqy-contests-preview.png" alt="Verdiqy — Contest tracker calendar" width="920" />
 </p>
 
 <p>
-  <img src="public/screenshots/verdiqy-cheat-library-preview.png" alt="Verdiqy — Cheat Library" width="920" />
+  <img src="./public/screenshots/verdiqy-cheat-library-preview.png" alt="Verdiqy — Cheat Library" width="920" />
 </p>
 
 <p>
-  <img src="public/screenshots/verdiqy-video-solutions-preview.png" alt="Verdiqy — Video Solutions walkthrough" width="920" />
+  <img src="./public/screenshots/verdiqy-video-solutions-preview.png" alt="Verdiqy — Video Solutions walkthrough" width="920" />
 </p>
 
 <p>
-  <img src="public/screenshots/verdiqy-compare-preview.png" alt="Verdiqy — Compare two Codeforces profiles" width="920" />
+  <img src="./public/screenshots/verdiqy-compare-preview.png" alt="Verdiqy — Compare two Codeforces profiles" width="920" />
 </p>
 
 <p>
-  <img src="public/screenshots/verdiqy-intelligence-preview.png" alt="Verdiqy — Codeforces Intelligence handle search" width="920" />
+  <img src="./public/screenshots/verdiqy-intelligence-preview.png" alt="Verdiqy — Codeforces Intelligence handle search" width="920" />
 </p>
 
 <p>
-  <img src="public/screenshots/verdiqy-profile-preview.png" alt="Verdiqy — Profile with activity heatmap and stats" width="920" />
+  <img src="./public/screenshots/verdiqy-profile-preview.png" alt="Verdiqy — Profile with activity heatmap and stats" width="920" />
 </p>
 
 <p>
