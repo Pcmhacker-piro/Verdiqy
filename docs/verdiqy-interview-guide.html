@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Verdiqy — Engineering Interview & Architecture Guide</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    @page {
+      size: A4;
+      margin: 1.6cm 1.4cm;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #0f172a;
+      background: #ffffff;
+      line-height: 1.55;
+      font-size: 13px;
+    }
+
+    .header {
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 16px;
+      margin-bottom: 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .title-area h1 {
+      font-size: 26px;
+      font-weight: 800;
+      color: #6366f1;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .title-area p {
+      font-size: 13px;
+      color: #64748b;
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    .candidate-meta {
+      text-align: right;
+      font-size: 12px;
+      color: #475569;
+    }
+
+    .candidate-meta b {
+      color: #0f172a;
+      font-size: 13px;
+    }
+
+    .section {
+      margin-bottom: 22px;
+      page-break-inside: avoid;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-left: 4px solid #6366f1;
+      padding-left: 8px;
+    }
+
+    .card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+    }
+
+    .card-title {
+      font-weight: 700;
+      color: #1e293b;
+      font-size: 13.5px;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .card p, .card li {
+      color: #334155;
+      font-size: 12.5px;
+    }
+
+    ul {
+      padding-left: 18px;
+      margin-top: 6px;
+    }
+
+    li {
+      margin-bottom: 4px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      background: #e0e7ff;
+      color: #4338ca;
+    }
+
+    .badge.green {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .quote-box {
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      padding: 10px 14px;
+      border-radius: 0 6px 6px 0;
+      font-style: italic;
+      color: #1e3a8a;
+      margin: 8px 0;
+      font-size: 12.5px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      background: #e2e8f0;
+      padding: 1px 5px;
+      border-radius: 4px;
+      color: #0f172a;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+
+    .qa-box {
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+
+    .qa-question {
+      background: #f1f5f9;
+      font-weight: 700;
+      padding: 8px 12px;
+      color: #0f172a;
+      font-size: 12.5px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .qa-answer {
+      padding: 10px 12px;
+      color: #334155;
+      font-size: 12px;
+      background: #ffffff;
+    }
+
+    .tech-pill {
+      display: inline-block;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 11px;
+      margin-right: 4px;
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="title-area">
+      <h1>Verdiqy <span>⚡</span></h1>
+      <p>AI-Powered Competitive Programming & Codeforces Training Platform</p>
+    </div>
+    <div class="candidate-meta">
+      <b>Prakash Meena</b><br>
+      GitHub: github.com/Pcmhacker-piro/Verdiqy<br>
+      Live: verdiqy.vercel.app
+    </div>
+  </div>
+
+  <!-- SECTION 1: ELEVATOR PITCH -->
+  <div class="section">
+    <div class="section-title">1. The 30-Second Elevator Pitch (Start with this)</div>
+    <div class="quote-box">
+      "Verdiqy is an AI-powered competitive programming platform designed around Codeforces. While competitive programmers have access to thousands of problems, they often plateau because they don't know what to practice next, or they get stuck on terse editorials. Verdiqy analyzes a user's submission history and topic weaknesses, recommends tailored practice sheets, and provides a multimodal AI mentor capable of reading problem screenshots, code snippets, and WA submissions to guide the candidate without spoiling solutions."
+    </div>
+  </div>
+
+  <!-- SECTION 2: SYSTEM ARCHITECTURE -->
+  <div class="section">
+    <div class="section-title">2. Full-Stack System Architecture</div>
+    <div class="card">
+      <div style="margin-bottom: 10px;">
+        <span class="tech-pill">React 19</span>
+        <span class="tech-pill">TanStack Start (SSR)</span>
+        <span class="tech-pill">TypeScript 5.8</span>
+        <span class="tech-pill">Tailwind CSS v4</span>
+        <span class="tech-pill">Supabase (PostgreSQL)</span>
+        <span class="tech-pill">Google Gemini 2.5 Flash</span>
+        <span class="tech-pill">Codeforces REST API</span>
+      </div>
+      <div class="grid-2">
+        <div>
+          <b>Client & Presentation Layer:</b>
+          <ul>
+            <li>Full Server-Side Rendering (SSR) via <b>TanStack Start</b> for instant initial paint and SEO.</li>
+            <li>Client-side caching and optimistic updates via <b>TanStack Query</b>.</li>
+            <li>Accessible UI with <b>shadcn/ui</b>, Radix primitives, dark/light theme toggle, and universal <code>⌘K</code> command palette.</li>
+          </ul>
+        </div>
+        <div>
+          <b>Server & Persistence Layer:</b>
+          <ul>
+            <li>Typed <b>Server Functions</b> (RPC) executed strictly on the edge/server runtime.</li>
+            <li>Private credentials (<code>GEMINI_API_KEY</code>, <code>SUPABASE_SECRET_KEY</code>) kept strictly isolated server-side.</li>
+            <li>Relational <b>PostgreSQL</b> with granular Row Level Security (RLS) policies.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: BACKEND DEEP-DIVE -->
+  <div class="section">
+    <div class="section-title">3. The Backend Deep-Dive: Exactly What Lives There</div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">🤖 AI Gateway & Multimodal Mentor <span class="badge">Server Only</span></div>
+        <p><b>Files:</b> <code>ai-gateway.server.ts</code>, <code>mentor.functions.ts</code></p>
+        <ul>
+          <li>Direct integration with <b>Google Gemini 2.5 Flash</b>.</li>
+          <li>Multimodal pipeline: parses base64 problem diagrams, submission screenshots, and code attachments.</li>
+          <li>System prompt enforces <b>Socratic algorithmic tutoring</b> (hints, edge case detection) rather than full solution dumping.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📊 Analytics & Topic Mastery Engine <span class="badge">Server Only</span></div>
+        <p><b>Files:</b> <code>cf-dashboard.functions.ts</code>, <code>sync.server.ts</code></p>
+        <ul>
+          <li>Computes per-tag mastery (accuracy %, average rating solved, tag frequency).</li>
+          <li>Tracks mistake log: filters WA, TLE, MLE with re-attempt tracking.</li>
+          <li>Contest analytics: calculates rating deltas and expected performance vs actual.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📄 Custom Practice Sheets Engine <span class="badge">RPC Functions</span></div>
+        <p><b>Files:</b> <code>sheets.functions.ts</code></p>
+        <ul>
+          <li>CRUD API for personalized and community practice sheets.</li>
+          <li>Filter engine by rating bands (e.g. 1200–1600) and problem tags.</li>
+          <li>Public sharing, cloning, problem ordering, and progress percentage.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🖼️ Codeforces Avatar Proxy Route <span class="badge">API Route</span></div>
+        <p><b>Files:</b> <code>src/routes/api/public/cf-avatar.ts</code></p>
+        <ul>
+          <li>Solves third-party avatar CORS failures & SSL hostname mismatches on Codeforces asset domains.</li>
+          <li>Streams verified image buffers to client; falls back to SVG initials if Codeforces asset server is down.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE BREAK FOR CLEAN PRINTING -->
+  <div class="page-break"></div>
+
+  <!-- SECTION 4: ENGINEERING CHALLENGES -->
+  <div class="section" style="margin-top: 10px;">
+    <div class="section-title">4. Core Engineering Challenges & Solutions (Interview Gold)</div>
+
+    <div class="card">
+      <div class="card-title">1. Why TanStack Start Server Functions over Express/REST?</div>
+      <p><b>Challenge:</b> Building a separate Express or NestJS backend introduces duplicate TypeScript interface maintenance, routing boilerplate, and synchronization overhead.</p>
+      <p><b>Solution:</b> <i>"I implemented TanStack Start server functions (<code>createServerFn</code>). This provides end-to-end type inference from database queries straight to UI components, zero-overhead RPC routing, and guarantees that database secret keys never bundle into the browser."</i></p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">2. Handling Third-Party Codeforces API Constraints & Flakiness</div>
+      <p><b>Challenge:</b> Codeforces rate limits requests (1 call every 2 seconds per IP) and their media CDN (<code>userpic.codeforces.org</code>) frequently goes offline independently of the main site.</p>
+      <p><b>Solution:</b> <i>"I decoupled the client from direct asset requests. Avatars are proxied through an internal edge endpoint with upstream fallback. For data queries, TanStack Query server caching prevents redundant calls and protects users from hitting 429 rate limits."</i></p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">3. Multi-Tenant Database Security with PostgreSQL RLS</div>
+      <p><b>Challenge:</b> Ensuring private user data (custom sheets, bug reports, AI conversations) is completely inaccessible to other users without relying solely on application-level <code>WHERE</code> clauses.</p>
+      <p><b>Solution:</b> <i>"I enforced Row Level Security (RLS) directly in PostgreSQL. Even if an endpoint was misconfigured, the database engine itself rejects unauthorized reads/writes using <code>auth.uid() = user_id</code> checks."</i></p>
+    </div>
+  </div>
+
+  <!-- SECTION 5: LIVE DEMO FLOW -->
+  <div class="section">
+    <div class="section-title">5. 3-Minute Live Demo Flow</div>
+    <div class="grid-3">
+      <div class="card">
+        <b>1. Landing & Navigation</b>
+        <p>Show responsive design, dark/light theme, and command palette (<code>⌘K</code>).</p>
+      </div>
+      <div class="card">
+        <b>2. Problems & Sheet Builder</b>
+        <p>Filter problems by tag/rating and build a custom curated sheet in 10 seconds.</p>
+      </div>
+      <div class="card">
+        <b>3. AI Mentor & Analytics</b>
+        <p>Ask the mentor for intuition on a WA code snippet and show the tag mastery heatmap.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 6: TOUGH QUESTIONS & BULLETPROOF ANSWERS -->
+  <div class="section">
+    <div class="section-title">6. Tough Interview Questions & Perfect Answers</div>
+
+    <div class="qa-box">
+      <div class="qa-question">Q: "Did you just prompt an AI builder or use a boilerplate?"</div>
+      <div class="qa-answer">
+        <b>Answer:</b> <i>"I used modern AI tools to rapidly prototype the visual UI mockups. However, I engineered the full production architecture myself: decoupling the application into an independent TanStack Start SSR platform, designing the relational PostgreSQL schema with RLS, writing the Codeforces proxy, and building the server-side Gemini 2.5 Flash integration."</i>
+      </div>
+    </div>
+
+    <div class="qa-box">
+      <div class="qa-question">Q: "Why PostgreSQL over MongoDB for competitive programming data?"</div>
+      <div class="qa-answer">
+        <b>Answer:</b> <i>"CP data is inherently relational: users own submissions, submissions link to problems, problems belong to contests and sheets. Relational schema with foreign keys and ACID constraints guarantees data integrity, which is much cleaner than denormalizing in a document store."</i>
+      </div>
+    </div>
+
+    <div class="qa-box">
+      <div class="qa-question">Q: "How do you ensure the AI mentor doesn't spoil the answer immediately?"</div>
+      <div class="qa-answer">
+        <b>Answer:</b> <i>"I created a Socratic coaching system prompt that classifies user queries into 'hint', 'edge-case', or 'conceptual'. It provides time/space complexity guidance and thought questions first, and only provides concrete code when explicitly requested."</i>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
