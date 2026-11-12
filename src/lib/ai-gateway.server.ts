@@ -26,7 +26,7 @@ export async function callAI(opts: AICallOptions): Promise<string> {
 
   if (geminiKey) {
     endpoint = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
-    defaultModel = "gemini-2.0-flash";
+    defaultModel = "gemini-2.5-flash";
     headers["Authorization"] = `Bearer ${geminiKey}`;
   } else if (openaiKey) {
     endpoint = "https://api.openai.com/v1/chat/completions";
